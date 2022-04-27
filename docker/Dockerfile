@@ -49,3 +49,4 @@ COPY package.json package.json
 COPY package-lock.json package-lock.json
 RUN npm ci --only=production
 RUN npm i query-selector-shadow-dom
+RUN npm i xhr2
