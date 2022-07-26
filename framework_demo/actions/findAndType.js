@@ -5,9 +5,10 @@ const findXpath = new Find().XPATH;
 class FindAndType {
     async XPATH(selector, text, page) {
         let successMessage = "Typed successfully (XPATH): " + selector;
-        let failedMessage  = "Can't type into selector (XPATH): " + selector;
+        let failedMessage  = "Can't type this (" + text + ") into selector (XPATH): " + selector;
 
         let linkHandlers = await findXpath(selector, page);
+        console.log(page.isSuccess);
         if (page.isSuccess) {
           try {
               await linkHandlers[0].type(text);
@@ -20,7 +21,7 @@ class FindAndType {
 
     async CSS(selector, text, page) {
         let successMessage = "Typed successfully (CSS): " + selector;
-        let failedMessage  = "Can't type into selector (CSS): " + selector;
+        let failedMessage  = "Can't type this (" + text + ") into selector (CSS): " + selector;
 
         await findCSS(selector, page);
         if (page.isSuccess) {
