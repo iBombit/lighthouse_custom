@@ -61,7 +61,7 @@ async function captureReport() {
     page.isSuccess ? await zoomIn(page, flow) : console.log('Fail detected, skipping flow...');
 
     //REPORTING
-    await createReports(flow);
+    await createReports(flow, configString);
 
     await browser.close();
 }

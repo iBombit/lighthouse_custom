@@ -5,7 +5,8 @@ const reportPath = __dirname + '/../user-flow.report.html';
 const reportPathJson = __dirname + '/../user-flow.report.json';
 
 class CreateReport {
-    async createReports(flow) {
+    async createReports(flow, configString) {
+      //use configString to add mobile/desktop to report name (will fail in Carrier)
       const reportHTML = flow.generateReport();
       const reportJSON = JSON.stringify(flow.getFlowResult()).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
       fs.writeFileSync(reportPath, reportHTML);
