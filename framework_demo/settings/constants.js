@@ -17,8 +17,8 @@ class Desktop {
 
 class Mobile {
   get lighthouseReportName()    { return "onliner mobile"};
-  get fhdWidth()                { return 844};
-  get fhdHeight()               { return 390};
+  get fhdWidth()                { return 390};
+  get fhdHeight()               { return 844};
   get rttMs()                   { return 40};
   get throughputKbps()          { return 10240};
   get cpuSlowdownMultiplier()   { return 1};
