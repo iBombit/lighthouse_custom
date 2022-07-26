@@ -31,6 +31,7 @@ const withPageStatusCheck = async (page, flow) => {
 }
 
 async function captureReport() {
+    console.time('Execution Time');
     let testuser     = process.argv[2]; //username
     let testpassword = process.argv[3]; //password
     let configString = process.argv[4]; //desktop or mobile
@@ -67,5 +68,6 @@ async function captureReport() {
     await createReports(flow, configString);
 
     await browser.close();
+    console.timeEnd('Execution Time');
 }
 captureReport();
