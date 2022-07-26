@@ -1,27 +1,45 @@
 // Selectors
 const Constants = require('./constants');
 const desktop = new Constants.Desktop();
+const mobile = new Constants.Mobile();
 
-const fhdWidth = desktop.fhdWidth;
-const fhdHeight = desktop.fhdHeight;
 
 class Browser {
-    get headless() {
+    get headlessDesktop() {
         return {
-            args: [`--window-size=${ fhdWidth },${ fhdHeight }`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--disable-gpu', '--disable-gpu-sandbox', '--display', '--ignore-certificate-errors', '--disable-storage-reset=true'],
+            args: [`--window-size=${ desktop.fhdWidth },${ desktop.fhdHeight }`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--disable-gpu', '--disable-gpu-sandbox', '--display', '--ignore-certificate-errors', '--disable-storage-reset=true'],
             defaultViewport: {
-                width: fhdWidth,
-                height: fhdHeight
+                width: desktop.fhdWidth,
+                height: desktop.fhdHeight
             }
         }
     };
-    get headful() {
+    get headfulDesktop() {
         return {
             "headless": false,
-            args: [`--window-size=${ fhdWidth },${ fhdHeight }`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--ignore-certificate-errors', '--disable-storage-reset=true'],
+            args: [`--window-size=${ desktop.fhdWidth },${ desktop.fhdHeight }`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--ignore-certificate-errors', '--disable-storage-reset=true'],
             defaultViewport: {
-                width: fhdWidth,
-                height: fhdHeight
+                width: desktop.fhdWidth,
+                height: desktop.fhdHeight
+            }
+        }
+    };
+    get headlessMobile() {
+        return {
+            args: [`--window-size=${ mobile.fhdWidth },${ mobile.fhdHeight }`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--disable-gpu', '--disable-gpu-sandbox', '--display', '--ignore-certificate-errors', '--disable-storage-reset=true'],
+            defaultViewport: {
+                width: mobile.fhdWidth,
+                height: mobile.fhdHeight
+            }
+        }
+    };
+    get headfulMobile() {
+        return {
+            "headless": false,
+            args: [`--window-size=${ mobile.fhdWidth },${ mobile.fhdHeight }`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--ignore-certificate-errors', '--disable-storage-reset=true'],
+            defaultViewport: {
+                width: mobile.fhdWidth,
+                height: mobile.fhdHeight
             }
         }
     };

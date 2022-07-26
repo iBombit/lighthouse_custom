@@ -33,9 +33,9 @@ async function captureReport() {
     const testpassword = process.argv[3]; //password to pass from Carrier
 
     //FOR docker/carrier
-    //const browser = await puppeteer.launch(browserSettings.headless);
+    //const browser = await puppeteer.launch(browserSettings.headlessDesktop);
     //FOR LOCAL DEBUG -- with node only (doesn't work in docker)
-    const browser = await puppeteer.launch(browserSettings.headful);
+    const browser = await puppeteer.launch(browserSettings.headfulDesktop);
     const page = await browser.newPage();
     // extra property to track failed actions
     // any fail working with selectors or keyboard sets this to false
