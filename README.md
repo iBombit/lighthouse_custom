@@ -21,7 +21,7 @@ npm install puppeteer lighthouse@9.2.0 # chrome browser is bundled with the pupp
 node <YOUR_UI_SCRIPT>.js
 ```
 
-Possible launch commands for demo script:
+**Possible launch commands for demo script**
 ```
 node onliner.js user pass desktop headful
 node onliner.js user pass desktop headless
