@@ -38,6 +38,7 @@ async function captureReport() {
         browser = browserType==="headless"? await puppeteer.launch(browserSettings.headlessMobile) : await puppeteer.launch(browserSettings.headfulMobile);
         page    = await browser.newPage();
         flow    = await lighthouse.startFlow(page, lightHouseSettings.configMobile);
+        break;
       }
       default: {
         browser = browserType==="headless"? await puppeteer.launch(browserSettings.headlessDesktop) : await puppeteer.launch(browserSettings.headfulDesktop);
