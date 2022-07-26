@@ -3,7 +3,7 @@ class Desktop {
   get fhdWidth()               { return 1920};
   get fhdHeight()              { return 1080};
   get rttMs()                  { return 40};
-	get throughputKbps()         { return 10240};
+  get throughputKbps()         { return 10240};
   get cpuSlowdownMultiplier()  { return 1};
   get requestLatencyMs()       { return 0};
   get downloadThroughputKbps() { return 0};
