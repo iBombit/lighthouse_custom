@@ -4,15 +4,14 @@ Custom Lighthouse Tests Creation
 Docker Hub
 https://hub.docker.com/r/ibombit/lighthouse-puppeteer-chrome
 
-Preparing local environment for testing UI scripts
-There's no strict necessity to test UI script in Carrier during development.  To speed up script debug it is possible to:
+**Preparing local environment for testing UI scripts**
 
-**Install docker**
+- **Install docker**
 1. Create debug UI script (Node.js+Puppeteer+Lighthouse)
 2. In the same directory execute this command:
 3. `docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:latest node <YOUR_UI_SCRIPT>.js`
 
-**Without docker**
+- **Without docker**
 1. Install node.js
 2. Run these commands:
 ```
