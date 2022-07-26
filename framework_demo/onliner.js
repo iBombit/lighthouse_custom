@@ -27,7 +27,7 @@ const CreateReport = require('./reporting/createReport');
 const createReports = new CreateReport().createReports;
 
 const withPageStatusCheck = async (page, flow) => {
-  return page.isSuccess? await flow : console.log('Fail detected, skipping flow...');
+  return page.isSuccess? await flow() : console.log('Fail detected, skipping flow...');
 }
 
 async function captureReport() {
@@ -56,13 +56,13 @@ async function captureReport() {
     page.isSuccess = true;
 
     //TEST STEPS
-    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.mainPage, "Main Page"));
-    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.services, "Uslugi"));
-    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.baraholka, "Baraholka"));
-    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.forum, "Forum"));
-    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.kurs, "Kurs"));
-    await withPageStatusCheck(page, selectCurrencyExchange(page, flow));
-    await withPageStatusCheck(page, zoomIn(page, flow));
+    await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.mainPage, "Main Page"));
+    await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.services, "Uslugi"));
+    await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.baraholka, "Baraholka"));
+    await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.forum, "Forum"));
+    await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.kurs, "Kurs"));
+    await withPageStatusCheck(page, () => selectCurrencyExchange(page, flow));
+    await withPageStatusCheck(page, () => zoomIn(page, flow));
 
     //REPORTING
     await createReports(flow, configString);
