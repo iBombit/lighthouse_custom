@@ -27,23 +27,27 @@ const CreateReport = require('./reporting/createReport');
 const createReports = new CreateReport().createReports;
 
 async function captureReport() {
-    const nodePath = process.argv[0]; //always 1st env var
-    const appPath = process.argv[1]; //always 2nd env var
-    const testuser = process.argv[2]; //username to pass from Carrier
-    const testpassword = process.argv[3]; //password to pass from Carrier
+    let testuser     = process.argv[2]; //username
+    let testpassword = process.argv[3]; //password
+    let configString = process.argv[4]; //desktop or mobile
+    let browserType  = process.argv[5]; //headless (docker) or headful (node.js)
+    let browser = ''; let page = ''; let flow = '';
 
-    //FOR docker/carrier
-    //const browser = await puppeteer.launch(browserSettings.headlessDesktop);
-    //FOR LOCAL DEBUG -- with node only (doesn't work in docker)
-    const browser = await puppeteer.launch(browserSettings.headfulDesktop);
-    const page = await browser.newPage();
+    switch (configString) {
+      case "mobile": {
+        browser = browserType==="headless"? await puppeteer.launch(browserSettings.headlessMobile) : await puppeteer.launch(browserSettings.headfulMobile);
+        page    = await browser.newPage();
+        flow    = await lighthouse.startFlow(page, lightHouseSettings.configMobile);
+      }
+      default: {
+        browser = browserType==="headless"? await puppeteer.launch(browserSettings.headlessDesktop) : await puppeteer.launch(browserSettings.headfulDesktop);
+        page    = await browser.newPage();
+        flow    = await lighthouse.startFlow(page, lightHouseSettings.configDesktop);
+      }
+    }
     // extra property to track failed actions
     // any fail working with selectors or keyboard sets this to false
     page.isSuccess = true;
-
-    // Start Lighthouse Flow for UI perfomance measurement
-    const flow = await lighthouse.startFlow(page, lightHouseSettings.configDesktop);
-    //const flow = await lighthouse.startFlow(page, lightHouseSettings.configMobile);
 
     //TEST STEPS
     page.isSuccess ? await measureColdPage(page, flow, directLinks.mainPage, "Main Page") : console.log('Fail detected, skipping flow...');
