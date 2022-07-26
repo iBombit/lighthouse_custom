@@ -26,6 +26,10 @@ const directLinks = new Links.DirectLinks();
 const CreateReport = require('./reporting/createReport');
 const createReports = new CreateReport().createReports;
 
+const withPageStatusCheck = async (page, flow) => {
+  return page.isSuccess? await flow : console.log('Fail detected, skipping flow...');
+}
+
 async function captureReport() {
     let testuser     = process.argv[2]; //username
     let testpassword = process.argv[3]; //password
@@ -51,14 +55,13 @@ async function captureReport() {
     page.isSuccess = true;
 
     //TEST STEPS
-    page.isSuccess ? await measureColdPage(page, flow, directLinks.mainPage, "Main Page") : console.log('Fail detected, skipping flow...');
-    page.isSuccess ? await measureColdPage(page, flow, directLinks.services, "Uslugi") : console.log('Fail detected, skipping flow...');
-    page.isSuccess ? await measureColdPage(page, flow, directLinks.baraholka, "Baraholka") : console.log('Fail detected, skipping flow...');
-    page.isSuccess ? await measureColdPage(page, flow, directLinks.forum, "Forum") : console.log('Fail detected, skipping flow...');
-    page.isSuccess ? await measureColdPage(page, flow, directLinks.kurs, "Kurs") : console.log('Fail detected, skipping flow...');
-
-    page.isSuccess ? await selectCurrencyExchange(page, flow) : console.log('Fail detected, skipping flow...');
-    page.isSuccess ? await zoomIn(page, flow) : console.log('Fail detected, skipping flow...');
+    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.mainPage, "Main Page"));
+    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.services, "Uslugi"));
+    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.baraholka, "Baraholka"));
+    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.forum, "Forum"));
+    await withPageStatusCheck(page, measureColdPage(page, flow, directLinks.kurs, "Kurs"));
+    await withPageStatusCheck(page, selectCurrencyExchange(page, flow));
+    await withPageStatusCheck(page, zoomIn(page, flow));
 
     //REPORTING
     await createReports(flow, configString);
