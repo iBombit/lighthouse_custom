@@ -22,8 +22,8 @@ node <YOUR_UI_SCRIPT>.js
 
 **Possible launch commands for demo script**
 ```
-node onliner.js user pass desktop headful
-node onliner.js user pass desktop headless
-node onliner.js user pass mobile headful
-node onliner.js user pass mobile headless
+node onliner.js user pass desktop headful https://onliner.by
+node onliner.js user pass desktop headless https://onliner.by
+node onliner.js user pass mobile headful https://onliner.by
+node onliner.js user pass mobile headless https://onliner.by
 ```
