@@ -36,7 +36,9 @@ async function captureReport() {
     let testpassword = process.argv[3]; //password
     let configString = process.argv[4]; //desktop or mobile
     let browserType  = process.argv[5]; //headless (docker) or headful (node.js)
+	  let env          = process.argv[6]; //env link
     let browser = ''; let page = ''; let flow = '';
+	  directLinks.link = env;
 
     switch (configString) {
       case "mobile": {
