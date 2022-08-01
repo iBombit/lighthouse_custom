@@ -1,7 +1,7 @@
 class Desktop {
   get lighthouseReportName()    { return "onliner desktop"};
-  get screenWidth()                { return 1920};
-  get screenHeight()               { return 1080};
+  get screenWidth()             { return 1920};
+  get screenHeight()            { return 1080};
   get rttMs()                   { return 40};
   get throughputKbps()          { return 10240};
   get cpuSlowdownMultiplier()   { return 1};
@@ -17,8 +17,8 @@ class Desktop {
 
 class Mobile {
   get lighthouseReportName()    { return "onliner mobile"};
-  get screenWidth()                { return 390};
-  get screenHeight()               { return 844};
+  get screenWidth()             { return 390};
+  get screenHeight()            { return 844};
   get rttMs()                   { return 40};
   get throughputKbps()          { return 10240};
   get cpuSlowdownMultiplier()   { return 1};
