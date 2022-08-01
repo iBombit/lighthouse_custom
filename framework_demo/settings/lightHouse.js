@@ -23,8 +23,8 @@ class LightHouse {
           throttlingMethod: desktop.throttlingMethod,
           screenEmulation: {
             mobile: desktop.screenEmulationMobile,
-            width: desktop.fhdWidth,
-            height: desktop.fhdHeight,
+            width: desktop.screenWidth,
+            height: desktop.screenHeight,
             deviceScaleFactor: desktop.deviceScaleFactor,
             disabled: desktop.screenEmulationDisabled,
           },
@@ -51,8 +51,8 @@ class LightHouse {
           throttlingMethod: mobile.throttlingMethod,
           screenEmulation: {
             mobile: mobile.screenEmulationMobile,
-            width: mobile.fhdWidth,
-            height: mobile.fhdHeight,
+            width: mobile.screenWidth,
+            height: mobile.screenHeight,
             deviceScaleFactor: mobile.deviceScaleFactor,
             disabled: mobile.screenEmulationDisabled,
           },
