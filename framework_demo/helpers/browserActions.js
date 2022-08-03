@@ -66,9 +66,7 @@ class BrowserActions {
       catch(error) {
         console.log("BROWSER KILLED (error was from not existent PID, but we catch it)");
       }
-      let thisClass = new BrowserActions();
-      [browser, page, flow] = await thisClass.startBrowserWithLighthouse(configString, browserType, flow);
-      return [browser, page];
+      return new BrowserActions().startBrowserWithLighthouse(configString, browserType, flow)
   }
 
   /**
