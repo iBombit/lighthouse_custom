@@ -18,7 +18,7 @@ const CurrencyExchange = require('./flows/currencyExchange');
 const selectCurrencyExchange = new CurrencyExchange().selectCurrencyExchange;
 const zoomIn = new CurrencyExchange().zoomIn;
 
-// Links
+// links
 const Links = require('./links/links');
 const directLinks = new Links.DirectLinks();
 
@@ -26,8 +26,52 @@ const directLinks = new Links.DirectLinks();
 const CreateReport = require('./reporting/createReport');
 const createReports = new CreateReport().createReports;
 
+// exec will allow us to execute basic sh commands
+const { promisify } = require('util');
+const exec = promisify(require('child_process').exec)
+
 const withPageStatusCheck = async (page, flow) => {
   return page.isSuccess? await flow() : console.log('Fail detected, skipping flow...');
+}
+
+const startBrowserWithLighthouse = async (configString, browserType, flow) => {
+  switch (configString) {
+    case "mobile": {
+      const browser = browserType==="headless" ? await puppeteer.launch(browserSettings.headlessMobile) : await puppeteer.launch(browserSettings.headfulMobile);
+      const page    = await browser.newPage();
+      // change only page object inside flow to preserve report data
+      const newFlow = typeof flow !== "undefined" ? flow.options.page = page : await lighthouse.startFlow(page, lightHouseSettings.configMobile);
+      // extra property to track failed actions
+      // any fail working with selectors or keyboard sets this to false
+      page.isSuccess = true;
+      return [browser, page, newFlow];
+    }
+    default: {
+      const browser = browserType==="headless" ? await puppeteer.launch(browserSettings.headlessDesktop) : await puppeteer.launch(browserSettings.headfulDesktop);
+      const page    = await browser.newPage();
+      // change only page object inside flow to preserve report data
+      const newFlow = typeof flow !== "undefined" ? flow.options.page = page : await lighthouse.startFlow(page, lightHouseSettings.configDesktop);
+      // extra property to track failed actions
+      // any fail working with selectors or keyboard sets this to false
+      page.isSuccess = true;
+      return [browser, page, newFlow];
+    }
+  }
+}
+
+const restartChrome = async (browser, page, flow, configString, browserType) => {
+    console.log('killing CHROME');
+    await page.close();
+    await browser.close();
+    try {
+      // ensure that your system/docker has these commands installed
+      await exec("kill -9 $(ps -ef | grep chrome | awk '{print $2}')");
+    }
+    catch(error) {
+      console.log("chrome killed, error was from not existent PID, but we catch it");
+    }
+    [browser, page, flow] = await startBrowserWithLighthouse(configString, browserType, flow);
+    return [browser, page];
 }
 
 async function captureReport() {
@@ -38,29 +82,28 @@ async function captureReport() {
     let browserType  = process.argv[5]; //headless (docker) or headful (node.js)
     let env          = process.argv[6]; //env link
     let browser = ''; let page = ''; let flow = '';
-    directLinks.link = env;
 
-    switch (configString) {
-      case "mobile": {
-        browser = browserType==="headless"? await puppeteer.launch(browserSettings.headlessMobile) : await puppeteer.launch(browserSettings.headfulMobile);
-        page    = await browser.newPage();
-        flow    = await lighthouse.startFlow(page, lightHouseSettings.configMobile);
-        break;
-      }
-      default: {
-        browser = browserType==="headless"? await puppeteer.launch(browserSettings.headlessDesktop) : await puppeteer.launch(browserSettings.headfulDesktop);
-        page    = await browser.newPage();
-        flow    = await lighthouse.startFlow(page, lightHouseSettings.configDesktop);
-      }
-    }
-    // extra property to track failed actions
-    // any fail working with selectors or keyboard sets this to false
-    page.isSuccess = true;
+    // set env URL in links.js class
+    directLinks.link = env;
+    /*
+      set vars depending on passed configString, browserType
+      browser -- current browser instance
+      page -- current page in browser
+      flow -- lighthouse flow object (used for measurements and report)
+    */
+    [browser, page, flow] = await startBrowserWithLighthouse(configString, browserType);
 
     //TEST STEPS
     await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.mainPage, "Main Page"));
     await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.services, "Uslugi"));
     await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.baraholka, "Baraholka"));
+    /*
+      Chrome with puppeteer tends to use A LOT of RAM with large sites and >10 consecutive page navigations
+      Chrome has a limit for 1 page of 4GB
+      The method below will restart Chrome and append previous report results (flow object)
+      Do not forget to login after this (if needed)
+    */
+    [browser, page] = await restartChrome(browser, page, flow, configString, browserType);
     await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.forum, "Forum"));
     await withPageStatusCheck(page, () => measureColdPage(page, flow, directLinks.kurs, "Kurs"));
     await withPageStatusCheck(page, () => selectCurrencyExchange(page, flow));
