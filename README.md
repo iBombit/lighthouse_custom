@@ -9,7 +9,7 @@ https://hub.docker.com/r/ibombit/lighthouse-puppeteer-chrome
 - **Install docker**
 1. Create debug UI script (Node.js+Puppeteer+Lighthouse)
 2. In the same directory execute this command:
-3. `docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:latest node <YOUR_UI_SCRIPT>.js`
+3. `docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:node16 node <YOUR_UI_SCRIPT>.js`
 
 - **Without docker**
 1. Install node.js
