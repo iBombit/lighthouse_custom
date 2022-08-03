@@ -17,9 +17,7 @@ class BrowserActions {
      * @return        browser, page, newFlow
      */
     async startBrowserWithLighthouse(configString, browserType, flow) {
-        let browser = '';
-        let page = '';
-        let newFlow = '';
+        let browser = ''; let page = ''; let newFlow = '';
         switch (configString) {
             case "mobile": {
                 [browser, page, newFlow] = await startMobileBrowserWithLighthouse(configString, browserType, flow);
