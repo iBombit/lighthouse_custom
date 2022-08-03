@@ -3,6 +3,12 @@ const findCSS = new Find().CSS;
 const findXpath = new Find().XPATH;
 
 class FindAndType {
+    /**
+     * Find and type into XPATH selector
+     * @selector XPATH selector
+     * @text     text to type into selector
+     * @page     current page in browser
+    */
     async XPATH(selector, text, page) {
         let successMessage = "Typed successfully (XPATH): " + selector;
         let failedMessage  = "Can't type this (" + text + ") into selector (XPATH): " + selector;
@@ -18,7 +24,12 @@ class FindAndType {
         }
         page.isSuccess? console.log(successMessage) : console.log(failedMessage);
     }
-
+    /**
+     * Find and type into CSS selector (delay between keypress is 100ms)
+     * @selector CSS selector
+     * @text     text to type into selector
+     * @page     current page in browser
+    */
     async CSS(selector, text, page) {
         let successMessage = "Typed successfully (CSS): " + selector;
         let failedMessage  = "Can't type this (" + text + ") into selector (CSS): " + selector;

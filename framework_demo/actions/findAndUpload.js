@@ -3,6 +3,12 @@ const findCSS = new Find().CSS;
 const findXpath = new Find().XPATH;
 
 class FindAndUpload {
+    /**
+     * Find and upload file into XPATH selector
+     * @selector XPATH selector
+     * @page     current page in browser
+     * @filepath relative path to file
+    */
     async XPATH(selector, page, filepath) {
         let successMessage = "Uploaded successfully (XPATH): " + selector;
         let failedMessage  = "Can't upload into (XPATH): " + selector;
@@ -17,7 +23,12 @@ class FindAndUpload {
         }
         page.isSuccess? console.log(successMessage) : console.log(failedMessage);
     }
-
+    /**
+     * Find and upload file into CSS selector
+     * @selector CSS selector
+     * @page     current page in browser
+     * @filepath relative path to file
+    */
     async CSS(selector, page, filepath) {
         let successMessage = "Uploaded successfully (CSS): " + selector;
         let failedMessage  = "Can't upload into (CSS): " + selector;

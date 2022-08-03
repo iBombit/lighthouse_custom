@@ -1,4 +1,10 @@
 class Find {
+    /**
+     * Find XPATH selector and return it to further flows
+     * @selector XPATH selector
+     * @page     current page in browser
+     * @return   linkHandlers
+    */
     async XPATH(selector, page) {
         let successMessage = "Selector found (XPATH): " + selector;
         let failedMessage  = "Selector not found (XPATH): " + selector +
@@ -21,7 +27,13 @@ class Find {
           }
         }
     }
-
+    /**
+     * Find CSS selector and return it to further flows
+     * @selector CSS selector
+     * @page     current page in browser
+     * @options  hidden, returnValue or undefined :)
+     * @return   await page.$(selector)  -- if options===returnValue
+    */
     async CSS(selector, page, options) {
         const waitingTime = 240000;
         let successMessage = "Selector found (CSS): " + selector;

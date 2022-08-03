@@ -3,6 +3,12 @@ const findCSS = new Find().CSS;
 const findXpath = new Find().XPATH;
 
 class FindAndClick {
+    /**
+     * Find and click into XPATH selector
+     * @selector XPATH selector
+     * @page     current page in browser
+     * @options  rightClick or undefined :)
+    */
     async XPATH(selector, page, options) {
         let successMessage = "Clicked successfully (XPATH): " + selector;
         let failedMessage  = "Selector was not clickable (XPATH): " + selector +
@@ -26,7 +32,12 @@ class FindAndClick {
         }
         page.isSuccess? console.log(successMessage) : console.log(failedMessage);
     }
-
+    /**
+     * Find and click into CSS selector
+     * @selector CSS selector
+     * @page     current page in browser
+     * @options  rightClick, jsClick, doubleClick or undefined :)
+    */
     async CSS(selector, page, options) {
         let successMessage = "Clicked successfully (CSS): " + selector;
         let failedMessage  = "Selector was not clickable (CSS): " + selector +

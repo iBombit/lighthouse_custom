@@ -1,4 +1,9 @@
 class HtmlWaiter {
+    /**
+     * Wait till the size of the page is not changing over time
+     * @page    current page in browser
+     * @timeout time to wait for the page to load (default: 30sec)
+    */
     async waitTillHTMLRendered (page, timeout = 30000) {
         const checkDurationMsecs = 1000;
         const maxChecks = timeout / checkDurationMsecs;

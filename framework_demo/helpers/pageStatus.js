@@ -5,7 +5,7 @@ class PageStatus {
    * @flow          lighthouse flow object (used for measurements and report)
   */
   async withPageStatusCheck (page, flow) {
-    return page.isSuccess? await flow() : console.log('Fail detected, skipping flow...');
+    return page.isSuccess ? await flow() : console.log('Fail detected, skipping flow...');
   }
 
 }
