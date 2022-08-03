@@ -37,20 +37,20 @@ const withPageStatusCheck = async (page, flow) => {
 const startBrowserWithLighthouse = async (configString, browserType, flow) => {
   switch (configString) {
     case "mobile": {
-      const browser = browserType==="headless" ? await puppeteer.launch(browserSettings.headlessMobile) : await puppeteer.launch(browserSettings.headfulMobile);
+      const browser = browserType === "headless" ? await puppeteer.launch(browserSettings.headlessMobile) : await puppeteer.launch(browserSettings.headfulMobile);
       const page    = await browser.newPage();
       // change only page object inside flow to preserve report data
-      const newFlow = typeof flow !== "undefined" ? flow.options.page = page : await lighthouse.startFlow(page, lightHouseSettings.configMobile);
+      const newFlow = typeof flow === "undefined" ? await lighthouse.startFlow(page, lightHouseSettings.configMobile) : flow.options.page = page;
       // extra property to track failed actions
       // any fail working with selectors or keyboard sets this to false
       page.isSuccess = true;
       return [browser, page, newFlow];
     }
     default: {
-      const browser = browserType==="headless" ? await puppeteer.launch(browserSettings.headlessDesktop) : await puppeteer.launch(browserSettings.headfulDesktop);
+      const browser = browserType === "headless" ? await puppeteer.launch(browserSettings.headlessDesktop) : await puppeteer.launch(browserSettings.headfulDesktop);
       const page    = await browser.newPage();
       // change only page object inside flow to preserve report data
-      const newFlow = typeof flow !== "undefined" ? flow.options.page = page : await lighthouse.startFlow(page, lightHouseSettings.configDesktop);
+      const newFlow = typeof flow === "undefined" ? await lighthouse.startFlow(page, lightHouseSettings.configDesktop) : flow.options.page = page;
       // extra property to track failed actions
       // any fail working with selectors or keyboard sets this to false
       page.isSuccess = true;
