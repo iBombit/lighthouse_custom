@@ -1,6 +1,6 @@
 // Selectors
 const Selectors = require('../selectors/selectors');
-const currencyExchangeSelectors = new Selectors.CurrencyExchangeSelectors();
+const currencyExchangeSelectors = new Selectors();
 
 // Actions
 const FindAndClick = require('../actions/findAndClick');

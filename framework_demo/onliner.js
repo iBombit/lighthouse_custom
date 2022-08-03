@@ -11,7 +11,7 @@ const zoomIn = new CurrencyExchange().zoomIn;
 
 // links
 const Links = require('./links/links');
-const directLinks = new Links.DirectLinks();
+const directLinks = new Links();
 
 // reports
 const CreateReport = require('./reporting/createReport');

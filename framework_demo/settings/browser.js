@@ -3,7 +3,6 @@ const Constants = require('./constants');
 const desktop = new Constants.Desktop();
 const mobile = new Constants.Mobile();
 
-
 class Browser {
     get headlessDesktop() {
         return {
@@ -45,6 +44,4 @@ class Browser {
     };
 }
 
-module.exports = {
-    Browser: Browser
-};
+module.exports = Browser;

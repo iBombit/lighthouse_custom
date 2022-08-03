@@ -63,4 +63,4 @@ class LightHouse {
   }};
 }
 
-module.exports = {LightHouse: LightHouse};
+module.exports = LightHouse;
