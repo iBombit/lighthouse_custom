@@ -7,4 +7,4 @@ class DirectLinks {
 	get kurs()      { return "https://kurs.onliner.by/"};
 }
 
-module.exports = DirectLinks;
+module.exports = {DirectLinks: DirectLinks};

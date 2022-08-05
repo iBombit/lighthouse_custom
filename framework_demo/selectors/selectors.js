@@ -5,4 +5,4 @@ class CurrencyExchangeSelectors {
   get zoomIn()      { return "//*[@class='ymaps-b-zoom__hint-text' and contains(text(),'дом')]"};
 }
 
-module.exports = CurrencyExchangeSelectors;
+module.exports = {CurrencyExchangeSelectors: CurrencyExchangeSelectors};
