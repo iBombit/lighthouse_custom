@@ -1,14 +1,14 @@
 //https://github.com/puppeteer/puppeteer/blob/v1.14.0/docs/api.md#keyboardpresskey-options
 class Keyboard {
     /**
-     * Press key
+     * Press key (https://github.com/puppeteer/puppeteer/blob/v1.14.0/lib/USKeyboardLayout.js)
      * @key      key to press
      * @page     current page in browser
     */
     async pressKey(key, page) {
         let successMessage = "Key pressed successfully (" + key + ")";
         let failedMessage  = "Failed to press Key (" + key + ")" +
-                           "\nYou need to pass both selector and page to this method";
+                           "\nYou need to pass both key and page to this method";
 
         if (page.isSuccess) {
           try {
