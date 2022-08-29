@@ -35,7 +35,8 @@ async function captureReport() {
     let browser = ''; let page = ''; let flow = '';
 
     // set env URL in links.js class
-    directLinks.link = env;
+    //directLinks.link = env;
+    directLinks.link = "https://onliner.by";
 
     // set vars depending on passed configString, browserType
     [browser, page, flow] = await startBrowserWithLighthouse(configString, browserType);
