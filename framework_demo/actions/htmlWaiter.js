@@ -25,7 +25,7 @@ class HtmlWaiter {
             countStableSizeIterations = 0; //reset the counter
 
         if(countStableSizeIterations >= minStableSizeIterations) {
-            console.log("Fully Rendered Page: " + page.url());
+            console.log("[SUCCESS] Fully Rendered Page: " + page.url());
             break;
         }
 

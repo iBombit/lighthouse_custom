@@ -10,8 +10,8 @@ class FindAndClick {
      * @options  rightClick or undefined :)
     */
     async XPATH(selector, page, options) {
-        let successMessage = "Clicked successfully (XPATH): " + selector;
-        let failedMessage  = "Selector was not clickable (XPATH): " + selector +
+        let successMessage = "[SUCCESS] Clicked (XPATH): " + selector;
+        let failedMessage  = "[FAIL] Selector was not clickable (XPATH): " + selector +
                              "\nYou need to pass both selector and page to this method";
 
         let linkHandlers = await findXpath(selector, page);
@@ -21,7 +21,7 @@ class FindAndClick {
               switch (options) {
                   case 'rightClick':
                       await linkHandlers[0].click({button: 'right',});
-                      successMessage = "Right click success (XPATH): " + selector;
+                      successMessage = "[SUCCESS] Right click (XPATH): " + selector;
                       break;
                   default:
                       await linkHandlers[0].click();
@@ -39,8 +39,8 @@ class FindAndClick {
      * @options  rightClick, jsClick, doubleClick or undefined :)
     */
     async CSS(selector, page, options) {
-        let successMessage = "Clicked successfully (CSS): " + selector;
-        let failedMessage  = "Selector was not clickable (CSS): " + selector +
+        let successMessage = "[SUCCESS] Clicked (CSS): " + selector;
+        let failedMessage  = "[FAIL] Selector was not clickable (CSS): " + selector +
                              "\nYou need to pass both selector and page to this method"
 
         await findCSS(selector, page);
@@ -50,15 +50,15 @@ class FindAndClick {
               switch (options) {
                   case 'rightClick':
                       await page.click(selector, {button: 'right',});
-                      successMessage = "Right click success (CSS): " + selector;
+                      successMessage = "[SUCCESS] Right click (CSS): " + selector;
                       break;
                   case 'jsClick':
                       await page.$eval(selector, element => element.click());
-                      successMessage = "JS click success (CSS): " + selector;
+                      successMessage = "[SUCCESS] JS click (CSS): " + selector;
                       break;
                   case 'doubleClick':
                       await page.click(selector, {clickCount: 2});
-                      successMessage = "Double click success (CSS): " + selector;
+                      successMessage = "[SUCCESS] Double click (CSS): " + selector;
                       break;
                   default:
                       await page.click(selector);

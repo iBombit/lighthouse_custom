@@ -10,8 +10,8 @@ class FindAndUpload {
      * @filepath relative path to file
     */
     async XPATH(selector, page, filepath) {
-        let successMessage = "Uploaded successfully (XPATH): " + selector;
-        let failedMessage  = "Can't upload into (XPATH): " + selector;
+        let successMessage = "[SUCCESS] Uploaded (XPATH): " + selector;
+        let failedMessage  = "[FAIL] Can't upload into (XPATH): " + selector;
 
         let linkHandlers = await findXpath(selector, page);
         if (page.isSuccess) {
@@ -30,8 +30,8 @@ class FindAndUpload {
      * @filepath relative path to file
     */
     async CSS(selector, page, filepath) {
-        let successMessage = "Uploaded successfully (CSS): " + selector;
-        let failedMessage  = "Can't upload into (CSS): " + selector;
+        let successMessage = "[SUCCESS] Uploaded (CSS): " + selector;
+        let failedMessage  = "[FAIL] Can't upload into (CSS): " + selector;
 
         let linkHandlers = await findCSS(selector, page, "returnValue");
         if (page.isSuccess) {
