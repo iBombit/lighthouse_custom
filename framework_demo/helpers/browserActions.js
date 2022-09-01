@@ -28,8 +28,7 @@ class BrowserActions {
                 break;
             }
             default: {
-                [browser, page, newFlow] = await startDesktopBrowserWithLighthouse("desktop", "headless", flow);
-                // throw new Error('configString is not correct! Needs to be mobile or desktop, received: ' + configString);
+                throw new Error('configString is not correct! Needs to be mobile or desktop, received: ' + configString);
             }
         }
         // extra property to track failed actions
