@@ -19,6 +19,7 @@ class FindAndType {
           try {
               await linkHandlers[0].type(text);
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }
@@ -30,15 +31,26 @@ class FindAndType {
      * @text     text to type into selector
      * @page     current page in browser
     */
-    async CSS(selector, text, page) {
+    async CSS(selector, text, page, options) {
         let successMessage = "[SUCCESS] Typed successfully (CSS): " + selector;
         let failedMessage  = "[FAIL] Can't type this (" + text + ") into selector (CSS): " + selector;
 
         await findCSS(selector, page);
         if (page.isSuccess) {
           try {
-              await page.type(selector, text, {delay: 100});
+            //more options to add here
+            switch (options) {
+              case 'iframe':
+                      let link = await findCSS(selector, page, "returnValue");
+                      await link.type(text);
+                      successMessage = "[SUCCESS] iframe type (CSS): " + selector;
+                      break;
+              //await page.type(selector, text, {delay: 100});
+              default:
+                      await page.type(selector, text, {delay: 100});
+            }
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }

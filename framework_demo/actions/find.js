@@ -45,6 +45,7 @@ class Find {
               }
           }
           catch (error) {
+              console.log(error);
               console.log(failedMessage);
               page.isSuccess = false;
           }
@@ -78,6 +79,7 @@ class Find {
               }
           }
           catch (error) {
+              console.log(error);
               console.log(failedMessage);
               page.isSuccess = false;
           }
@@ -114,6 +116,42 @@ class Find {
                       await page.waitForSelector(selector, {timeout: waitingTime});
               }
           } catch (error) {
+              console.log(error);
+              page.isSuccess = false;
+          }
+        }
+        page.isSuccess? console.log(successMessage) : console.log(failedMessage);
+    }
+
+    /**
+     * Find CSS selector in iframe(s) and return it to further flows
+     * @selector CSS selector
+     * @page     current page in browser
+     * @options  hidden, returnValue or undefined :)
+     * @return   await page.$(selector)  -- if options===returnValue
+    */
+    async CSSIframe(selector, page, options) {
+        const waitingTime = 1200000;
+        let successMessage = "[SUCCESS] Selector found (CSS): " + selector;
+        let failedMessage  = "[FAIL] Selector not found (CSS): " + selector +
+                             "\nYou need to pass both selector and page to this method";
+
+        if (page.isSuccess) {
+          try {
+              //more options to add here
+              switch (options) {
+                  case 'hidden':
+                      await page.waitForSelector(selector, {hidden: true, timeout: waitingTime});
+                      successMessage = "[SUCCESS] Selector disappeared (CSS): " + selector;
+                      break;
+                  case 'returnValue':
+                      await page.waitForSelector(selector, {timeout: waitingTime});
+                      return await page.$(selector);
+                  default:
+                      await page.waitForSelector(selector, {timeout: waitingTime});
+              }
+          } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }

@@ -18,6 +18,7 @@ class FindAndUpload {
           try {
             await linkHandlers[0].uploadFile(filepath);
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }
@@ -38,6 +39,7 @@ class FindAndUpload {
           try {
             await linkHandlers.uploadFile(filepath);
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }

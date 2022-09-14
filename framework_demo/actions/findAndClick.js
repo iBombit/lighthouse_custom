@@ -27,6 +27,7 @@ class FindAndClick {
                       await linkHandlers[0].click();
               }
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }
@@ -36,7 +37,7 @@ class FindAndClick {
      * Find and click into CSS selector
      * @selector CSS selector
      * @page     current page in browser
-     * @options  rightClick, jsClick, doubleClick or undefined :)
+     * @options  rightClick, jsClick, iframe, doubleClick, random or undefined :)
     */
     async CSS(selector, page, options) {
         let successMessage = "[SUCCESS] Clicked (CSS): " + selector;
@@ -56,14 +57,29 @@ class FindAndClick {
                       await page.$eval(selector, element => element.click());
                       successMessage = "[SUCCESS] JS click (CSS): " + selector;
                       break;
+                  case 'iframe':
+                      let link = await findCSS(selector, page, "returnValue");
+                      await link.click();
+                      successMessage = "[SUCCESS] iframe click (CSS): " + selector;
+                      break;
                   case 'doubleClick':
                       await page.click(selector, {clickCount: 2});
                       successMessage = "[SUCCESS] Double click (CSS): " + selector;
+                      break;
+                  case 'random':
+                      let totalCount = await page.evaluate((selector) => { return document.querySelectorAll(selector).length; }, selector);
+                      console.log("[RANDOM] totalCount of possible clicks: " + totalCount);
+                      let num = Math.floor(Math.random() * totalCount);
+                      console.log("[RANDOM] chosen num to click: " + num);
+                      let selectAll = await page.$$(selector);
+                      await selectAll[num].click();
+                      successMessage = "[SUCCESS] Random click (CSS): " + selector;
                       break;
                   default:
                       await page.click(selector);
               }
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }

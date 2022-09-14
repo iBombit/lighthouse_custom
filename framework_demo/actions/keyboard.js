@@ -13,6 +13,7 @@ class Keyboard {
           try {
               await page.keyboard.press(key);
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }
@@ -32,6 +33,7 @@ class Keyboard {
               await page.keyboard.press("ArrowRight");
               await page.keyboard.up("ControlLeft");
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }
@@ -51,6 +53,7 @@ class Keyboard {
               await page.keyboard.press("ArrowLeft");
               await page.keyboard.up("ControlLeft");
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }
@@ -70,6 +73,7 @@ class Keyboard {
               await page.keyboard.press("ArrowDown");
               await page.keyboard.up("ControlLeft");
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }
@@ -89,6 +93,7 @@ class Keyboard {
               await page.keyboard.press("ArrowUp");
               await page.keyboard.up("ControlLeft");
           } catch (error) {
+              console.log(error);
               page.isSuccess = false;
           }
         }
