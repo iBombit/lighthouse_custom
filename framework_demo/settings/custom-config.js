@@ -180,19 +180,19 @@ module.exports = {
 
     // 3. Add custom audit to the list of audits 'lighthouse:default' will run.
     audits: [
-        './settings/custom-network-requests',
-        './settings/custom-network-server-latency',
+        './framework_demo/settings/custom-network-requests',
+        './framework_demo/settings/custom-network-server-latency',
         //'network-requests',
         'network-rtt',
         //'network-server-latency',
-        './settings/custom-main-thread-tasks',
+        './framework_demo/settings/custom-main-thread-tasks',
         'metrics',
         'performance-budget',
         'timing-budget',
         'full-page-screenshot',
         'screenshot-thumbnails',
         //'final-screenshot',
-        './settings/custom-final-screenshot',
+        './framework_demo/settings/custom-final-screenshot',
     ],
 
     groups: {
