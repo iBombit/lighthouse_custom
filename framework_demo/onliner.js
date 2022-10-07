@@ -29,9 +29,9 @@ async function captureReport() {
     console.time('Execution Time');
     let testuser     = process.argv[2]; //username
     let testpassword = process.argv[3]; //password
-    let configString = process.argv[4]; //desktop or mobile
-    let browserType  = process.argv[5]; //headless (docker) or headful (node.js)
-    let env          = process.argv[6]; //env link
+    let configString = "desktop"; //desktop or mobile
+    let browserType  = "headless"; //headless (docker) or headful (node.js)
+    let env          = "https://onliner.by"; //env link
     let browser = ''; let page = ''; let flow = '';
 
     // set env URL in links.js class
