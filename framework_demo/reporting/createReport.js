@@ -1,8 +1,8 @@
 const fs = require('fs');
 
 // need to write to the parent directory for Carrier
-const reportPath = __dirname + '/../user-flow.report.html';
-const reportPathJson = __dirname + '/../user-flow.report.json';
+const reportPath = '/user-flow.report.html';
+const reportPathJson = '/user-flow.report.json';
 
 class CreateReport {
     async createReports(flow, configString) {
