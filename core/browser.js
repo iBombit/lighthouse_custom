@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const Browser = require('../settings/browser');
-const lighthouse = require('../node_modules/lighthouse/lighthouse-core/fraggle-rock/api.js');
+const lighthouse = require('lighthouse/lighthouse-core/fraggle-rock/api.js');
 const exec = require('child_process').exec;
 // settings
 const LightHouse = require('../settings/lightHouse');
