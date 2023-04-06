@@ -26,7 +26,7 @@ beforeAll(async () =>  {
 
 afterAll(async() => {
     await new CreateReport().createReports(browser.flow, browserType)
-    await browser.closeBrowser().then(() => console.log("done"));
+    await browser.closeBrowser();
 }, testTime)
   
 // Now declaring tests
@@ -39,7 +39,6 @@ test('Check Google', async () => {
 test('Search for "Lighthouse"', async () => {
     await GooglePage.objects.search.type('Lighthouse')
     await GooglePage.objects.submit.click()
-    await browser.withPageStatusCheck()
     await browser.waitTillRendered()
     await browser.coldNavigation("Search Results")
     await browser.withPageStatusCheck()
