@@ -4,7 +4,7 @@ class Iframes {
      * @selector CSS selector for iframe
      * @scope    current scope (page in browser or other iframe)
     */
-    async createIframe(selector, scope) {
+    static async createIframe(selector, scope) {
       let frameHandle = await scope.$(selector);
       let frame = await frameHandle.contentFrame();
       //each time we create a new frame we need to set status as sucess

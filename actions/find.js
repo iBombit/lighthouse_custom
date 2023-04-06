@@ -6,14 +6,14 @@ class Find {
      * @options  hidden or undefined :)
      * @return   linkHandlers
     */
-    async XPATH(selector, page, options) {
+    static async XPATH(selector, page, options) {
         if (page.isSuccess) {
             //more options to add here
             switch (options) {
                 case 'hidden':
-                    return new Find().findHiddenXPATH(selector, page);
+                    return Find.findHiddenXPATH(selector, page);
                 default:
-                    return new Find().findVisibleXPATH(selector, page);
+                    return Find.findVisibleXPATH(selector, page);
             }
         }
     }
@@ -24,7 +24,7 @@ class Find {
      * @page     current page in browser
      * @return   linkHandlers
     */
-    async findHiddenXPATH(selector, page) {
+    static async findHiddenXPATH(selector, page) {
         const pollingTime = 1000;
         const waitingTime = 1200000;
         const finishTime = new Date().getTime() + waitingTime;
@@ -60,7 +60,7 @@ class Find {
      * @page     current page in browser
      * @return   linkHandlers
     */
-    async findVisibleXPATH(selector, page) {
+    static async findVisibleXPATH(selector, page) {
         const pollingTime = 1000;
         const waitingTime = 1200000;
         const finishTime = new Date().getTime() + waitingTime;
@@ -95,7 +95,7 @@ class Find {
      * @options  hidden, returnValue or undefined :)
      * @return   await page.$(selector)  -- if options===returnValue
     */
-    async CSS(selector, page, options) {
+    static async CSS(selector, page, options) {
         const waitingTime = 1200000;
         let successMessage = "[SUCCESS] Selector found (CSS): " + selector;
         let failedMessage  = "[FAIL] Selector not found (CSS): " + selector +

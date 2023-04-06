@@ -1,0 +1,27 @@
+{
+    "name": "lightprobe",
+    "productName": "Lighthouse based UI performance testing framework",
+    "description": "Testing framework",
+    "keywords": [],
+    "main": "./onliner.js",
+    "version": "1.0.0",
+    "author": "iBombit",
+    "scripts": {
+        "test": "jest"
+    },
+    "dependencies": {
+        "lighthouse": "9.2.0",
+        "puppeteer": "19.8.3"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/iBombit/lighthouse_custom.git"
+    },
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/iBombit/lighthouse_custom/issues"
+    },
+    "devDependencies": {
+        "jest": "^29.5.0"
+    }
+}

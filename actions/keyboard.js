@@ -5,7 +5,7 @@ class Keyboard {
      * @key      key to press
      * @page     current page in browser
     */
-    async pressKey(key, page) {
+    static async pressKey(key, page) {
         let successMessage = "[SUCCESS] Key pressed (" + key + ")";
         let failedMessage  = "[FAIL] Failed to press Key (" + key + ")";
 
@@ -23,7 +23,7 @@ class Keyboard {
      * Scroll page to the right via Ctrl+ArrowRight.  Might not work for all the cases..
      * @page     current page in browser
     */
-    async scrollPageRight(page) {
+    static async scrollPageRight(page) {
         let successMessage = "[SUCCESS] Page scrolled to the right";
         let failedMessage  = "[FAIL] Failed to scroll the page to the right";
 
@@ -43,7 +43,7 @@ class Keyboard {
      * Scroll page to the left via Ctrl+ArrowLeft.  Might not work for all the cases..
      * @page     current page in browser
     */
-    async scrollPageLeft(page) {
+    static async scrollPageLeft(page) {
         let successMessage = "[SUCCESS] Page scrolled to the left";
         let failedMessage  = "[FAIL] Failed to scroll the page to the left";
 
@@ -63,7 +63,7 @@ class Keyboard {
      * Scroll page down via Ctrl+ArrowDown.  Might not work for all the cases..
      * @page     current page in browser
     */
-    async scrollPageDown(page) {
+    static async scrollPageDown(page) {
         let successMessage = "[SUCCESS] Page scrolled down";
         let failedMessage  = "[FAIL] Failed to scroll the page down";
 
@@ -83,7 +83,7 @@ class Keyboard {
      * Scroll page up via Ctrl+ArrowUp.  Might not work for all the cases..
      * @page     current page in browser
     */
-    async scrollPageUp(page) {
+    static async scrollPageUp(page) {
         let successMessage = "[SUCCESS] Page scrolled up";
         let failedMessage  = "[FAIL] Failed to scroll the page up";
 

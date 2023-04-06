@@ -3,7 +3,7 @@ class PopupPages {
      * Get new page popup
      * @browser current browser instance
      */
-    async getNewPageWhenLoaded(browser) {
+    static async getNewPageWhenLoaded(browser) {
         return new Promise(x =>
             browser.on('targetcreated', async target => {
                 if (target.type() === 'page') {

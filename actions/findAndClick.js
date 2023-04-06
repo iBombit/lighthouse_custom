@@ -1,6 +1,4 @@
 const Find = require('./find');
-const findCSS = new Find().CSS;
-const findXpath = new Find().XPATH;
 
 class FindAndClick {
     /**
@@ -9,12 +7,12 @@ class FindAndClick {
      * @page     current page in browser
      * @options  rightClick or undefined :)
     */
-    async XPATH(selector, page, options) {
+    static async XPATH(selector, page, options) {
         let successMessage = "[SUCCESS] Clicked (XPATH): " + selector;
         let failedMessage  = "[FAIL] Selector was not clickable (XPATH): " + selector +
                              "\nYou need to pass both selector and page to this method";
 
-        let linkHandlers = await findXpath(selector, page);
+        let linkHandlers = await Find.XPATH(selector, page);
         if (page.isSuccess) {
           try {
               //more options to add here
@@ -39,12 +37,12 @@ class FindAndClick {
      * @page     current page in browser
      * @options  rightClick, jsClick, iframe, doubleClick, random or undefined :)
     */
-    async CSS(selector, page, options) {
+    static async CSS(selector, page, options) {
         let successMessage = "[SUCCESS] Clicked (CSS): " + selector;
         let failedMessage  = "[FAIL] Selector was not clickable (CSS): " + selector +
                              "\nYou need to pass both selector and page to this method"
 
-        await findCSS(selector, page);
+        await Find.CSS(selector, page);
         if (page.isSuccess){
           try {
               //more options to add here
@@ -58,7 +56,7 @@ class FindAndClick {
                       successMessage = "[SUCCESS] JS click (CSS): " + selector;
                       break;
                   case 'iframe':
-                      let link = await findCSS(selector, page, "returnValue");
+                      let link = await Find.XPATH(selector, page, "returnValue");
                       await link.click();
                       successMessage = "[SUCCESS] iframe click (CSS): " + selector;
                       break;

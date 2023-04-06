@@ -3,7 +3,7 @@ class AlertBoxes {
      * Accept Alert Message
      * @page     current page in browser
     */
-    async acceptAlert(page) {
+    static async acceptAlert(page) {
       page.on('dialog', async dialog => {
           //get alert message
           console.log(dialog.message());

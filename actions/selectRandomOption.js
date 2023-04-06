@@ -1,5 +1,4 @@
 const Find = require('./find');
-const findCSS = new Find().CSS;
 
 class SelectRandomOption {
     /**
@@ -8,12 +7,12 @@ class SelectRandomOption {
      * @page     current page in browser or frame
      * @options  hope it won't be needed...
     */
-    async CSS(selector, page, options) {
+    static async CSS(selector, page, options) {
         let successMessage = "[SUCCESS] Selected option (CSS): " + selector;
         let failedMessage  = "[FAIL] Can't select option (CSS): " + selector +
                              "\nYou need to pass both selector and page to this method";
 
-        await findCSS(selector, page);
+        await Find.XPATH(selector, page);
         if (page.isSuccess) {
           try {
               //more options to add here
