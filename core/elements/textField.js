@@ -34,16 +34,6 @@ class TextField extends Element {
         }
     }
 
-    async upload(path, timeout=DEFAULT_TIMEOUT){
-        try {
-            await this.find(this.page, timeout);
-            await this.element.uploadFile(path);
-        }
-        catch (error) {
-            this.page.isSuccess = false;
-            throw new Error(error);
-        }
-    }
 }
 
 module.exports = TextField;
