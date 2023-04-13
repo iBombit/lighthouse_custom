@@ -70,10 +70,6 @@ class LighthouseBrowser {
         this.flow.options.page = this.page;
     }
 
-    async withPageStatusCheck() {
-        return this.page.isSuccess ? await this.flow() : console.log('Fail detected, skipping flow...');
-    }
-
     /**
      * Get new page popup
      * @browser current browser instance

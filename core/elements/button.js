@@ -1,4 +1,5 @@
 const Element = require('./element');
+const DEFAULT_TIMEOUT = 120000;
 
 class Button extends Element {
     page;
@@ -8,18 +9,48 @@ class Button extends Element {
         this.page = page;
     }
 
-    async jsClick(){
-        await this.page.$eval(this.locator, element => element.click());
+    async jsClick(timeout=DEFAULT_TIMEOUT){
+        try {
+            await this.find(this.page, timeout);
+            await this.page.$eval(this.locator, element => element.click());
+        }
+        catch (error) {
+            this.page.isSuccess = false;
+            throw new Error(error);
+        }
     }
 
-    async click(){
-        await this.find(this.page);
-        await this.element.click();
+    async click(timeout=DEFAULT_TIMEOUT){
+        try {
+            await this.find(this.page, timeout);
+            await this.element.click();
+        }
+        catch (error) {
+            this.page.isSuccess = false;
+            throw new Error(error);
+        }
     }
 
-    async dobleClick(){
-        await this.find(this.page);
-        await this.element.click({clickCount: 2});
+    async dobleClick(timeout=DEFAULT_TIMEOUT){
+        try {
+            await this.find(this.page, timeout);
+            await this.element.click({clickCount: 2});
+        }
+        catch (error) {
+            this.page.isSuccess = false;
+            throw new Error(error);
+        }
+    }
+
+    async rightClick(timeout=DEFAULT_TIMEOUT){
+        try {
+            await this.find(this.page, timeout);
+            await this.element.click({button: 'right',});
+        }
+        catch (error) {
+            this.page.isSuccess = false;
+            throw new Error(error);
+        }
     }
 
 }

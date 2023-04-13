@@ -1,9 +1,11 @@
 const Button = require('./elements/button');
 const TextField = require('./elements/textField');
+const UploadField = require('./elements/uploadField');
+const VerificationField = require('./elements/verificationField');
 
 class Page  {
     constructor() {
-        this.objects = {};
+        //this.objects = {};
     }
 
     init(page) {
@@ -11,13 +13,23 @@ class Page  {
     }
 
     btn(name, selector) {
-        this.objects[name] = new Button(selector, this.p);
-        return this.objects[name]
+        this[name] = new Button(selector, this.p);
+        return this[name]
     }
 
     input(name, selector) {
-        this.objects[name] = new TextField(selector, this.p);
-        return this.objects[name]
+        this[name] = new TextField(selector, this.p);
+        return this[name]
+    }
+
+    upload(name, selector) {
+        this[name] = new UploadField(selector, this.p);
+        return this[name]
+    }
+
+    verify(name, selector) {
+        this[name] = new VerificationField(selector, this.p);
+        return this[name]
     }
 
     async close() {
