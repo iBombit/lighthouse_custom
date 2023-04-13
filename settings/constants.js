@@ -1,5 +1,5 @@
 class Desktop {
-  get lighthouseReportName()    { return "UI desktop"};
+  get lighthouseReportName()    { return "Desktop"};
   get screenWidth()             { return 1920};
   get screenHeight()            { return 1080};
   get rttMs()                   { return 40};
@@ -16,7 +16,7 @@ class Desktop {
 }
 
 class Mobile {
-  get lighthouseReportName()    { return "UI mobile"};
+  get lighthouseReportName()    { return "Mobile"};
   get screenWidth()             { return 390};
   get screenHeight()            { return 844};
   get rttMs()                   { return 40};

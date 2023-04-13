@@ -46,5 +46,5 @@ class Crawler {
     }
 }
 
-var crawler = new Crawler("desktop", false, "https://www.blueskystatistics.com/", 2, 30000)
+var crawler = new Crawler("desktop", false, "https://www.optimahealth.com", 2, 30000)
 crawler.init().then(() => crawler.crawl().then(() => crawler.report().then(() => console.log(crawler.visited))))
