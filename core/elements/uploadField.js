@@ -5,13 +5,13 @@ class UploadField extends Element {
     page;
     
     constructor(locator, page){
-        super(locator);
+        super(locator, page);
         this.page = page;
     }
 
     async upload(path, timeout=DEFAULT_TIMEOUT){
         try {
-            await this.find(this.page, timeout);
+            await this.find(timeout);
             await this.element.uploadFile(path);
         }
         catch (error) {

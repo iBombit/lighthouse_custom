@@ -5,13 +5,13 @@ class Button extends Element {
     page;
 
     constructor(locator, page){
-        super(locator);
+        super(locator, page);
         this.page = page;
     }
 
     async jsClick(timeout=DEFAULT_TIMEOUT){
         try {
-            await this.find(this.page, timeout);
+            await this.find(timeout);
             await this.page.$eval(this.locator, element => element.click());
         }
         catch (error) {
@@ -22,7 +22,7 @@ class Button extends Element {
 
     async click(timeout=DEFAULT_TIMEOUT){
         try {
-            await this.find(this.page, timeout);
+            await this.find(timeout);
             await this.element.click();
         }
         catch (error) {
@@ -33,7 +33,7 @@ class Button extends Element {
 
     async dobleClick(timeout=DEFAULT_TIMEOUT){
         try {
-            await this.find(this.page, timeout);
+            await this.find(timeout);
             await this.element.click({clickCount: 2});
         }
         catch (error) {
@@ -44,7 +44,7 @@ class Button extends Element {
 
     async rightClick(timeout=DEFAULT_TIMEOUT){
         try {
-            await this.find(this.page, timeout);
+            await this.find(timeout);
             await this.element.click({button: 'right',});
         }
         catch (error) {

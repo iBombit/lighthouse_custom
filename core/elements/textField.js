@@ -6,13 +6,13 @@ class TextField extends Element {
     page;
     
     constructor(locator, page){
-        super(locator);
+        super(locator, page);
         this.page = page;
     }
 
     async type(text, timeout=DEFAULT_TIMEOUT, delay=TYPE_KEY_BY_KEY_TIMEOUT){
         try {
-            await this.find(this.page, timeout);
+            await this.find(timeout);
             await this.element.type(text, {delay: delay});
         }
         catch (error) {
@@ -21,9 +21,9 @@ class TextField extends Element {
         }
     }
 
-    async clear(){
+    async clear(timeout=DEFAULT_TIMEOUT){
         try {
-            await this.find(this.page);
+            await this.find(timeout);
             await this.element.click({ clickCount: 3 })
             await this.element.type(" ");
             await this.page.keyboard.press('Backspace');
@@ -33,17 +33,7 @@ class TextField extends Element {
             throw new Error(error);
         }
     }
-
-    async upload(path, timeout=DEFAULT_TIMEOUT){
-        try {
-            await this.find(this.page, timeout);
-            await this.element.uploadFile(path);
-        }
-        catch (error) {
-            this.page.isSuccess = false;
-            throw new Error(error);
-        }
-    }
+    
 }
 
 module.exports = TextField;

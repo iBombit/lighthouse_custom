@@ -1,7 +1,6 @@
 const Button = require('./elements/button');
 const TextField = require('./elements/textField');
 const UploadField = require('./elements/uploadField');
-const VerificationField = require('./elements/verificationField');
 
 class Page  {
     constructor() {
@@ -24,11 +23,6 @@ class Page  {
 
     upload(name, selector) {
         this[name] = new UploadField(selector, this.p);
-        return this[name]
-    }
-
-    verify(name, selector) {
-        this[name] = new VerificationField(selector, this.p);
         return this[name]
     }
 
