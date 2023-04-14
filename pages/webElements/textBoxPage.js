@@ -3,7 +3,7 @@ const TextField = require("../../core/elements/textField");
 const Button = require("../../core/elements/button");
 const Element = require("../../core/elements/element");
 
-class TextBox extends Page {
+class TextBoxPage extends Page {
     constructor(page) {
         super(page)
         this.url = "https://demoqa.com/text-box"
@@ -21,4 +21,4 @@ class TextBox extends Page {
 
 }
 
-module.exports = TextBox;
+module.exports = TextBoxPage;

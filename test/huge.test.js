@@ -1,8 +1,9 @@
 const HomePage = require('../pages/homePage');
-const TextBoxPage = require('../pages/webElements/textBox');
-const PracticeFormPage = require('../pages/webForms/practiceForm');
-const UploadDownloadPage = require('../pages/webElements/uploadDownload');
-const CheckBoxPage = require('../pages/webElements/checkBox');
+const TextBoxPage = require('../pages/webElements/textBoxPage');
+const PracticeFormPage = require('../pages/webForms/practiceFormPage');
+const UploadDownloadPage = require('../pages/webElements/uploadDownloadPage');
+const CheckBoxPage = require('../pages/webElements/checkBoxPage');
+const ButtonsPage = require('../pages/webElements/buttonsPage');
 const LighthouseBrowser = require('../core/browser');
 const CreateReport = require('../reporting/createReport');
 const path = require('path');
@@ -16,6 +17,7 @@ var browserType = "desktop",
     TextBox = new TextBoxPage(),
     UploadDownload = new UploadDownloadPage(),
     CheckBox = new CheckBoxPage(),
+    Buttons = new ButtonsPage(),
     testTime = 100000;
 
 beforeAll(async () =>  {
@@ -27,6 +29,7 @@ beforeAll(async () =>  {
     TextBox.init(browser.page); // Sets instance of puppeteer page to TextBox page object
     UploadDownload.init(browser.page); // Sets instance of puppeteer page to UploadDownload page object
     CheckBox.init(browser.page); // Sets instance of puppeteer page to CheckBox page object
+    Buttons.init(browser.page); // Sets instance of puppeteer page to Buttons page object
 }, testTime);
 
 // Check if prev flow finished successfully before launching test
@@ -88,19 +91,6 @@ test("[Timespan] Submit text box form", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
-//Uploading
-test('[ColdNavigation] Check ' + UploadDownload.url, async () => {
-    await browser.coldNavigation("UploadDownload Page", UploadDownload.url)
-}, testTime)
-
-test("[Timespan] Upload file into 'Choose File'", async () => {
-    await browser.flow.startTimespan({ stepName: "Upload file into 'Choose File'"})
-        await UploadDownload.uploadFile.upload(uploadDir + "../testdata/files/uploadTest.txt")
-        await UploadDownload.uploadVerify.find()
-        await browser.waitTillRendered()
-    await browser.flow.endTimespan()
-}, testTime)
-
 //Check Box
 test('[ColdNavigation] Check ' + CheckBox.url, async () => {
     await browser.coldNavigation("CheckBox Page", CheckBox.url)
@@ -130,8 +120,50 @@ test("[Timespan] Deselect 'Desktop' checkBox", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
+//Buttons
+test('[ColdNavigation] Check ' + Buttons.url, async () => {
+    await browser.coldNavigation("Buttons Page", Buttons.url)
+}, testTime)
+
+test("[Timespan] Simple click button", async () => {    
+    await browser.flow.startTimespan({ stepName: "Simple click button"})    
+        await Buttons.clickBtn.click()
+        await Buttons.clickVerify.find()
+        await browser.waitTillRendered()
+    await browser.flow.endTimespan()
+}, testTime)
+
+test("[Timespan] Double click button", async () => {    
+    await browser.flow.startTimespan({ stepName: "Double click button"})    
+        await Buttons.doubleClickBtn.dobleClick()
+        await Buttons.doubleClickVerify.find()
+        await browser.waitTillRendered()
+    await browser.flow.endTimespan()
+}, testTime)
+
+test("[Timespan] Right click button", async () => {    
+    await browser.flow.startTimespan({ stepName: "Right click button"})    
+        await Buttons.rightClickBtn.rightClick()
+        await Buttons.rightClickVerify.find()
+        await browser.waitTillRendered()
+    await browser.flow.endTimespan()
+}, testTime)
+
+//Uploading
+test('[ColdNavigation] Check ' + UploadDownload.url, async () => {
+    await browser.coldNavigation("UploadDownload Page", UploadDownload.url)
+}, testTime)
+
+test("[Timespan] Upload file into 'Choose File'", async () => {
+    await browser.flow.startTimespan({ stepName: "Upload file into 'Choose File'"})
+        await UploadDownload.uploadFile.upload(uploadDir + "../testdata/files/uploadTest.txt")
+        await UploadDownload.uploadVerify.find()
+        await browser.waitTillRendered()
+    await browser.flow.endTimespan()
+}, testTime)
+
 //Practice Form
-test('[ColdNavigation] Check https://demoqa.com/automation-practice-form', async () => {
+test('[ColdNavigation] Check ' + PracticeForm.url, async () => {
     await browser.coldNavigation("Automation Practice Form", PracticeForm.url)
 }, testTime)
 

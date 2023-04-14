@@ -2,7 +2,7 @@ const Page = require("../../core/page");
 const UploadField = require("../../core/elements/uploadField");
 const Element = require("../../core/elements/element");
 
-class UploadDownload extends Page {
+class UploadDownloadPage extends Page {
     constructor(page) {
         super(page)
         this.url = "https://demoqa.com/upload-download"
@@ -16,4 +16,4 @@ class UploadDownload extends Page {
 
 }
 
-module.exports = UploadDownload;
+module.exports = UploadDownloadPage;
