@@ -1,82 +1,89 @@
 const Page = require('../core/page');
 const LighthouseBrowser = require('../core/browser');
 const CreateReport = require('../reporting/createReport');
-const { expect } = require('chai');
-
-
-var browserType = "desktop",
-    headless = false,
-    browser = new LighthouseBrowser(browserType, headless),
-    GooglePage = new Page();
-    testTime = 100000;
+const Input = require('../core/elements/textField');
+const Button = require('../core/elements/button');
 
 
 // Create Page object for Google
-function initGooglePage() {
-    GooglePage.url = "https://www.google.com"
-    GooglePage.input("search", "input[name='q'],textarea[name='q']")
-    GooglePage.btn("submit", "input[name='btnK']")
-    GooglePage.btn("searchSubmit", "//button[@type='submit']")
-    GooglePage.btn("searchResultLinks", "a>h3")
-    GooglePage.btn("images", "g-img")
+// With search input and submit button
+class GoogleHome extends Page {
+    init(page) {
+        super.init(page)
+        this.url = "https://www.google.com"
+        this.search = new Input("input[name='q'],textarea[name='q']", page)
+        this.submit = new Button("input[name='btnK']", page)
+    }
 }
 
+// Create Page object for Google search results
+// With list of search results
+class GoogleSearchResults extends Page {
+    init(page) {
+        super.init(page)
+        this.search = new Input("input[name='q'],textarea[name='q']", page)
+        this.searchSubmit = new Button("//button[@type='submit']", page)
+        this.searchResultLinks = new Button("a>h3", page)
+        this.images = new Button("g-img", page)
+    }
+}
 
+// Declare browser and pages required for this test
+var browserType = "desktop",
+    browser = new LighthouseBrowser(browserType),
+    GooglePage = new GoogleHome(), // Creates instance of Google page object
+    GoogleSearchResultsPage = new GoogleSearchResults(), // Creates instance of Google search results page object
+    testTime = 30000; // Timeout must be bigger then DEFAULT_TIMEOUT in element.js (5000) otherwise you never will be able to debug
+
+
+// Setup browser and initialize Google page object before tests
 beforeAll(async () =>  {
     await browser.init();
-    await browser.start();    
-    browser.page.isSuccess = true; // Track failed actions (any fail working with actions sets this to false)
+    await browser.start();
     GooglePage.init(browser.page); // Sets instance of puppeteer page to the page object
-    initGooglePage(); // Need to be here as elements initialized with instance of page
+    GoogleSearchResultsPage.init(browser.page); // Sets instance of puppeteer page to the page object
 }, testTime);
 
 // Check if prev flow finished successfully before launching test
 beforeEach(async () =>  {
-    if (browser.flow.currentTimespan) {  // happens if waiting inside actions exceeds "testTime" timeout
-        await browser.flow.endTimespan() // stopping active timespan if not stopped by timeout
-        browser.page.isSuccess = false
-        throw new Error('Skipping test because previous flow exceeded testTime limit: ' + testTime);
-    }
-    if (!browser.page.isSuccess) 
-        throw new Error('Skipping test because previous flow failed');
+    browser.beforeEachHanlder(testTime).catch(err => {
+        throw err
+    })
 }, testTime)
 
-afterAll(async () =>  {
-    await browser.flow.snapshot({stepName: 'Capturing last state of the test'});
+// Teardown browser and create report after tests
+afterAll(async() => {
     await new CreateReport().createReports(browser.flow, browserType)
     await browser.closeBrowser();
 }, testTime)
 
-
-// coldNavigations -- full page load
-// can't be used together with timespan
-test('[ColdNavigation] Check Google', async () => {
+// Given: I am opening the browser
+// When: I am navigating to Google homepage
+// Then: I measure cold navigation performance of the page
+test('Check Google', async () => {
     await browser.coldNavigation("Main Page", GooglePage.url)
 }, testTime)
 
-// timespans -- actions
-// should contain ONE submit action that triggers loading between start/end block
-test('[Timespan] Search for "Lighthouse"', async () => {
-    await browser.flow.startTimespan({ stepName: "Execute google search from Home"})
-        await GooglePage.search.type('Lighthouse')
-        await GooglePage.submit.click()
-        await browser.waitTillRendered()
-    await browser.flow.endTimespan()
+// Given: I am on the Google homepage
+// When: I search for "Lighthouse"
+// Then: I wait for results of the rearch
+// And: I measure cold navigation performance of the page
+test('Search for "Lighthouse"', async () => {
+    await GooglePage.search.type('Lighthouse')
+    await GooglePage.submit.click()
+    await browser.waitTillRendered()
+    await browser.coldNavigation("Search Results")
 }, testTime)
 
-test('[Timespan] Search for "laptop"', async () => {
-    await browser.flow.startTimespan({ stepName: "Execute google search from search results"})
-        await GooglePage.search.clear()        
-        await GooglePage.search.type('laptop')
-        await GooglePage.searchSubmit.click()
-        await browser.waitTillRendered()
+// Given: I am on the Google seach results page
+// When: I enter "Laptop" in the search field to measure action time
+// Then: I wait for results of the rearch
+// And: I measure action time performance of the page
+test('Search for "Laptop"', async () => {
+    await browser.flow.startTimespan({ stepName: "Execute google search from Search Results page"})
+    await GoogleSearchResultsPage.search.clear()
+    await GoogleSearchResultsPage.search.type('Laptop')
+    await GoogleSearchResultsPage.searchSubmit.click()
+    await browser.waitTillRendered()
     await browser.flow.endTimespan()
 }, testTime)
-
-// test('[Timespan] Open link from results', async () => {
-//     await browser.flow.startTimespan({ stepName: "Open link from results"})
-//         await GooglePage.searchResultLinks.click()
-//         await GooglePage.images.isHidden()
-//         await browser.waitTillRendered()
-//     await browser.flow.endTimespan()
-// }, testTime)

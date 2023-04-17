@@ -1,5 +1,4 @@
 const Element = require('./element');
-const DEFAULT_TIMEOUT = 120000;
 const TYPE_KEY_BY_KEY_TIMEOUT = 100;
 
 class TextField extends Element {
@@ -10,18 +9,20 @@ class TextField extends Element {
         this.page = page;
     }
 
-    async type(text, timeout=DEFAULT_TIMEOUT, delay=TYPE_KEY_BY_KEY_TIMEOUT){
+    // Action: type text in text field
+    async type(text, timeout=Element.DEFAULT_TIMEOUT, delay=TYPE_KEY_BY_KEY_TIMEOUT){
         try {
             await this.find(timeout);
             await this.element.type(text, {delay: delay});
         }
         catch (error) {
             this.page.isSuccess = false;
-            throw new Error(error);
+            throw error;
         }
     }
 
-    async clear(timeout=DEFAULT_TIMEOUT){
+    // Action: clear text field
+    async clear(timeout=Element.DEFAULT_TIMEOUT){
         try {
             await this.find(timeout);
             await this.element.click({ clickCount: 3 })

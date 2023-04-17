@@ -1,5 +1,4 @@
 const Element = require('./element');
-const DEFAULT_TIMEOUT = 120000;
 
 class UploadField extends Element {
     page;
@@ -9,7 +8,8 @@ class UploadField extends Element {
         this.page = page;
     }
 
-    async upload(path, timeout=DEFAULT_TIMEOUT){
+    // Action: upload file
+    async upload(path, timeout=Element.DEFAULT_TIMEOUT){
         try {
             await this.find(timeout);
             await this.element.uploadFile(path);

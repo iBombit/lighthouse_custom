@@ -1,5 +1,6 @@
 
 class Element {
+    static DEFAULT_TIMEOUT = 5000;
     locator;
     element;
     locatorType;
@@ -10,6 +11,7 @@ class Element {
         this.locatorType = this.locator.startsWith("/") ? "xpath" : "css";
     }
 
+    // Action: find element on page with timeout for operation
     async find(timeout){
         switch(this.locatorType){
             case "xpath":
@@ -21,6 +23,7 @@ class Element {
         return this.element    
     }
 
+    // Action: find hidden element on page with timeout for operation
     async findHidden(timeout){
         switch(this.locatorType){
             case "xpath":
@@ -31,7 +34,6 @@ class Element {
         }
         return this.element
     }
-
 }
 
 module.exports = Element;

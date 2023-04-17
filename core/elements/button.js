@@ -1,5 +1,4 @@
 const Element = require('./element');
-const DEFAULT_TIMEOUT = 120000;
 
 class Button extends Element {
     page;
@@ -9,7 +8,9 @@ class Button extends Element {
         this.page = page;
     }
 
-    async jsClick(timeout=DEFAULT_TIMEOUT){
+
+    // Action: click on button using JS click
+    async jsClick(timeout=Element.DEFAULT_TIMEOUT){
         try {
             await this.find(timeout);
             await this.page.$eval(this.locator, element => element.click());
@@ -20,7 +21,8 @@ class Button extends Element {
         }
     }
 
-    async click(timeout=DEFAULT_TIMEOUT){
+    // Action (Default): click on button using Puppeteer click
+    async click(timeout=Element.DEFAULT_TIMEOUT){
         try {
             await this.find(timeout);
             await this.element.click();
@@ -31,7 +33,8 @@ class Button extends Element {
         }
     }
 
-    async dobleClick(timeout=DEFAULT_TIMEOUT){
+    // Action: double click on button using Puppeteer double click
+    async dobleClick(timeout=Element.DEFAULT_TIMEOUT){
         try {
             await this.find(timeout);
             await this.element.click({clickCount: 2});
@@ -42,7 +45,8 @@ class Button extends Element {
         }
     }
 
-    async rightClick(timeout=DEFAULT_TIMEOUT){
+    // Action: right click on button using Puppeteer right click
+    async rightClick(timeout=Element.DEFAULT_TIMEOUT){
         try {
             await this.find(timeout);
             await this.element.click({button: 'right',});

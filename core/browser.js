@@ -33,6 +33,7 @@ class LighthouseBrowser {
         }
     }
 
+    // Action: Start browser with LightHouse flow
     async start() {
         this.page = await this.browser.newPage();
         if (! this.flow) {
@@ -41,7 +42,9 @@ class LighthouseBrowser {
             await this.updateLighthouseFlow();
         }
     }
-    
+
+
+    // Action: Restart browser with LightHouse flow
     async restartBrowser() {
         console.log('KILLING BROWSER');
         await this.page.close();
@@ -56,23 +59,19 @@ class LighthouseBrowser {
         this.start()
     }
 
-    /**
-     * Create new LH flow object. Should be executed only once during first lauch
-     */
+    // Action: Create new LH flow object. Should be executed only once during first lauch
     async startNewLighthouseFlow() {
         this.flow = await lighthouse.startFlow(this.page, this.browserType === "mobile" ? new LightHouse().configMobile : new LightHouse().configDesktop);
     }
 
-    /**
-     * Preserve LH flow report and config, set new page after restart
-     */
+    // Preserve LH flow report and config, set new page after restart
     async updateLighthouseFlow() {
         this.flow.options.page = this.page;
     }
 
-    /**
-     * Get new page popup
-     * @browser current browser instance
+    /** 
+      Action: Get new page popup
+      @browser current browser instance
      */
     static async getNewPageWhenLoaded() {
         return new Promise(x =>
@@ -95,6 +94,7 @@ class LighthouseBrowser {
         );
     };
 
+    /** Action: measure cold navigation performance and assosite it with @name */ 
     async coldNavigation(name, link) {
         console.log('Started: ' + name);
         if (!link) {
@@ -105,6 +105,7 @@ class LighthouseBrowser {
         await this.waitTillRendered();
     }
 
+    /** Action: Navigate to page @link */ 
     async goToPage(link) {
         console.log('Opening Link: ' + link);
         await this.page.goto(link);
@@ -113,6 +114,7 @@ class LighthouseBrowser {
         await this.waitTillRendered(); 
     }
 
+    /** Action: wait for page to render completely */
     async waitTillRendered(timeout = 30000) {
         const checkDurationMsecs = 1000;
         const maxChecks = timeout / checkDurationMsecs;
@@ -143,12 +145,19 @@ class LighthouseBrowser {
         }
     }
 
-    /**
-     * Just closing browser
-     */
+    /** Action: Close browser */
     async closeBrowser(browser) {
         console.log('CLOSING BROWSER');
         await this.browser.close();
+    }
+
+    async beforeEachHanlder(timeout) {
+    if (this.flow.currentTimespan !== undefined) {  // happens if waiting inside actions exceeds "testTime" timeout
+        await this.flow.endTimespan() // stopping active timespan if not stopped by timeout
+        this.page.isSuccess = false
+        throw new Error(`Skipping test because previous flow exceeded testTime limit: ${timeout} seconds`);
+    } else if (!this.page.isSuccess) 
+        throw new Error('Skipping test because previous flow failed');
     }
     
 }
