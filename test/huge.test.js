@@ -1,6 +1,5 @@
 const HomePage = require('../pages/homePage');
 const TextBoxPage = require('../pages/webElements/textBoxPage');
-const PracticeFormPage = require('../pages/webForms/practiceFormPage');
 const UploadDownloadPage = require('../pages/webElements/uploadDownloadPage');
 const CheckBoxPage = require('../pages/webElements/checkBoxPage');
 const ButtonsPage = require('../pages/webElements/buttonsPage');
@@ -13,7 +12,6 @@ var browserType = "desktop",
     headless = false,
     browser = new LighthouseBrowser(browserType, headless),
     Home = new HomePage(),
-    PracticeForm = new PracticeFormPage(),
     TextBox = new TextBoxPage(),
     UploadDownload = new UploadDownloadPage(),
     CheckBox = new CheckBoxPage(),
@@ -25,7 +23,6 @@ beforeAll(async () =>  {
     await browser.start();   
     browser.page.isSuccess = true; // Track failed actions (any fail working with actions sets this to false)
     Home.init(browser.page); // Sets instance of puppeteer page to Home page object
-    PracticeForm.init(browser.page); // Sets instance of puppeteer page to PracticeForm page object
     TextBox.init(browser.page); // Sets instance of puppeteer page to TextBox page object
     UploadDownload.init(browser.page); // Sets instance of puppeteer page to UploadDownload page object
     CheckBox.init(browser.page); // Sets instance of puppeteer page to CheckBox page object
@@ -59,14 +56,17 @@ afterAll(async () =>  {
 }, testTime)
 
 
-// coldNavigations -- full page load
-// can't be used together with timespan
-test('[ColdNavigation] Check ' + Home.url, async () => {
+// Given: I am opening the browser
+// When: I am navigating to Home page
+// Then: I measure cold navigation performance of the page
+test("[ColdNavigation] Check " + Home.url, async () => {
     await browser.coldNavigation("Main Page", Home.url)
 }, testTime)
 
-// timespans -- actions
-// should contain ONE submit action that triggers loading between start/end block
+// Given: I am on the Home page
+// When: I click on "Elements"
+// Then: I wait for the new page to be rendered
+// And: I stop measuring action time performance of the page
 test("[Timespan] Click on 'Elements'", async () => {
     await browser.flow.startTimespan({ stepName: "Click on 'Elements'"})
         await Home.elements.click()
@@ -74,10 +74,18 @@ test("[Timespan] Click on 'Elements'", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
-test('[ColdNavigation] Check ' + TextBox.url, async () => {
+// Given: I am on the Main page "Elements" section
+// When: I am navigating to Main page "TextBox" section
+// Then: I measure cold navigation performance of the page
+test("[ColdNavigation] Check " + TextBox.url, async () => {
     await browser.coldNavigation("TextBox Page", TextBox.url)
 }, testTime)
 
+// Given: I am on the Main page "TextBox" section
+// When: I fill text box fields
+// Then: I click on "submit" button
+// And: I wait for "textBoxVerify" to be visible
+// And: I stop measuring action time performance of the page
 test("[Timespan] Submit text box form", async () => {
     await TextBox.fullName.type("UI TESTER")
     await TextBox.userEmail.type("ui_tester@gmail.com")
@@ -91,19 +99,30 @@ test("[Timespan] Submit text box form", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
-//Check Box
-test('[ColdNavigation] Check ' + CheckBox.url, async () => {
+// Given: I am on the Main page "TextBox" section
+// When: I am navigating to Main page "CheckBox" section
+// Then: I measure cold navigation performance of the page
+test("[ColdNavigation] Check " + CheckBox.url, async () => {
     await browser.coldNavigation("CheckBox Page", CheckBox.url)
 }, testTime)
 
+// Given: I am on the Main page "CheckBox" section
+// When: I check 'Home' checkbox
+// Then: I wait for 'Home' checkbox to be selected
+// And: I measure action time performance of the page
 test("[Timespan] Select 'Home' checkBox", async () => {    
-    await browser.flow.startTimespan({ stepName: "Select 'Public' checkBox"})    
+    await browser.flow.startTimespan({ stepName: "Select 'Home' checkBox"})    
         await CheckBox.homeCheckBox.click()
         await CheckBox.homeSelectVerify.find()
         await browser.waitTillRendered()
     await browser.flow.endTimespan()
 }, testTime)
 
+// Given: I am on the Main page "CheckBox" section
+// And: 'Home' checkbox is selected
+// When: I expand 'Home' treeNode
+// Then: I wait for 'Home' treeNode to be expanded
+// And: I measure action time performance of the page
 test("[Timespan] Expand 'Home' treeNode", async () => {
     await browser.flow.startTimespan({ stepName: "Expand 'Home' treeNode"})    
         await CheckBox.checkBoxExpandHome.click()
@@ -112,6 +131,12 @@ test("[Timespan] Expand 'Home' treeNode", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
+// Given: I am on the Main page "CheckBox" section
+// And: 'Home' checkbox is selected
+// And: 'Home' treeNode is expanded
+// When: I uncheck 'Desktop' checkbox
+// Then: I wait for 'Desktop' checkbox to be deselected
+// And: I measure action time performance of the page
 test("[Timespan] Deselect 'Desktop' checkBox", async () => {    
     await browser.flow.startTimespan({ stepName: "Deselect 'Desktop' checkBox"})    
         await CheckBox.desktopCheckbox.click()
@@ -120,11 +145,17 @@ test("[Timespan] Deselect 'Desktop' checkBox", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
-//Buttons
-test('[ColdNavigation] Check ' + Buttons.url, async () => {
+// Given: I am on the Main page "CheckBox" section
+// When: I am navigating to Main page "Buttons" section
+// Then: I measure cold navigation performance of the page
+test("[ColdNavigation] Check " + Buttons.url, async () => {
     await browser.coldNavigation("Buttons Page", Buttons.url)
 }, testTime)
 
+// Given: I am on the Main page "Buttons" section
+// When: I click on "Click Me" button
+// Then: I wait for click message to appear
+// And: I measure action time performance of the page
 test("[Timespan] Simple click button", async () => {    
     await browser.flow.startTimespan({ stepName: "Simple click button"})    
         await Buttons.clickBtn.click()
@@ -133,6 +164,10 @@ test("[Timespan] Simple click button", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
+// Given: I am on the Main page "Buttons" section
+// When: I double click on "Double Click Me" button
+// Then: I wait for click message to appear
+// And: I measure action time performance of the page
 test("[Timespan] Double click button", async () => {    
     await browser.flow.startTimespan({ stepName: "Double click button"})    
         await Buttons.doubleClickBtn.dobleClick()
@@ -141,6 +176,10 @@ test("[Timespan] Double click button", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
+// Given: I am on the Main page "Buttons" section
+// When: I right click on "Right Click Me" button
+// Then: I wait for click message to appear
+// And: I measure action time performance of the page
 test("[Timespan] Right click button", async () => {    
     await browser.flow.startTimespan({ stepName: "Right click button"})    
         await Buttons.rightClickBtn.rightClick()
@@ -149,45 +188,21 @@ test("[Timespan] Right click button", async () => {
     await browser.flow.endTimespan()
 }, testTime)
 
-//Uploading
-test('[ColdNavigation] Check ' + UploadDownload.url, async () => {
+// Given: I am on the Main page "Buttons" section
+// When: I am navigating to Main page "UploadDownload" section
+// Then: I measure cold navigation performance of the page
+test("[ColdNavigation] Check " + UploadDownload.url, async () => {
     await browser.coldNavigation("UploadDownload Page", UploadDownload.url)
 }, testTime)
 
+// Given: I am on the Main page "UploadDownload" section
+// When: I am uploading test file
+// Then: I wait for upload verification message to appear
+// And: I measure action time performance of the page
 test("[Timespan] Upload file into 'Choose File'", async () => {
     await browser.flow.startTimespan({ stepName: "Upload file into 'Choose File'"})
         await UploadDownload.uploadFile.upload(uploadDir + "../testdata/files/uploadTest.txt")
         await UploadDownload.uploadVerify.find()
-        await browser.waitTillRendered()
-    await browser.flow.endTimespan()
-}, testTime)
-
-//Practice Form
-test('[ColdNavigation] Check ' + PracticeForm.url, async () => {
-    await browser.coldNavigation("Automation Practice Form", PracticeForm.url)
-}, testTime)
-
-test("[Timespan] Fill out practice form", async () => {
-    await PracticeForm.firstName.type("John")
-    await PracticeForm.lastName.type("Doe")
-    await PracticeForm.userEmail.type("johndoe@gmail.com")
-    await PracticeForm.genderMale.click()
-    await PracticeForm.mobileNumber.type("1234567890")
-    await PracticeForm.dateOfBirth.click()
-    await PracticeForm.day.click()
-    await PracticeForm.subjects.type("Maths")
-    await browser.page.keyboard.press('Enter')
-    await PracticeForm.hobbiesSports.click()
-    await PracticeForm.uploadPicture.upload(uploadDir + "../testdata/files/uploadTest.jpg")
-    await PracticeForm.currentAddress.type("123 Main St.")
-    await PracticeForm.state.click()
-    await PracticeForm.stateNCR.click()
-    await PracticeForm.city.click()
-    await PracticeForm.cityDelhi.click()
-
-    await browser.flow.startTimespan({ stepName: "Fill out practice form" })
-        await PracticeForm.submit.click()
-        await PracticeForm.formSubmitVerify.find()
         await browser.waitTillRendered()
     await browser.flow.endTimespan()
 }, testTime)

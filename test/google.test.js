@@ -66,7 +66,7 @@ test('Check Google', async () => {
 
 // Given: I am on the Google homepage
 // When: I search for "Lighthouse"
-// Then: I wait for results of the rearch
+// Then: I wait for results of the search
 // And: I measure cold navigation performance of the page
 test('Search for "Lighthouse"', async () => {
     await GooglePage.search.type('Lighthouse')
@@ -77,7 +77,7 @@ test('Search for "Lighthouse"', async () => {
 
 // Given: I am on the Google seach results page
 // When: I enter "Laptop" in the search field to measure action time
-// Then: I wait for results of the rearch
+// Then: I wait for results of the search
 // And: I measure action time performance of the page
 test('Search for "Laptop"', async () => {
     await browser.flow.startTimespan({ stepName: "Execute google search from Search Results page"})
