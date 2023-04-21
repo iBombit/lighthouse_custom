@@ -23,6 +23,19 @@ class Element {
         return this.element    
     }
 
+    // Action: get element from list on page
+    async findFromList(timeout, index){
+        switch(this.locatorType){
+            case "xpath":
+                throw new Error("Not implemented yet");
+                break;
+            default:
+                var elements = await this.page.$$(this.locator);
+                this.element = elements[index]
+        }
+        return this.element
+    }
+
     // Action: find hidden element on page with timeout for operation
     async findHidden(timeout){
         switch(this.locatorType){
