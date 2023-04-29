@@ -1,3 +1,4 @@
+const logger = require("../../settings/logger");
 const Element = require('./element');
 const TYPE_KEY_BY_KEY_TIMEOUT = 100;
 
@@ -11,6 +12,7 @@ class TextField extends Element {
 
     // Action: type text in text field
     async type(text, timeout=Element.DEFAULT_TIMEOUT, delay=TYPE_KEY_BY_KEY_TIMEOUT){
+        logger.debug(`type into ${this.locator}`);
         try {
             await this.find(timeout);
             await this.element.type(text, {delay: delay});
@@ -23,6 +25,7 @@ class TextField extends Element {
 
     // Action: clear text field
     async clear(timeout=Element.DEFAULT_TIMEOUT){
+        logger.debug(`clear text in ${this.locator}`);
         try {
             await this.find(timeout);
             await this.element.click({ clickCount: 3 })

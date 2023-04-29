@@ -1,3 +1,4 @@
+const logger = require("../settings/logger");
 const HomePage = require('../pages/homePage');
 const TextBoxPage = require('../pages/webElements/textBoxPage');
 const UploadDownloadPage = require('../pages/webElements/uploadDownloadPage');
@@ -31,7 +32,7 @@ beforeAll(async () =>  {
 
 // Check if prev flow finished successfully before launching test
 beforeEach(async () =>  {
-    console.log("[STARTED] " + expect.getState().currentTestName)
+    logger.debug("[STARTED] " + expect.getState().currentTestName)
     if (browser.flow.currentTimespan) {  // happens if waiting inside actions exceeds "testTime" timeout
         await browser.flow.endTimespan() // stopping active timespan if not stopped by timeout
         browser.page.isSuccess = false
@@ -42,7 +43,7 @@ beforeEach(async () =>  {
 }, testTime)
 
 afterEach(async () =>  {
-    console.log("[ENDED] " + expect.getState().currentTestName)
+    logger.debug("[ENDED] " + expect.getState().currentTestName)
 })
 
 afterAll(async () =>  {

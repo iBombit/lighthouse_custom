@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const logger = require("../settings/logger");
 const Browser = require('../settings/browser');
 const lighthouse = require('lighthouse/lighthouse-core/fraggle-rock/api.js');
 const exec = require('child_process').exec;
@@ -46,14 +47,14 @@ class LighthouseBrowser {
 
     // Action: Restart browser with LightHouse flow
     async restartBrowser() {
-        console.log('KILLING BROWSER');
+        logger.debug('KILLING BROWSER');
         await this.page.close();
         await this.browser.close();
         try {
             // ensure that your system/docker has these commands installed
             exec("kill -9 $(ps -ef | grep chrome | awk '{print $2}')");
         } catch (error) {
-            console.log("BROWSER KILLED (error was from not existent PID, but we catch it)");
+            logger.debug("BROWSER KILLED (error was from not existent PID, but we catch it)");
         }
         this.init()
         this.start()
@@ -96,23 +97,49 @@ class LighthouseBrowser {
 
     /** Action: measure cold navigation performance and assosite it with @name */ 
     async coldNavigation(name, link) {
-        console.log('Started: ' + name);
+        logger.debug(`start coldNavigation ${name}`);
         if (!link) {
             link = this.page.url();
         }
         await this.flow.navigate(link, {stepName: name});
-        console.log('Ended: ' + name);
+        logger.debug(`end coldNavigation ${name}`);
+        await this.waitTillRendered();
+    }
+
+    /** Action: measure warm navigation performance and assosite it with @name */ 
+    async warmNavigation(name, link) {
+        logger.debug(`start warmNavigation ${name}`);
+        if (!link) {
+            link = this.page.url();
+        }
+        await this.flow.navigate(link, {stepName: name, configContext: {settingsOverrides: {disableStorageReset: true}}});
+        logger.debug(`end warmNavigation ${name}`);
         await this.waitTillRendered();
     }
 
     /** Action: Navigate to page @link */ 
     async goToPage(link) {
-        console.log('Opening Link: ' + link);
+        logger.debug(`opening link ${link}`);
         await this.page.goto(link);
         // loosing page context on multiple redirects, so wait 10sec before that...
         await this.page.waitForTimeout(10000);
         await this.waitTillRendered(); 
     }
+
+    /**
+     * Create iframe with success status
+     * @selector CSS selector for iframe
+     * @scope    current scope (page in browser or other iframe)
+    */
+    async createIframe(selector, scope) {
+        logger.debug(`creating iframe via CSS ${selector} in ${scope}`);
+        let frameHandle = await scope.$(selector);
+        let frame = await frameHandle.contentFrame();
+        //each time we create a new frame we need to set status as sucess
+        //If it fails in "actions" -- it will skip other actions within this frame
+        frame.isSuccess = true;
+        return frame;
+      }
 
     /** Action: wait for page to render completely */
     async waitTillRendered(timeout = 30000) {
@@ -128,7 +155,7 @@ class LighthouseBrowser {
         let currentHTMLSize = html.length;
 
         //let bodyHTMLSize = await page.evaluate(() => document.body.innerHTML.length);
-        //console.log('last: ', lastHTMLSize, ' <> curr: ', currentHTMLSize, " body html size: ", bodyHTMLSize);
+        //logger.debug('last: ', lastHTMLSize, ' <> curr: ', currentHTMLSize, " body html size: ", bodyHTMLSize);
 
         if(lastHTMLSize != 0 && currentHTMLSize == lastHTMLSize)
             countStableSizeIterations++;
@@ -136,7 +163,7 @@ class LighthouseBrowser {
             countStableSizeIterations = 0; //reset the counter
 
         if(countStableSizeIterations >= minStableSizeIterations) {
-            console.log("[SUCCESS] Fully Rendered Page: " + this.page.url());
+            logger.debug(`[SUCCESS] Fully Rendered Page: ${this.page.url()}`);
             break;
         }
 
@@ -147,7 +174,7 @@ class LighthouseBrowser {
 
     /** Action: Close browser */
     async closeBrowser(browser) {
-        console.log('CLOSING BROWSER');
+        logger.debug('CLOSING BROWSER');
         await this.browser.close();
     }
 
