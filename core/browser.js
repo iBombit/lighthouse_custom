@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const logger = require("../settings/logger");
+const logger = require("../logger/logger");
 const Browser = require('../settings/browser');
 const lighthouse = require('lighthouse/lighthouse-core/fraggle-rock/api.js');
 const exec = require('child_process').exec;
@@ -97,29 +97,29 @@ class LighthouseBrowser {
 
     /** Action: measure cold navigation performance and assosite it with @name */ 
     async coldNavigation(name, link) {
-        logger.debug(`start coldNavigation ${name}`);
+        logger.debug(`[COLDNAV] Start:${name}`);
         if (!link) {
             link = this.page.url();
         }
         await this.flow.navigate(link, {stepName: name});
-        logger.debug(`end coldNavigation ${name}`);
+        logger.debug(`[COLDNAV] End:${name}`);
         await this.waitTillRendered();
     }
 
     /** Action: measure warm navigation performance and assosite it with @name */ 
     async warmNavigation(name, link) {
-        logger.debug(`start warmNavigation ${name}`);
+        logger.debug(`[WARMNAV] Start:${name}`);
         if (!link) {
             link = this.page.url();
         }
         await this.flow.navigate(link, {stepName: name, configContext: {settingsOverrides: {disableStorageReset: true}}});
-        logger.debug(`end warmNavigation ${name}`);
+        logger.debug(`[WARMNAV] End:${name}`);
         await this.waitTillRendered();
     }
 
     /** Action: Navigate to page @link */ 
     async goToPage(link) {
-        logger.debug(`opening link ${link}`);
+        logger.debug(`[GOTOPAGE] ${link}`);
         await this.page.goto(link);
         // loosing page context on multiple redirects, so wait 10sec before that...
         await this.page.waitForTimeout(10000);
@@ -132,7 +132,7 @@ class LighthouseBrowser {
      * @scope    current scope (page in browser or other iframe)
     */
     async createIframe(selector, scope) {
-        logger.debug(`creating iframe via CSS ${selector} in ${scope}`);
+        logger.debug(`[IFRAME] create via CSS ${selector} in ${scope}`);
         let frameHandle = await scope.$(selector);
         let frame = await frameHandle.contentFrame();
         //each time we create a new frame we need to set status as sucess

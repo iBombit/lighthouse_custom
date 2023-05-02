@@ -1,4 +1,4 @@
-const logger = require("../settings/logger");
+const logger = require("../logger/logger");
 const HomePage = require('../pages/homePage');
 const TextBoxPage = require('../pages/webElements/textBoxPage');
 const UploadDownloadPage = require('../pages/webElements/uploadDownloadPage');

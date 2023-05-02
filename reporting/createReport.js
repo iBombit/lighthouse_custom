@@ -1,4 +1,4 @@
-const logger = require("../settings/logger");
+const logger = require("../logger/logger");
 const fs = require('fs');
 
 // need to write to the parent directory for Carrier

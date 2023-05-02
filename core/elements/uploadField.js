@@ -1,4 +1,4 @@
-const logger = require("../../settings/logger");
+const logger = require("../../logger/logger");
 const Element = require('./element');
 
 class UploadField extends Element {
@@ -11,7 +11,7 @@ class UploadField extends Element {
 
     // Action: upload file
     async upload(path, timeout=Element.DEFAULT_TIMEOUT){
-        logger.debug(`upload into ${this.locator}`);
+        logger.debug(`[UPLOAD] ${this.locatorType}:${this.locator}`);
         try {
             await this.find(timeout);
             await this.element.uploadFile(path);

@@ -1,4 +1,4 @@
-const logger = require("../../settings/logger");
+const logger = require("../../logger/logger");
 
 class Element {
     static DEFAULT_TIMEOUT = 5000;
@@ -9,14 +9,14 @@ class Element {
     constructor(locator, page){
         this.locator = locator
         this.page = page
-        this.locatorType = this.locator.startsWith("/") ? "xpath" : "css";
+        this.locatorType = this.locator.startsWith("/") ? "XPATH" : "CSS";
     }
 
     // Action: find element on page with timeout for operation
     async find(timeout){
-        logger.debug(`[${this.locatorType}] looking for ${this.locator}`);
+        logger.debug(`[FIND] ${this.locatorType}:${this.locator}`);
         switch(this.locatorType){
-            case "xpath":
+            case "XPATH":
                 this.element = await this.page.waitForXPath(this.locator, {visible: true, 'timeout': timeout});
                 break;
             default:
@@ -27,9 +27,9 @@ class Element {
 
     // Action: get element from list on page
     async findFromList(timeout, index){
-        logger.debug(`[${this.locatorType}] looking for ${this.locator} -- index ${index}`);
+        logger.debug(`[FIND] ${this.locatorType}:${this.locator} -- index ${index}`);
         switch(this.locatorType){
-            case "xpath":
+            case "XPATH":
                 throw new Error("Not implemented yet");
             default:
                 var elements = await this.page.$$(this.locator);
@@ -40,9 +40,9 @@ class Element {
 
     // Action: find hidden element on page with timeout for operation
     async findHidden(timeout){
-        logger.debug(`[${this.locatorType}] looking for ${this.locator}`);
+        logger.debug(`[FINDHIDDEN] ${this.locatorType}:${this.locator}`);
         switch(this.locatorType){
-            case "xpath":
+            case "XPATH":
                 this.element = await this.page.waitForXPath(this.locator, {hidden: true, 'timeout': timeout});
                 break;
             default:
