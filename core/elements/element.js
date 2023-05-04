@@ -9,7 +9,7 @@ class Element {
     constructor(locator, page){
         this.locator = locator
         this.page = page
-        this.locatorType = this.locator.startsWith("/") ? "XPATH" : "CSS";
+        this.locatorType = (this.locator.startsWith("/") || this.locator.startsWith("(")) ? "XPATH" : "CSS";
     }
 
     // Action: find element on page with timeout for operation
