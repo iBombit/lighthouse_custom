@@ -11,10 +11,11 @@ class PowerApps extends Page {
     }
 
     init(page){
-        super.init(page)
-        this.appFrame = new Iframe("iframe[id='fullscreen-app-host']", page)
+        super.init(page);
+        this.appFrame = new Iframe("iframe[id='fullscreen-app-host']", page);
         this.marketing = new Button("(//*[@data-control-name='Button3'])[1]", page);
         this.marketingHeader = new Element("[data-control-name='TextBox1_13']", page);
+        this.teamsIcon = new Button("#AddToTeamsButton_container", page);
     }
 
 }

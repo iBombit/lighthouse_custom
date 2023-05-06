@@ -62,3 +62,14 @@ test("[Timespan] Click on 'marketing'", async () => {
         await browser.waitTillRendered()
     await browser.flow.endTimespan()
 }, testTime)
+
+// Given: I am on the "Marketing" page
+// When: I click on "Teams" icon
+// Then: I take the URL of the page that opened
+// And: I measure cold navigation performance of the new page URL
+test("[ColdNavigation] Check 'Teams' page", async () => {
+    powerApps.init(browser.page) // Update page object with browser default page
+    await powerApps.teamsIcon.click()
+    let newPage = await browser.getNewPageWhenLoaded();
+    await browser.coldNavigation("Teams Page", newPage.url()); // Using new page URL obtained after click for measurement
+}, testTime)

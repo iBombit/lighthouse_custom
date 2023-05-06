@@ -70,11 +70,8 @@ class LighthouseBrowser {
         this.flow.options.page = this.page;
     }
 
-    /** 
-      Action: Get new page popup
-      @browser current browser instance
-     */
-    static async getNewPageWhenLoaded() {
+    // Action: Get new page popup
+    async getNewPageWhenLoaded() {
         return new Promise(x =>
             this.browser.on('targetcreated', async target => {
                 if (target.type() === 'page') {
@@ -163,15 +160,6 @@ class LighthouseBrowser {
         await this.browser.close();
     }
 
-    async beforeEachHanlder(timeout) {
-    if (this.flow.currentTimespan !== undefined) {  // happens if waiting inside actions exceeds "testTime" timeout
-        await this.flow.endTimespan() // stopping active timespan if not stopped by timeout
-        this.page.isSuccess = false
-        throw new Error(`Skipping test because previous flow exceeded testTime limit: ${timeout} seconds`);
-    } else if (!this.page.isSuccess) 
-        throw new Error('Skipping test because previous flow failed');
-    }
-    
 }
 
 module.exports = LighthouseBrowser;
