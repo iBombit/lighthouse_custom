@@ -1,8 +1,8 @@
-const logger = require("../logger/logger");
-const Page = require("../core/page")
-const Button = require("../core/elements/button")
-const Element = require("../core/elements/element")
-const Iframe = require("../core/elements/iframe")
+const logger = require("../../logger/logger");
+const Page = require("../../core/page")
+const Button = require("../../core/elements/button")
+const Element = require("../../core/elements/element")
+const Iframe = require("../../core/elements/iframe")
 
 class PowerApps extends Page {
     constructor(page) {
@@ -15,7 +15,7 @@ class PowerApps extends Page {
         this.appFrame = new Iframe("iframe[id='fullscreen-app-host']", page);
         this.marketing = new Button("(//*[@data-control-name='Button3'])[1]", page);
         this.marketingHeader = new Element("[data-control-name='TextBox1_13']", page);
-        this.teamsIcon = new Button("#AddToTeamsButton_container", page);
+        this.teamsIcon = new Button("#AddToTeamsButton", page);
     }
 
 }

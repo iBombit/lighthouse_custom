@@ -1,6 +1,6 @@
-const Page = require("../core/page");
-const Button = require("../core/elements/button");
-const Element = require("../core/elements/element")
+const Page = require("../../core/page");
+const Button = require("../../core/elements/button");
+const Element = require("../../core/elements/element")
 
 
 class MainPage extends Page {

@@ -1,5 +1,5 @@
 const logger = require("../logger/logger");
-const PowerApps = require('../powerapps/pages');
+const PowerApps = require('../pages/powerapps/pages');
 const LighthouseBrowser = require('../core/browser');
 const CreateReport = require('../reporting/createReport');
 

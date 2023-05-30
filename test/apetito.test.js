@@ -1,6 +1,6 @@
 const LighthouseBrowser = require('../core/browser');
 const CreateReport = require('../reporting/createReport');
-const { MainPage, FullMenuList, ProductPage } = require('../apetito/pages');
+const { MainPage, FullMenuList, ProductPage } = require('../pages/apetito/pages');
 
 
 // Declare browser and pages required for this test

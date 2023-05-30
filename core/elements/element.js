@@ -1,7 +1,7 @@
 const logger = require("../../logger/logger");
 
 class Element {
-    static DEFAULT_TIMEOUT = 5000;
+    static DEFAULT_TIMEOUT = 60000;
     locator;
     element;
     locatorType;
