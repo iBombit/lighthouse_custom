@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const logger = require("../logger/logger");
 const Browser = require('../settings/browser');
 const lighthouse = require('lighthouse/lighthouse-core/fraggle-rock/api.js');
