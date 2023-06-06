@@ -12,8 +12,9 @@ Docker:  executablePath: '/usr/lib/chromium/chrome'
 **Preparing local environment for testing UI scripts**
 
 - **Without docker**
-1. Install node.js
-2. Run these commands:
+1. Clone repo
+2. Install node.js
+3. In repo dir execute run these commands:
 ```
 npm install
 npm test huge.test.js --runInBand
@@ -21,7 +22,7 @@ npm test huge.test.js --runInBand
 
 - **With docker**
 1. Clone repo
-2. In repo dir execute this command:
+2. In repo dir run this command:
 ```
 docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:2.0-alpine npm test huge.test.js --runInBand
 ```
