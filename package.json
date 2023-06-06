@@ -13,10 +13,10 @@
     "dependencies": {
         "chai": "^4.3.7",
         "express": "^4.18.2",
-        "lighthouse": "9.2.0",
+        "lighthouse": "^9.6.8",
         "mocha": "^10.2.0",
-        "puppeteer": "19.8.3",
-        "winston": "^3.8.2"
+        "puppeteer": "^20.5.0",
+        "winston": "^3.9.0"
     },
     "repository": {
         "type": "git",
