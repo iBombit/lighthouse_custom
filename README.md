@@ -5,8 +5,8 @@ Docker Hub
 https://hub.docker.com/r/ibombit/lighthouse-puppeteer-chrome
 
 **Setting up target browser for execution (settings/browser.js)**
-* MS EDGE: executablePath: 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
-* Chrome:  executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+* MS EDGE: executablePath: 'C:\\\Program Files (x86)\\\Microsoft\\\Edge\\\Application\\\msedge.exe'
+* Chrome:  executablePath: 'C:\\\Program Files\\\Google\\\Chrome\\\Application\\\chrome.exe'
 * Docker:  executablePath: '/usr/lib/chromium/chrome'
 
 **Preparing local environment for testing UI scripts**
