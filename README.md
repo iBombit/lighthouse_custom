@@ -22,7 +22,8 @@ npm test huge.test.js --runInBand
 
 - **With docker**
 1. Clone repo
-2. In repo dir run this command:
+2. Verify that headless mode is set to **true**: https://github.com/iBombit/lighthouse_custom/blob/38d8b67527c53a8ee67b87553bc3b099340c2288/test/huge.test.js#L13
+3. In repo dir run this command:
 ```
 docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:2.0-alpine npm test huge.test.js --runInBand
 ```
