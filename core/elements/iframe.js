@@ -1,7 +1,7 @@
-const logger = require("../../logger/logger");
-const Element = require('./element');
+import logger from "../../logger/logger.js";
+import Element from './element.js';
 
-class Iframe extends Element {
+export default class Iframe extends Element {
     page;
 
     constructor(locator, page) {
@@ -26,5 +26,3 @@ class Iframe extends Element {
     }
 
 }
-
-module.exports = Iframe;

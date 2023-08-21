@@ -1,8 +1,8 @@
-const Button = require('./elements/button');
-const TextField = require('./elements/textField');
-const UploadField = require('./elements/uploadField');
+import Button from './elements/button.js';
+import TextField from './elements/textField.js';
+import UploadField from './elements/uploadField.js';
 
-class Page  {
+export default class Page  {
     constructor() {}
 
     init(page) {
@@ -33,5 +33,3 @@ class Page  {
         await this.p.close();
     }
 }
-
-module.exports = Page;

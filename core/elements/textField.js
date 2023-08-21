@@ -1,8 +1,8 @@
-const logger = require("../../logger/logger");
-const Element = require('./element');
+import logger from "../../logger/logger.js";
+import Element from './element.js';
 const TYPE_KEY_BY_KEY_TIMEOUT = 100;
 
-class TextField extends Element {
+export default class TextField extends Element {
     page;
     
     constructor(locator, page){
@@ -39,5 +39,3 @@ class TextField extends Element {
     }
     
 }
-
-module.exports = TextField;

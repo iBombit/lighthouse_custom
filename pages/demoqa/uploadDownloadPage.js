@@ -1,8 +1,8 @@
-const Page = require("../../core/page");
-const UploadField = require("../../core/elements/uploadField");
-const Element = require("../../core/elements/element");
+import Page from "../../core/page.js";
+import UploadField from "../../core/elements/uploadField.js";
+import Element from "../../core/elements/element.js";
 
-class UploadDownloadPage extends Page {
+export default class UploadDownloadPage extends Page {
     constructor(page) {
         super(page)
         this.url = "https://demoqa.com/upload-download"
@@ -15,5 +15,3 @@ class UploadDownloadPage extends Page {
     }
 
 }
-
-module.exports = UploadDownloadPage;

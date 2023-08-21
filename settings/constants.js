@@ -1,4 +1,4 @@
-class Desktop {
+export class Desktop {
   get lighthouseReportName()    { return "Desktop"};
   get screenWidth()             { return 1920};
   get screenHeight()            { return 1080};
@@ -12,10 +12,11 @@ class Desktop {
   get screenEmulationMobile()   { return false};
   get deviceScaleFactor()       { return 1};
   get screenEmulationDisabled() { return false};
+  get hasTouch()                { return false};
   get formFactor()              { return "desktop"};
 }
 
-class Mobile {
+export class Mobile {
   get lighthouseReportName()    { return "Mobile"};
   get screenWidth()             { return 390};
   get screenHeight()            { return 844};
@@ -29,9 +30,17 @@ class Mobile {
   get screenEmulationMobile()   { return true};
   get deviceScaleFactor()       { return 3};
   get screenEmulationDisabled() { return false};
+  get hasTouch()                { return true};
   get formFactor()              { return "mobile"};
 }
 
-module.exports = {Desktop: Desktop,
-                  Mobile: Mobile
-                };
+export class BrowserLocations {
+  get chrome()                  { return "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"};
+  get edge()                    { return "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"};
+  get docker()                  { return "/usr/lib/chromium/chrome"};
+}
+
+export const myRelevantAudits = [
+  'network-requests',
+  'network-server-latency',
+];

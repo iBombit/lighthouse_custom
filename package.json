@@ -1,32 +1,41 @@
 {
-    "name": "lightprobe",
-    "productName": "Lighthouse based UI performance testing framework",
-    "description": "Testing framework",
-    "keywords": [],
-    "main": "./onliner.js",
-    "version": "1.0.0",
-    "author": "iBombit",
-    "scripts": {
-        "test": "jest",
-        "crawl": "node crawler/crawler.js"
-    },
-    "dependencies": {
-        "chai": "^4.3.7",
-        "express": "^4.18.2",
-        "lighthouse": "^9.6.8",
-        "mocha": "^10.2.0",
-        "puppeteer": "^20.5.0",
-        "winston": "^3.9.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/iBombit/lighthouse_custom.git"
-    },
-    "license": "Apache-2.0",
-    "bugs": {
-        "url": "https://github.com/iBombit/lighthouse_custom/issues"
-    },
-    "devDependencies": {
-        "jest": "^29.5.0"
-    }
+  "name": "lightprobe",
+  "productName": "Lighthouse based UI performance testing framework",
+  "description": "Testing framework",
+  "keywords": [],
+  "type": "module",
+  "version": "2.0.0",
+  "author": "iBombit",
+  "engines": {
+    "node": ">=18.16"
+  },
+  "scripts": {
+    "test": "jest",
+    "crawl": "node crawler/crawler.js"
+  },
+  "dependencies": {
+    "chai": "^4.3.7",
+    "es-main": "^1.2.0",
+    "express": "^4.18.2",
+    "logform": "^2.5.1",
+    "mocha": "^10.2.0",
+    "puppeteer": "^21.1.0",
+    "winston": "^3.10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iBombit/lighthouse_custom.git"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/iBombit/lighthouse_custom/issues"
+  },
+  "devDependencies": {
+    "lighthouse": "^11.0.0"
+  },
+  "homepage": "https://github.com/iBombit/lighthouse_custom#readme",
+  "directories": {
+    "test": "test"
+  },
+  "main": "index.js"
 }

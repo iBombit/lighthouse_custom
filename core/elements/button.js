@@ -1,7 +1,7 @@
-const logger = require("../../logger/logger");
-const Element = require('./element');
+import logger from "../../logger/logger.js";
+import Element from './element.js';
 
-class Button extends Element {
+export default class Button extends Element {
     page;
 
     constructor(locator, page){
@@ -63,5 +63,3 @@ class Button extends Element {
     }
 
 }
-
-module.exports = Button;

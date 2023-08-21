@@ -1,7 +1,7 @@
-const logger = require("../../logger/logger");
-const Element = require('./element');
+import logger from "../../logger/logger.js";
+import Element from './element.js';
 
-class UploadField extends Element {
+export default class UploadField extends Element {
     page;
     
     constructor(locator, page){
@@ -12,6 +12,7 @@ class UploadField extends Element {
     // Action: upload file
     async upload(path, timeout=Element.DEFAULT_TIMEOUT){
         logger.debug(`[UPLOAD] ${this.locatorType}:${this.locator}`);
+        logger.debug(`[ PATH ] ${path}`);
         try {
             await this.find(timeout);
             await this.element.uploadFile(path);
@@ -23,5 +24,3 @@ class UploadField extends Element {
     }
 
 }
-
-module.exports = UploadField;

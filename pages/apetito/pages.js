@@ -1,9 +1,8 @@
-const Page = require("../../core/page");
-const Button = require("../../core/elements/button");
-const Element = require("../../core/elements/element")
+import Page from "../../core/page.js";
+import Button from "../../core/elements/button.js";
+import Element from "../../core/elements/element.js";
 
-
-class MainPage extends Page {
+export class MainPage extends Page {
     init(page) {
         super.init(page)
         this.url = 'https://www.apetito-shop.de/'
@@ -16,7 +15,7 @@ class MainPage extends Page {
     }
 }
 
-class FullMenuList extends Page {
+export class FullMenuList extends Page {
     init(page) {
         super.init(page)
         this.secondAvailableProductEl = new Element("button[name='addProductButton']:not(:disabled)", page)
@@ -27,7 +26,7 @@ class FullMenuList extends Page {
     }
 }
 
-class ProductPage extends Page {
+export class ProductPage extends Page {
     init(page) {
         super.init(page)
         this.zubereitung = new Button('a[href="#tab3"]', page)
@@ -37,10 +36,3 @@ class ProductPage extends Page {
         this.mainPageLink = new Button('a.header__logo', page)
     }
 }
-
-
-module.exports = {
-    MainPage: MainPage,
-    ProductPage: ProductPage,
-    FullMenuList: FullMenuList
-};

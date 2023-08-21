@@ -1,9 +1,9 @@
-const Page = require("../../core/page")
-const TextField = require("../../core/elements/textField");
-const Button = require("../../core/elements/button");
-const Element = require("../../core/elements/element");
+import Page from "../../core/page.js";
+import TextField from "../../core/elements/textField.js";
+import Button from "../../core/elements/button.js";
+import Element from "../../core/elements/element.js";
 
-class TextBoxPage extends Page {
+export default class TextBoxPage extends Page {
     constructor(page) {
         super(page)
         this.url = "https://demoqa.com/text-box"
@@ -20,5 +20,3 @@ class TextBoxPage extends Page {
     }
 
 }
-
-module.exports = TextBoxPage;

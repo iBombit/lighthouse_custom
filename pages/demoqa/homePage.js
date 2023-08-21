@@ -1,7 +1,7 @@
-const Page = require("../../core/page")
-const Button = require("../../core/elements/button")
+import Page from "../../core/page.js";
+import Button from "../../core/elements/button.js";
 
-class HomePage extends Page {
+export default class HomePage extends Page {
     constructor(page) {
         super(page)
         this.url = "https://demoqa.com/"
@@ -18,5 +18,3 @@ class HomePage extends Page {
     }
 
 }
-
-module.exports = HomePage;

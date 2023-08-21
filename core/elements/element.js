@@ -1,6 +1,6 @@
-const logger = require("../../logger/logger");
+import logger from "../../logger/logger.js";
 
-class Element {
+export default class Element {
     static DEFAULT_TIMEOUT = 60000;
     locator;
     element;
@@ -51,5 +51,3 @@ class Element {
         return this.element
     }
 }
-
-module.exports = Element;

@@ -1,19 +1,18 @@
-const { format, createLogger, transports } = require("winston");
-
-const { combine, timestamp, printf } = format;
+import winston from "winston";
+const { combine, timestamp, printf } = winston.format;
 
 const customFormat = printf(({ timestamp, message }) => {
-  return `${timestamp} ${message}`;
+  return `[${timestamp}] ${message}`;
 });
 
 let today = new Date();
-let dateTime = today.getFullYear() + '-' + (today.getMonth()+1) + '-' +today.getDate() + '-' + today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
+let dateTime = today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate() + "-" + today.getHours() + "-" + today.getMinutes() + "-" + today.getSeconds();
 
-const logger = createLogger({
+const logger = winston.createLogger({
   level: "debug",
-  format: combine(timestamp({format: "YYYY-MM-DDTHH:mm:ss",}), customFormat),
-  transports: [new transports.Console(), new transports.File({filename: `${dateTime}.log`})],
+  format: combine(timestamp({ format: "YYYY-MM-DDTHH:mm:ss", }), customFormat),
+  transports: [new winston.transports.Console(), new winston.transports.File({ filename: `${dateTime}.log` })],
   silent: false, // set to true to disable logging
 });
 
-module.exports = logger;
+export default logger;

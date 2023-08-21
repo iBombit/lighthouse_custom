@@ -1,8 +1,8 @@
-const Page = require("../../core/page");
-const Button = require("../../core/elements/button");
-const Element = require("../../core/elements/element");
+import Page from "../../core/page.js";
+import Button from "../../core/elements/button.js";
+import Element from "../../core/elements/element.js";
 
-class CheckBoxPage extends Page {
+export default class CheckBoxPage extends Page {
     constructor(page) {
         super(page)
         this.url = "https://demoqa.com/checkbox"
@@ -19,5 +19,3 @@ class CheckBoxPage extends Page {
     }
 
 }
-
-module.exports = CheckBoxPage;
