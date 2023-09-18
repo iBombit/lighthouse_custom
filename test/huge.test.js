@@ -10,8 +10,8 @@ import path from 'path';
 
 const uploadDir = path.dirname(new URL(import.meta.url).pathname);
 
-const browserType = "desktop",
-    headless = false,
+const browserType = process.argv.includes("--desktop") ? "desktop" : "mobile",
+    headless = process.argv.includes("--headless") ? true : false,
     browser = new LighthouseBrowser(browserType, headless),
     Home = new HomePage(),
     TextBox = new TextBoxPage(),
