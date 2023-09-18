@@ -1,4 +1,4 @@
-import config from './custom-config.js';
+//import config from './custom-config.js';
 import { Desktop, Mobile, myRelevantAudits } from './constants.js';
 const desktop = new Desktop();
 const mobile = new Mobile();
@@ -7,7 +7,6 @@ export const configDesktop = {
   extends: 'lighthouse:default',
   name: desktop.lighthouseReportName,
   settings: {
-    "config-path": "./custom-config.js",
     throttling: {
       rttMs: desktop.rttMs,
       throughputKbps: desktop.throughputKbps,
@@ -26,31 +25,41 @@ export const configDesktop = {
     },
     formFactor: desktop.formFactor,
   },
+  // 2. Register new artifact with custom gatherer.
+  artifacts: [
+    { id: 'MemoryProfile', gatherer: './settings/gatherers/memory-gatherer.js' },
+  ],
+  // 3. Add custom audit to the list of audits 'lighthouse:default' will run.
+  audits: [
+    './settings/audits/memory-audit',
+    './settings/audits/network-requests',
+    './settings/audits/network-server-latency',
+    './settings/audits/main-thread-tasks',
+    './settings/audits/final-screenshot',
+  ],
   categories: {
     'server-side': {
       title: 'Server-Side Metrics',
       description: 'API loading speed, Server-side latency and screenshot times. ',
       supportedModes: ['navigation', 'timespan'],
       auditRefs: [
-          {id: 'network-requests', weight: 1, group: 'metrics', acronym: 'NR', relevantAudits: myRelevantAudits},
-          {id: 'network-rtt', weight: 0, group: 'metrics', acronym: 'RTT'},
-          {id: 'network-server-latency', weight: 1, group: 'metrics', acronym: 'SBL', relevantAudits: myRelevantAudits},
-          {id: 'main-thread-tasks', weight: 0, group: 'metrics'},
-          {id: 'screenshot-thumbnails', weight: 0, group: 'metrics'},
-          {id: 'final-screenshot', weight: 1, group: 'metrics', acronym: 'FS'},
-          {id: 'mainthread-work-breakdown', weight: 0, group: 'metrics'},
+        { id: 'network-requests', weight: 1, group: 'metrics', acronym: 'NR', relevantAudits: myRelevantAudits },
+        { id: 'network-rtt', weight: 0, group: 'metrics', acronym: 'RTT' },
+        { id: 'network-server-latency', weight: 1, group: 'metrics', acronym: 'SBL', relevantAudits: myRelevantAudits },
+        { id: 'main-thread-tasks', weight: 0, group: 'metrics' },
+        { id: 'screenshot-thumbnails', weight: 0, group: 'metrics' },
+        { id: 'final-screenshot', weight: 1, group: 'metrics', acronym: 'FS' },
+        { id: 'mainthread-work-breakdown', weight: 0, group: 'metrics' },
+        { id: 'memory-audit', weight: 1 },
       ],
-  },
+    },
   },
 };
 
 export const configMobile = {
   extends: 'lighthouse:default',
-  //config,
-  name: mobile.lighthouseReportName,
   configContext: {
     settingsOverrides: {
-      "config-path": "./custom-config.js",
       throttling: {
         rttMs: mobile.rttMs,
         throughputKbps: mobile.throughputKbps,
@@ -68,7 +77,35 @@ export const configMobile = {
         disabled: mobile.screenEmulationDisabled
       },
       formFactor: mobile.formFactor,
-      //onlyCategories: ["performance"],
+    },
+  },
+  // 2. Register new artifact with custom gatherer.
+  artifacts: [
+    { id: 'MemoryProfile', gatherer: './settings/gatherers/memory-gatherer.js' },
+  ],
+  // 3. Add custom audit to the list of audits 'lighthouse:default' will run.
+  audits: [
+    './settings/audits/memory-audit',
+    './settings/audits/network-requests',
+    './settings/audits/network-server-latency',
+    './settings/audits/main-thread-tasks',
+    './settings/audits/final-screenshot',
+  ],
+  categories: {
+    'server-side': {
+      title: 'Server-Side Metrics',
+      description: 'API loading speed, Server-side latency and screenshot times. ',
+      supportedModes: ['navigation', 'timespan'],
+      auditRefs: [
+        { id: 'network-requests', weight: 1, group: 'metrics', acronym: 'NR', relevantAudits: myRelevantAudits },
+        { id: 'network-rtt', weight: 0, group: 'metrics', acronym: 'RTT' },
+        { id: 'network-server-latency', weight: 1, group: 'metrics', acronym: 'SBL', relevantAudits: myRelevantAudits },
+        { id: 'main-thread-tasks', weight: 0, group: 'metrics' },
+        { id: 'screenshot-thumbnails', weight: 0, group: 'metrics' },
+        { id: 'final-screenshot', weight: 1, group: 'metrics', acronym: 'FS' },
+        { id: 'mainthread-work-breakdown', weight: 0, group: 'metrics' },
+        { id: 'memory-audit', weight: 1 },
+      ],
     },
   },
 };

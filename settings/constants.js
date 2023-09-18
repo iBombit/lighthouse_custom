@@ -38,9 +38,10 @@ export class BrowserLocations {
   get chrome()                  { return "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"};
   get edge()                    { return "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe"};
   get docker()                  { return "/usr/lib/chromium/chrome"};
+  get mac()                     { return "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"}
 }
 
 export const myRelevantAudits = [
-  'network-requests',
-  'network-server-latency',
+  './settings/audits/network-requests',
+  './settings/audits/network-server-latency',
 ];

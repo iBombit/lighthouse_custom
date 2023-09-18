@@ -10,7 +10,7 @@ import path from 'path';
 
 const uploadDir = path.dirname(new URL(import.meta.url).pathname);
 
-var browserType = "desktop",
+const browserType = "desktop",
     headless = false,
     browser = new LighthouseBrowser(browserType, headless),
     Home = new HomePage(),
@@ -202,10 +202,10 @@ it("[ColdNavigation] Check " + UploadDownload.url, async function () {
 // When: I am uploading test file
 // Then: I wait for upload verification message to appear
 // And: I measure action time performance of the page
-// it("[Timespan] Upload file into 'Choose File'", async function () {
-//     await browser.flow.startTimespan({ name: "Upload file into 'Choose File'" })
-//     await UploadDownload.uploadFile.upload(uploadDir + "../testdata/files/uploadTest.txt")
-//     await UploadDownload.uploadVerify.find()
-//     await browser.waitTillRendered() //TODO it fails with "RESULT_CODE_KILLED_BAD_MESSAGE"
-//     await browser.flow.endTimespan()
-// }).timeout(testTime);
+it("[Timespan] Upload file into 'Choose File'", async function () {
+    await browser.flow.startTimespan({ name: "Upload file into 'Choose File'" })
+    await UploadDownload.uploadFile.upload(uploadDir + "../testdata/files/uploadTest.txt")
+    // await UploadDownload.uploadVerify.find()
+    await browser.waitTillRendered() //TODO it fails with "RESULT_CODE_KILLED_BAD_MESSAGE"
+    await browser.flow.endTimespan()
+}).timeout(testTime);
