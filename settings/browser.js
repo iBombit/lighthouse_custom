@@ -1,8 +1,9 @@
 import { Desktop, Mobile, BrowserLocations } from './constants.js';
+import * as os from 'os';
 
 const desktop = new Desktop();
 const mobile = new Mobile();
-const browserLocations = new BrowserLocations();
+const browserLocations = new BrowserLocations(os.type());
 
 export class Browser {
     get headlessDesktop() {

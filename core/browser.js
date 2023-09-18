@@ -20,12 +20,12 @@ class LighthouseBrowser {
   async init() {
     switch (this.browserType) {
         case "mobile": {
-            logger.debug("[MOBILE] " + JSON.stringify(new Browser().headlessDesktop));
+            //logger.debug("[MOBILE] " + JSON.stringify(new Browser().headlessMobile));
             this.browser = await puppeteer.launch(this.headless ? new Browser().headlessMobile : new Browser().headfulMobile);
             break;
         }
         case "desktop": {
-            logger.debug("[DESKTOP] " + JSON.stringify(new Browser().headlessDesktop));
+            //logger.debug("[DESKTOP] " + JSON.stringify(new Browser().headlessDesktop));
             this.browser = await puppeteer.launch(this.headless ?  new Browser().headlessDesktop : new Browser().headfulDesktop);
             break;
         }
