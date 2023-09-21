@@ -42,15 +42,13 @@ export class BrowserLocations {
   }
   get chrome() {
     let location = ""
+    logger.debug("[MESSAGE] Browser location not specified via '--browserLocation' + 'path' so trying to find it based on OS type")
     if (this.os.indexOf('Windows') !== -1) {
       location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-      logger.debug("[OS] Windows system found")
     } else if (this.os === 'Darwin') {
       location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-      logger.debug("[OS] Darwin system found")
     } else if (this.os === 'Linux') {
       location = "/usr/lib/chromium/chrome"
-      logger.debug("[OS] Linux system found")
     } else {
       throw new Error(`Unsupported operating system: ${this.os}`);
     }

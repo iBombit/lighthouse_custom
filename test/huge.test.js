@@ -9,10 +9,12 @@ import CreateReport from '../reporting/createReport.js';
 import path from 'path';
 
 const uploadDir = path.dirname(new URL(import.meta.url).pathname);
-
-const browserType = process.argv.includes("--desktop") ? "desktop" : "mobile",
-    headless = process.argv.includes("--headless") ? true : false,
-    browser = new LighthouseBrowser(browserType, headless),
+const args = process.argv;
+const browserType = args.includes("--desktop") ? "desktop" : "mobile",
+    headless = args.includes("--headless") ? true : false,
+    browserLocationIndex = args.indexOf("--browserLocation"),
+    browserLocation = browserLocationIndex !==-1 ? args[browserLocationIndex + 1] : undefined,
+    browser = new LighthouseBrowser(browserType, headless, browserLocation),
     Home = new HomePage(),
     TextBox = new TextBoxPage(),
     UploadDownload = new UploadDownloadPage(),
@@ -205,7 +207,7 @@ it("[ColdNavigation] Check " + UploadDownload.url, async function () {
 it("[Timespan] Upload file into 'Choose File'", async function () {
     await browser.flow.startTimespan({ name: "Upload file into 'Choose File'" })
     await UploadDownload.uploadFile.upload(uploadDir + "../testdata/files/uploadTest.txt")
-    // await UploadDownload.uploadVerify.find()
+    await UploadDownload.uploadVerify.find()
     await browser.waitTillRendered() //TODO it fails with "RESULT_CODE_KILLED_BAD_MESSAGE"
     await browser.flow.endTimespan()
 }).timeout(testTime);

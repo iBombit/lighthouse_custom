@@ -2,31 +2,30 @@ import puppeteer from 'puppeteer-core';
 import logger from "../logger/logger.js";
 import { Browser } from '../settings/browser.js';
 import { startFlow } from 'lighthouse/core/index.js';
-//const { startFlow } = require('lighthouse/core/index.js');
 import { exec } from 'child_process';
 import { configDesktop, configMobile } from '../settings/lighthouse.js';
-//import desktopConfig from 'lighthouse/core/config/desktop-config.js';
+import * as os from 'os';
 
 class LighthouseBrowser {
   browser;
   page;
   flow;
 
-  constructor(browserType, headless=false) {
+  constructor(browserType="desktop", headless=false, browserLocation=os.type()) {
     this.browserType = browserType;
     this.headless = headless;
+    this.browserLocation = browserLocation;
   }
 
   async init() {
+    this.headless ? logger.debug(`[${this.browserType.toUpperCase()}] Starting HEADLESS browser (${this.browserLocation})`) : logger.debug(`[${this.browserType.toUpperCase()}] Starting HEADFUL browser (${this.browserLocation})`)
     switch (this.browserType) {
         case "mobile": {
-            //logger.debug("[MOBILE] " + JSON.stringify(new Browser().headlessMobile));
-            this.browser = await puppeteer.launch(this.headless ? new Browser().headlessMobile : new Browser().headfulMobile);
+            this.browser = await puppeteer.launch(this.headless ? new Browser(this.browserLocation).headlessMobile : new Browser(this.browserLocation).headfulMobile);
             break;
         }
         case "desktop": {
-            //logger.debug("[DESKTOP] " + JSON.stringify(new Browser().headlessDesktop));
-            this.browser = await puppeteer.launch(this.headless ?  new Browser().headlessDesktop : new Browser().headfulDesktop);
+            this.browser = await puppeteer.launch(this.headless ?  new Browser(this.browserLocation).headlessDesktop : new Browser(this.browserLocation).headfulDesktop);
             break;
         }
         default: {

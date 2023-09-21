@@ -5,13 +5,27 @@ import logger from "../logger/logger.js";
 
 
 // Declare browser and pages required for this test
-let browserType = "desktop",
-    browser = new LighthouseBrowser(browserType),
+const args = process.argv;
+const browserType = args.includes("--desktop") ? "desktop" : "mobile",
+    headless = args.includes("--headless") ? true : false,
+    browserLocationIndex = args.indexOf("--browserLocation"),
+    browserLocation = browserLocationIndex !==-1 ? args[browserLocationIndex + 1] : undefined,
+    browser = new LighthouseBrowser(browserType, headless, browserLocation),
     mainPage = new MainPage(), // Creates instance of Main page object
     productPage = new ProductPage(), // Creates instance of Product Page 
     fullMenuList = new FullMenuList(), // Creates instance of Full Menu List Page
     testTime = 90000; // Timeout must be bigger then DEFAULT_TIMEOUT in element.js (5000) otherwise you never will be able to debug
 
+
+// Setup browser and initialize Google page object before tests
+before(async function () {
+    await browser.init();
+    await browser.start();
+    browser.page.isSuccess = true; // Track failed actions (any fail working with actions sets this to false)
+    mainPage.init(browser.page); // Sets instance of puppeteer page to the page object
+    productPage.init(browser.page); // Sets instance of puppeteer page to the page object
+    fullMenuList.init(browser.page); // Sets instance of puppeteer page to the page object
+});
 
 // Check if prev flow finished successfully before launching test
 beforeEach(async function () {
@@ -31,17 +45,7 @@ afterEach(async function () {
 });
 
 after(async function () {
-    if (browser.flow.currentTimespan) {  // happens if waiting inside actions exceeds "testTime" timeout
-        await browser.flow.endTimespan(); // stopping active timespan if not stopped by timeout
-        browser.page.isSuccess = false;
-    }
-    await browser.flow.snapshot({ name: 'Capturing last state of the test' });
-    await new CreateReport().createReports(browser.flow, browserType);
-    await browser.closeBrowser();
-});
-
-// Teardown browser and create report after tests
-after(async function () {
+    this.timeout(60000);
     if (browser.flow.currentTimespan) {  // happens if waiting inside actions exceeds "testTime" timeout
         await browser.flow.endTimespan(); // stopping active timespan if not stopped by timeout
         browser.page.isSuccess = false;

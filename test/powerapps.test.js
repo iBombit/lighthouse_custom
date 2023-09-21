@@ -3,9 +3,12 @@ import PowerApps from "../pages/powerapps/pages.js";
 import LighthouseBrowser from "../core/browser.js";
 import CreateReport from "../reporting/createReport.js";
 
-var browserType = "desktop",
-    headless = false,
-    browser = new LighthouseBrowser(browserType, headless),
+const args = process.argv;
+const browserType = args.includes("--desktop") ? "desktop" : "mobile",
+    headless = args.includes("--headless") ? true : false,
+    browserLocationIndex = args.indexOf("--browserLocation"),
+    browserLocation = browserLocationIndex !==-1 ? args[browserLocationIndex + 1] : undefined,
+    browser = new LighthouseBrowser(browserType, headless, browserLocation),
     powerApps = new PowerApps(),
     testTime = 180000;
 

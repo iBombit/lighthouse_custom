@@ -1,14 +1,18 @@
 import { Desktop, Mobile, BrowserLocations } from './constants.js';
-import * as os from 'os';
 
 const desktop = new Desktop();
 const mobile = new Mobile();
-const browserLocations = new BrowserLocations(os.type());
+let browserLocation = "UNKNOWN BROWSER LOCATION";
 
 export class Browser {
+    constructor(os) {
+        this.os = os;
+        browserLocation = this.os.includes("\"") || this.os.includes("/") || this.os.includes("\'") ? this.os : new BrowserLocations(os).chrome;
+    }
+    
     get headlessDesktop() {
         return {
-            executablePath: browserLocations.chrome,
+            executablePath: browserLocation,
             args: [`--window-size=${desktop.screenWidth},${desktop.screenHeight}`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--disable-gpu', '--disable-gpu-sandbox', '--display', '--ignore-certificate-errors', '--disable-storage-reset=true'],
             defaultViewport: {
                 width: desktop.screenWidth,
@@ -20,7 +24,7 @@ export class Browser {
     };
     get headfulDesktop() {
         return {
-            executablePath: browserLocations.chrome,
+            executablePath: browserLocation,
             "headless": false,
             args: [`--window-size=${desktop.screenWidth},${desktop.screenHeight}`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--ignore-certificate-errors', '--disable-storage-reset=true'],
             defaultViewport: {
@@ -33,7 +37,7 @@ export class Browser {
     };
     get headlessMobile() {
         return {
-            executablePath: browserLocations.chrome,
+            executablePath: browserLocation,
             args: [`--window-size=${mobile.screenWidth},${mobile.screenHeight}`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--disable-gpu', '--disable-gpu-sandbox', '--display', '--ignore-certificate-errors', '--disable-storage-reset=true'],
             defaultViewport: {
                 width: mobile.screenWidth,
@@ -45,7 +49,7 @@ export class Browser {
     };
     get headfulMobile() {
         return {
-            executablePath: browserLocations.chrome,
+            executablePath: browserLocation,
             "headless": false,
             args: [`--window-size=${desktop.screenWidth},${desktop.screenHeight}`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--ignore-certificate-errors', '--disable-storage-reset=true'],
             defaultViewport: {
