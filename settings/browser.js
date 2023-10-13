@@ -7,7 +7,7 @@ let browserLocation = "UNKNOWN BROWSER LOCATION";
 export class Browser {
     constructor(os) {
         this.os = os;
-        browserLocation = this.os.includes("\"") || this.os.includes("/") || this.os.includes("\'") ? this.os : new BrowserLocations(os).chrome;
+        browserLocation = (this.os.includes("\"") || this.os.includes("/")|| this.os.includes("\\") || this.os.includes("\'")) ? this.os : new BrowserLocations(os).chrome;
     }
     
     get headlessDesktop() {

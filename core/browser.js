@@ -91,7 +91,11 @@ class LighthouseBrowser {
     if (!link) {
         link = this.page.url();
     }
-    await this.flow.navigate(link, { name: name });
+    try {
+      await this.flow.navigate(link, { name: name });
+    } catch (error) {
+      throw new Error(error);
+    }
     logger.debug(`[COLDNAV] End:${name}`);
     await this.waitTillRendered();
   }
