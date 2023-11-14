@@ -15,7 +15,7 @@ npx mocha .\test\huge.test.js --desktop
 ```
 
 **With docker**
-1. git clone --depth 1 --branch 11.1.0 https://github.com/iBombit/lighthouse_custom.git
+1. git clone https://github.com/iBombit/lighthouse_custom.git
 2. Verify that headless mode is enabled via "--headless" flag
 3. In repo dir run this command:
 ```
