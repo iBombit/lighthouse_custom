@@ -4,26 +4,26 @@ Custom Lighthouse Tests Creation
 Docker Hub
 https://hub.docker.com/r/ibombit/lighthouse-puppeteer-chrome
 
+**Setting up target browser for execution (settings/browser.js)**
+* MS EDGE: executablePath: 'C:\\\Program Files (x86)\\\Microsoft\\\Edge\\\Application\\\msedge.exe'
+* Chrome:  executablePath: 'C:\\\Program Files\\\Google\\\Chrome\\\Application\\\chrome.exe'
+* Docker:  executablePath: '/usr/lib/chromium/chrome'
+
 **Preparing local environment for testing UI scripts**
 
-- **Install docker**
-1. Create debug UI script (Node.js+Puppeteer+Lighthouse)
-2. In the same directory execute this command:
-3. `docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:node16 node <YOUR_UI_SCRIPT>.js`
-
 - **Without docker**
-1. Install node.js
-2. Run these commands:
+1. Clone repo
+2. Install node.js
+3. In repo dir execute run these commands:
 ```
-npm init -y
-npm install puppeteer lighthouse@9.2.0 # chrome browser is bundled with the puppeteer package on npm by default
-node <YOUR_UI_SCRIPT>.js
+npm install
+npm test huge.test.js --runInBand
 ```
 
-**Possible launch commands for demo script**
+- **With docker**
+1. Clone repo
+2. Verify that headless mode is set to **true**: https://github.com/iBombit/lighthouse_custom/blob/38d8b67527c53a8ee67b87553bc3b099340c2288/test/huge.test.js#L13
+3. In repo dir run this command:
 ```
-node onliner.js user pass desktop headful https://onliner.by
-node onliner.js user pass desktop headless https://onliner.by
-node onliner.js user pass mobile headful https://onliner.by
-node onliner.js user pass mobile headless https://onliner.by
+docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:2.0-alpine npm test huge.test.js --runInBand
 ```
