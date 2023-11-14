@@ -35,5 +35,5 @@ jobs:
         with:
           name: test-reports
           path: |
-            ./framework_demo/user-flow.report.html
-            ./framework_demo/user-flow.report.json
+            ./user-flow.report.html
+            ./user-flow.report.json
