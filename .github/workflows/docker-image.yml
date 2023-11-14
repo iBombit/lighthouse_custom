@@ -1,18 +1,24 @@
-name: Test Echo
+name: Docker Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
-  build:
-
+  lighthouse-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Echo Test
-      run: echo hi
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Test with Lighthouse and Puppeteer
+        run: |
+          docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:11.1.0-alpine npx mocha ./test/huge.test.js --desktop --headless
