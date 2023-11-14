@@ -21,7 +21,6 @@ jobs:
         
       - name: Print Working Directory and List Files
         run: |
-          cd framework_demo
           echo Current directory:
           pwd
           echo Files in current directory:
