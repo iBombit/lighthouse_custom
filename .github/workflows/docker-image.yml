@@ -29,3 +29,11 @@ jobs:
       - name: Test with Lighthouse and Puppeteer
         run: |
           docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:11.1.0-alpine npx mocha ./test/huge.test.js --desktop --headless
+
+      - name: Upload report files
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-reports
+          path: |
+            ./framework_demo/user-flow.report.html
+            ./framework_demo/user-flow.report.json
