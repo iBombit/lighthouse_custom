@@ -21,4 +21,4 @@ jobs:
 
       - name: Test with Lighthouse and Puppeteer
         run: |
-          docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:11.1.0-alpine npx mocha ./test/huge.test.js --desktop --headless
+          docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:11.1.0-alpine npx mocha ./framework_demo/test/huge.test.js --desktop --headless
