@@ -13,7 +13,17 @@ export class Browser {
     get headlessDesktop() {
         return {
             executablePath: browserLocation,
-            args: [`--window-size=${desktop.screenWidth},${desktop.screenHeight}`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--disable-gpu', '--disable-gpu-sandbox', '--display', '--ignore-certificate-errors', '--disable-storage-reset=true'],
+            args: [
+                `--window-size=${desktop.screenWidth},${desktop.screenHeight}`, 
+                '--allow-no-sandbox-job',
+                '--allow-sandbox-debugging',
+                '--no-sandbox',
+                '--disable-gpu',
+                '--disable-gpu-sandbox',
+                '--display',
+                '--ignore-certificate-errors',
+                '--disable-storage-reset=true'
+            ],
             defaultViewport: {
                 width: desktop.screenWidth,
                 height: desktop.screenHeight,
@@ -26,7 +36,14 @@ export class Browser {
         return {
             executablePath: browserLocation,
             "headless": false,
-            args: [`--window-size=${desktop.screenWidth},${desktop.screenHeight}`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--ignore-certificate-errors', '--disable-storage-reset=true'],
+            args: [
+                `--window-size=${desktop.screenWidth},${desktop.screenHeight}`,
+                '--allow-no-sandbox-job',
+                '--allow-sandbox-debugging',
+                '--no-sandbox',
+                '--ignore-certificate-errors',
+                '--disable-storage-reset=true'
+            ],
             defaultViewport: {
                 width: desktop.screenWidth,
                 height: desktop.screenHeight,
@@ -38,7 +55,17 @@ export class Browser {
     get headlessMobile() {
         return {
             executablePath: browserLocation,
-            args: [`--window-size=${mobile.screenWidth},${mobile.screenHeight}`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--disable-gpu', '--disable-gpu-sandbox', '--display', '--ignore-certificate-errors', '--disable-storage-reset=true'],
+            args: [
+                `--window-size=${mobile.screenWidth},${mobile.screenHeight}`,
+                '--allow-no-sandbox-job',
+                '--allow-sandbox-debugging',
+                '--no-sandbox',
+                '--disable-gpu',
+                '--disable-gpu-sandbox',
+                '--display',
+                '--ignore-certificate-errors',
+                '--disable-storage-reset=true'
+            ],
             defaultViewport: {
                 width: mobile.screenWidth,
                 height: mobile.screenHeight,
@@ -51,7 +78,14 @@ export class Browser {
         return {
             executablePath: browserLocation,
             "headless": false,
-            args: [`--window-size=${desktop.screenWidth},${desktop.screenHeight}`, '--allow-no-sandbox-job', '--allow-sandbox-debugging', '--no-sandbox', '--ignore-certificate-errors', '--disable-storage-reset=true'],
+            args: [
+                `--window-size=${desktop.screenWidth},${desktop.screenHeight}`,
+                '--allow-no-sandbox-job',
+                '--allow-sandbox-debugging',
+                '--no-sandbox',
+                '--ignore-certificate-errors',
+                '--disable-storage-reset=true'
+            ],
             defaultViewport: {
                 width: mobile.screenWidth,
                 height: mobile.screenHeight,
