@@ -9,7 +9,7 @@ export default class Element {
     constructor(locator, page){
         this.locator = locator
         this.page = page
-        this.locatorType = (this.locator.startsWith("/") || this.locator.startsWith("(")) ? "XPATH" : "CSS";
+        this.locatorType = (this.locator.startsWith("./") || this.locator.startsWith("/") || this.locator.startsWith("(")) ? "XPATH" : "CSS";
     }
 
     // Action: find element on page with timeout for operation
@@ -49,5 +49,13 @@ export default class Element {
                 this.element = await this.page.waitForSelector(this.locator, {hidden: true, 'timeout': timeout});
         }
         return this.element
+    }
+
+    // Action: replace % in selector with actual data and return context for chaining
+    replace(text){
+        logger.debug(`[REPLACE] ${this.locatorType}:${this.locator}`);
+        this.locator = this.locator.replace(/%/g, text)
+        logger.debug(`[REPLACE] ${this.locatorType}:${this.locator}`);
+        return this;
     }
 }
