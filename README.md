@@ -1,9 +1,27 @@
 CMD params
-- --desktop
-- --headless
-- --browserLocation "path"
-> if no parameters specified it will launch mobile headful browser based on OS
-> if OS based launch failing on your system, then specify full path to executable, like **--browserLocation "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"**
+- **`--desktop`**  
+  Specifies a desktop view. If omitted, a mobile view is used by default.
+
+- **`--headless`**  
+  Runs tests in headless mode. If omitted, a browser window will open.
+
+- **`--browserLocation`**  
+  Sets a custom browser location. Usage: `--browserLocation "C:/Browser/start.exe"`
+
+- **`--login`**  
+  Sets the login. Usage: `--login example@email.com`
+
+- **`--password`**  
+  Sets the password. Usage: `--password PASSWORD`
+
+- **`--host`**  
+  Sets the host link. Usage: `--host https://google.com`
+
+- **`--ddhost`**  
+  Specifies the Datadog host link (exclude 'http://'). Usage: `--ddhost api.datadoghq.eu`
+
+- **`--ddkey`**  
+  Provides the Datadog API key. Usage: `--ddkey <Your_Datadog_API_Key>`
 
 **Local runs**
 1. git clone https://github.com/iBombit/lighthouse_custom.git
