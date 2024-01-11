@@ -4,69 +4,39 @@ import TextBoxPage from '../pages/demoqa/textBoxPage.js';
 import UploadDownloadPage from '../pages/demoqa/uploadDownloadPage.js';
 import CheckBoxPage from '../pages/demoqa/checkBoxPage.js';
 import ButtonsPage from '../pages/demoqa/buttonsPage.js';
-import LighthouseBrowser from '../core/browser.js';
-import CreateReport from '../reporting/createReport.js';
-import path from 'path';
+import { beforeHook, beforeEachHook, afterEachHook, afterHook } from '../settings/mochaHooks.js';
+import * as params from '../settings/testParams.js';
 
-const uploadDir = path.dirname(new URL(import.meta.url).pathname);
-const args = process.argv;
-const browserType = args.includes("--desktop") ? "desktop" : "mobile",
-    headless = args.includes("--headless") ? true : false,
-    browserLocationIndex = args.indexOf("--browserLocation"),
-    browserLocation = browserLocationIndex !==-1 ? args[browserLocationIndex + 1] : undefined,
-    browser = new LighthouseBrowser(browserType, headless, browserLocation),
-    Home = new HomePage(),
-    TextBox = new TextBoxPage(),
-    UploadDownload = new UploadDownloadPage(),
-    CheckBox = new CheckBoxPage(),
-    Buttons = new ButtonsPage(),
-    testTime = 100000;
+let browser;
+const Home = new HomePage();
+const TextBox = new TextBoxPage();
+const UploadDownload = new UploadDownloadPage();
+const CheckBox = new CheckBoxPage();
+const Buttons = new ButtonsPage();
 
-before(async function () {
-    await browser.init();
-    await browser.start();
-    browser.page.isSuccess = true; // Track failed actions (any fail working with actions sets this to false)
+// Extend the common beforeHook with additional setup
+const customBeforeHook = async () => {
+    await beforeHook(); // Perform the common setup first (browser startup)
+    browser = await params.getBrowserInstance();
     Home.init(browser.page); // Sets instance of puppeteer page to Home page object
     TextBox.init(browser.page); // Sets instance of puppeteer page to TextBox page object
     UploadDownload.init(browser.page); // Sets instance of puppeteer page to UploadDownload page object
     CheckBox.init(browser.page); // Sets instance of puppeteer page to CheckBox page object
     Buttons.init(browser.page); // Sets instance of puppeteer page to Buttons page object
-});
+};
 
-// Check if prev flow finished successfully before launching test
-beforeEach(async function () {
-    logger.debug("[STARTED] " + this.currentTest.fullTitle());
-    this.timeout(testTime);
-    if (browser.flow.currentTimespan) {  // happens if waiting inside actions exceeds "testTime" timeout
-        await browser.flow.endTimespan() // stopping active timespan if not stopped by timeout
-        browser.page.isSuccess = false
-        throw new Error('Skipping test because previous flow exceeded testTime limit: ' + testTime);
-    }
-    else if (!browser.page.isSuccess)
-        throw new Error('Skipping test because previous flow failed');
-});
-
-afterEach(async function () {
-    logger.debug("[ENDED] " + this.currentTest.title);
-});
-
-after(async function () {
-    this.timeout(60000);
-    if (browser.flow.currentTimespan) {  // happens if waiting inside actions exceeds "testTime" timeout
-        await browser.flow.endTimespan(); // stopping active timespan if not stopped by timeout
-        browser.page.isSuccess = false;
-    }
-    await browser.flow.snapshot({ name: 'Capturing last state of the test' });
-    await new CreateReport().createReports(browser.flow, browserType);
-    await browser.closeBrowser();
-});
+// Specify all mocha hooks
+before(customBeforeHook);
+beforeEach(beforeEachHook);
+afterEach(afterEachHook);
+after(afterHook);
 
 // Given: I am opening the browser
 // When: I am navigating to Home page
 // Then: I measure cold navigation performance of the page
 it("[ColdNavigation] Check " + Home.url, async function () {
     await browser.coldNavigation("Main Page", Home.url)
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Home page
 // When: I click on "Elements"
@@ -77,14 +47,14 @@ it("[Timespan] Click on 'Elements'", async function () {
     await Home.elements.click()
     await browser.waitTillRendered()
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "Elements" section
 // When: I am navigating to Main page "TextBox" section
 // Then: I measure cold navigation performance of the page
 it("[ColdNavigation] Check " + TextBox.url, async function () {
     await browser.coldNavigation("TextBox Page", TextBox.url)
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "TextBox" section
 // When: I fill text box fields
@@ -102,14 +72,14 @@ it("[Timespan] Submit text box form", async function () {
     await TextBox.textBoxVerify.find()
     await browser.waitTillRendered()
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "TextBox" section
 // When: I am navigating to Main page "CheckBox" section
 // Then: I measure cold navigation performance of the page
 it("[ColdNavigation] Check " + CheckBox.url, async function () {
     await browser.coldNavigation("CheckBox Page", CheckBox.url)
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "CheckBox" section
 // When: I check 'Home' checkbox
@@ -121,7 +91,7 @@ it("[Timespan] Select 'Home' checkBox", async function () {
     await CheckBox.homeSelectVerify.find()
     await browser.waitTillRendered()
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "CheckBox" section
 // And: 'Home' checkbox is selected
@@ -134,7 +104,7 @@ it("[Timespan] Expand 'Home' treeNode", async function () {
     await CheckBox.checkBoxSelectVerify.find()
     await browser.waitTillRendered()
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "CheckBox" section
 // And: 'Home' checkbox is selected
@@ -148,14 +118,14 @@ it("[Timespan] Deselect 'Desktop' checkBox", async function () {
     await CheckBox.desktopCheckboxVerify.findHidden()
     await browser.waitTillRendered()
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "CheckBox" section
 // When: I am navigating to Main page "Buttons" section
 // Then: I measure cold navigation performance of the page
 it("[ColdNavigation] Check " + Buttons.url, async function () {
     await browser.coldNavigation("Buttons Page", Buttons.url)
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "Buttons" section
 // When: I click on "Click Me" button
@@ -167,7 +137,7 @@ it("[Timespan] Simple click button", async function () {
     await Buttons.clickVerify.find()
     await browser.waitTillRendered()
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "Buttons" section
 // When: I double click on "Double Click Me" button
@@ -175,11 +145,11 @@ it("[Timespan] Simple click button", async function () {
 // And: I measure action time performance of the page
 it("[Timespan] Double click button", async function () {
     await browser.flow.startTimespan({ name: "Double click button" })
-    await Buttons.doubleClickBtn.dobleClick()
+    await Buttons.doubleClickBtn.doubleClick()
     await Buttons.doubleClickVerify.find()
     await browser.waitTillRendered()
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "Buttons" section
 // When: I right click on "Right Click Me" button
@@ -191,14 +161,14 @@ it("[Timespan] Right click button", async function () {
     await Buttons.rightClickVerify.find()
     await browser.waitTillRendered()
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "Buttons" section
 // When: I am navigating to Main page "UploadDownload" section
 // Then: I measure cold navigation performance of the page
 it("[ColdNavigation] Check " + UploadDownload.url, async function () {
     await browser.coldNavigation("UploadDownload Page", UploadDownload.url)
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the Main page "UploadDownload" section
 // When: I am uploading test file
@@ -206,8 +176,8 @@ it("[ColdNavigation] Check " + UploadDownload.url, async function () {
 // And: I measure action time performance of the page
 it("[Timespan] Upload file into 'Choose File'", async function () {
     await browser.flow.startTimespan({ name: "Upload file into 'Choose File'" })
-    await UploadDownload.uploadFile.upload(uploadDir + "../testdata/files/uploadTest.txt")
+    await UploadDownload.uploadFile.upload(params.uploadDir + "../testdata/files/uploadTest.txt")
     await UploadDownload.uploadVerify.find()
     await browser.waitTillRendered() //TODO it fails with "RESULT_CODE_KILLED_BAD_MESSAGE"
     await browser.flow.endTimespan()
-}).timeout(testTime);
+}).timeout(params.testTime);

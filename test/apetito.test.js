@@ -1,59 +1,27 @@
-import LighthouseBrowser from '../core/browser.js';
-import CreateReport from '../reporting/createReport.js';
-import { MainPage, FullMenuList, ProductPage } from '../pages/apetito/pages.js'
 import logger from "../logger/logger.js";
+import { MainPage, FullMenuList, ProductPage } from '../pages/apetito/pages.js'
+import { beforeHook, beforeEachHook, afterEachHook, afterHook } from '../settings/mochaHooks.js';
+import * as params from '../settings/testParams.js';
 
+let browser;
+const mainPage = new MainPage();
+const productPage = new ProductPage();
+const fullMenuList = new FullMenuList();
 
-// Declare browser and pages required for this test
-const args = process.argv;
-const browserType = args.includes("--desktop") ? "desktop" : "mobile",
-    headless = args.includes("--headless") ? true : false,
-    browserLocationIndex = args.indexOf("--browserLocation"),
-    browserLocation = browserLocationIndex !==-1 ? args[browserLocationIndex + 1] : undefined,
-    browser = new LighthouseBrowser(browserType, headless, browserLocation),
-    mainPage = new MainPage(), // Creates instance of Main page object
-    productPage = new ProductPage(), // Creates instance of Product Page 
-    fullMenuList = new FullMenuList(), // Creates instance of Full Menu List Page
-    testTime = 90000; // Timeout must be bigger then DEFAULT_TIMEOUT in element.js (5000) otherwise you never will be able to debug
+// Extend the common beforeHook with additional setup
+const customBeforeHook = async () => {
+    await beforeHook(); // Perform the common setup first (browser startup)
+    browser = await params.getBrowserInstance();
+    mainPage.init(browser.page); // Sets instance of puppeteer page to mainPage page object
+    productPage.init(browser.page); // Sets instance of puppeteer page to productPage page object
+    fullMenuList.init(browser.page); // Sets instance of puppeteer page to fullMenuList page object
+};
 
-
-// Setup browser and initialize Google page object before tests
-before(async function () {
-    await browser.init();
-    await browser.start();
-    browser.page.isSuccess = true; // Track failed actions (any fail working with actions sets this to false)
-    mainPage.init(browser.page); // Sets instance of puppeteer page to the page object
-    productPage.init(browser.page); // Sets instance of puppeteer page to the page object
-    fullMenuList.init(browser.page); // Sets instance of puppeteer page to the page object
-});
-
-// Check if prev flow finished successfully before launching test
-beforeEach(async function () {
-    logger.debug("[STARTED] " + this.currentTest.fullTitle());
-    this.timeout(testTime);
-    if (browser.flow.currentTimespan) {  // happens if waiting inside actions exceeds "testTime" timeout
-        await browser.flow.endTimespan() // stopping active timespan if not stopped by timeout
-        browser.page.isSuccess = false
-        throw new Error('Skipping test because previous flow exceeded testTime limit: ' + testTime);
-    }
-    else if (!browser.page.isSuccess)
-        throw new Error('Skipping test because previous flow failed');
-});
-
-afterEach(async function () {
-    logger.debug("[ENDED] " + this.currentTest.title);
-});
-
-after(async function () {
-    this.timeout(60000);
-    if (browser.flow.currentTimespan) {  // happens if waiting inside actions exceeds "testTime" timeout
-        await browser.flow.endTimespan(); // stopping active timespan if not stopped by timeout
-        browser.page.isSuccess = false;
-    }
-    await browser.flow.snapshot({ name: 'Capturing last state of the test' });
-    await new CreateReport().createReports(browser.flow, browserType);
-    await browser.closeBrowser();
-});
+// Specify all mocha hooks
+before(customBeforeHook);
+beforeEach(beforeEachHook);
+afterEach(afterEachHook);
+after(afterHook);
 
 // Given: I am opening the browser
 // When: I am opening the main page
@@ -64,7 +32,7 @@ it('Open main page', async () => {
     await mainPage.firstProduct.find()
     // await browser.flow.navigate(browser.page.url(), {name: "Main page warm", configContext: {
     //     settingsOverrides: {disableStorageReset: true}}})
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the main page
 // When: I am clicking on the first product
@@ -75,13 +43,13 @@ it('Open product page', async () => {
     await productPage.addProduct.find();
     await browser.flow.endTimespan();
     await browser.waitTillRendered();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the product page
 // Then: I measure cold navigation performance of the product page
 it('Cold Check of product page', async () => {
     await browser.flow.navigate(browser.page.url(), { name: "Product page" });
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the product page
 // When: I am clicking on the "Zubereitung" tab
@@ -90,7 +58,7 @@ it('Open "Zubereitung" tab', async () => {
     await browser.flow.startTimespan({ name: "Open 'Zubereitung' tab" });
     await productPage.zubereitung.click();
     await browser.flow.endTimespan();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the product page
 // When: I adding product to the cart
@@ -100,7 +68,7 @@ it('Add product to the cart', async () => {
     await productPage.addProduct.click();
     await productPage.fistProductAdded.find();
     await browser.flow.endTimespan();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the product page
 // When: I'm navigating to main page
@@ -110,7 +78,7 @@ it('Navigate to main page', async () => {
     await productPage.mainPageLink.click();
     await mainPage.thirdProduct.find();
     await browser.flow.endTimespan();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the main page
 // Then: I measure warm navigation performance of the main page
@@ -120,7 +88,7 @@ it('Warm Check of main page', async () => {
             settingsOverrides: { disableStorageReset: true }
         }
     })
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given I'm on the main page
 // When: I'm selecting third product
@@ -131,7 +99,7 @@ it('Open third product page', async () => {
     await mainPage.thirdProduct.click();
     await productPage.addProduct.find();
     await browser.flow.endTimespan();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I'm on the product page 2
 // Then: I measure warm navigation performance of the product page 2
@@ -141,7 +109,7 @@ it('Watm Check of product page 2', async () => {
             settingsOverrides: { disableStorageReset: true }
         }
     });
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I am on the product page
 // When: I'm adding product to the cart
@@ -151,7 +119,7 @@ it('Add second product to the cart', async () => {
     await productPage.addProduct.click();
     await productPage.secondProductAdded.find();
     await browser.flow.endTimespan();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 
 // Given: I see top menu bar
@@ -163,13 +131,13 @@ it('Select full meal', async () => {
     await mainPage.menus.click();
     await mainPage.fullMenus.find();
     await browser.flow.endTimespan();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given I'm on the full menu page
 // Then: I measure cold navigation performance of the full menu page
 it('Cold Check of full meal page', async () => {
     await browser.flow.navigate(browser.page.url(), { name: "Full Meal List" });
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given I'm on the full menu page
 // When: I want to select a full menu
@@ -179,13 +147,13 @@ it('Open full meal list', async () => {
     await browser.flow.startTimespan({ name: "Open full meal list" });
     await mainPage.fullMenus.click();
     await browser.flow.endTimespan();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I'm on a full menu selection page
 // Then: I measure cold navigation performance of the full menu selection page
 it('Cold Check of full meal selection page', async () => {
     await browser.flow.navigate(browser.page.url(), { name: "Full Meal Selection" });
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given: I see full meal page
 // When: I want to select second available option
@@ -197,7 +165,7 @@ it('Select second full meal', async () => {
     console.log(el);
     el.click();
     await browser.flow.endTimespan();
-}).timeout(testTime);
+}).timeout(params.testTime);
 
 // Given I'm on the full menu selection page
 // When: I want to check what is in cart
@@ -208,4 +176,4 @@ it('Open cart', async () => {
     await mainPage.cartButton.click();
     await browser.flow.endTimespan();
     await browser.flow.snapshot({ name: 'Cart' });
-}).timeout(testTime);
+}).timeout(params.testTime);
