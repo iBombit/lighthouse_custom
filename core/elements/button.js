@@ -37,7 +37,7 @@ export default class Button extends Element {
     }
 
     // Action: double click on button using Puppeteer double click
-    async dobleClick(timeout=Element.DEFAULT_TIMEOUT){
+    async doubleClick(timeout=Element.DEFAULT_TIMEOUT){
         logger.debug(`[DOUBLECLICK] ${this.locatorType}:${this.locator}`);
         try {
             await this.find(timeout);
