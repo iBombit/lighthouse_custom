@@ -1,18 +1,41 @@
-name: Test Echo
+name: Docker Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
-  build:
-
+  lighthouse-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Echo Test
-      run: echo hi
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Print Working Directory and List Files
+        run: |
+          echo Current directory:
+          pwd
+          echo Files in current directory:
+          ls -l
+          
+      - name: Test with Lighthouse and Puppeteer
+        run: |
+          docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:11.1.0-alpine npx mocha ${{ secrets.TEST_PATH }} --desktop --headless
+
+      - name: Upload report files
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: |
+            ./user-flow.report.html
+            ./user-flow.report.json

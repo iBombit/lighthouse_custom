@@ -1,29 +1,41 @@
-# lighthouse_custom
-Custom Lighthouse Tests Creation
+CMD params
+- **`--desktop`**  
+  Specifies a desktop view. If omitted, a mobile view is used by default.
 
-Docker Hub
-https://hub.docker.com/r/ibombit/lighthouse-puppeteer-chrome
+- **`--headless`**  
+  Runs tests in headless mode. If omitted, a browser window will open.
 
-**Setting up target browser for execution (settings/browser.js)**
-* MS EDGE: executablePath: 'C:\\\Program Files (x86)\\\Microsoft\\\Edge\\\Application\\\msedge.exe'
-* Chrome:  executablePath: 'C:\\\Program Files\\\Google\\\Chrome\\\Application\\\chrome.exe'
-* Docker:  executablePath: '/usr/lib/chromium/chrome'
+- **`--browserLocation`**  
+  Sets a custom browser location. Usage: `--browserLocation "C:/Browser/start.exe"`
 
-**Preparing local environment for testing UI scripts**
+- **`--login`**  
+  Sets the login. Usage: `--login example@email.com`
 
-- **Without docker**
-1. Clone repo
+- **`--password`**  
+  Sets the password. Usage: `--password PASSWORD`
+
+- **`--host`**  
+  Sets the host link. Usage: `--host https://google.com`
+
+- **`--ddhost`**  
+  Specifies the Datadog host link (exclude 'http://'). Usage: `--ddhost api.datadoghq.eu`
+
+- **`--ddkey`**  
+  Provides the Datadog API key. Usage: `--ddkey <Your_Datadog_API_Key>`
+
+**Local runs**
+1. git clone https://github.com/iBombit/lighthouse_custom.git
 2. Install node.js
 3. In repo dir execute run these commands:
 ```
 npm install
-npm test huge.test.js --runInBand
+npx mocha .\test\huge.test.js --desktop
 ```
 
-- **With docker**
-1. Clone repo
-2. Verify that headless mode is set to **true**: https://github.com/iBombit/lighthouse_custom/blob/38d8b67527c53a8ee67b87553bc3b099340c2288/test/huge.test.js#L13
+**With docker**
+1. git clone https://github.com/iBombit/lighthouse_custom.git
+2. Verify that headless mode is enabled via "--headless" flag
 3. In repo dir run this command:
 ```
-docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:2.0-alpine npm test huge.test.js --runInBand
+docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:11.1.0-alpine npx mocha ./test/huge.test.js --desktop --headless
 ```
