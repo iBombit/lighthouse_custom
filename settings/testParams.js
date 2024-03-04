@@ -7,6 +7,7 @@ const args = process.argv;
 const uploadDir = path.dirname(new URL(import.meta.url).pathname);
 
 // Sets duration for all "it" mocha methods
+// Timeout must be bigger then DEFAULT_TIMEOUT in element.js otherwise you never will be able to debug
 const testTime = 120000;
 
 // Define constants for input arguments
