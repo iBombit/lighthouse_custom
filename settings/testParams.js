@@ -1,30 +1,54 @@
 import LighthouseBrowser from '../core/browser.js';
 import path from 'path';
-import * as os from 'os';
 
 let browserInstance;
-const args = process.argv;
 const uploadDir = path.dirname(new URL(import.meta.url).pathname);
 
-// Sets duration for all "it" mocha methods
-// Timeout must be bigger then DEFAULT_TIMEOUT in element.js otherwise you never will be able to debug
-const testTime = 120000;
+// Initialize variables with default values
+let testTime = 120000; // 2 minutes
+let headless = true;
+let browserType = 'desktop';
+let password;
+let url;
+let browserLocation;
+let ddHost;
+let ddKey;
 
-// Define constants for input arguments
-const browserType = args.includes("--desktop") ? "desktop" : "mobile";
-const headless = args.includes("--headless");
-const browserLocationIndex = args.indexOf("--browserLocation");
-const testuserIndex = args.indexOf("--login");
-const testpasswordIndex = args.indexOf("--password");
-const envIndex = args.indexOf("--host");
-const ddHostIndex = args.indexOf("--ddhost");
-const ddKeyIndex = args.indexOf("--ddkey");
-const browserLocation = browserLocationIndex !== -1 ? args[browserLocationIndex + 1] : os.type();
-const login = testuserIndex !== -1 ? args[testuserIndex + 1] : undefined;
-const password = testpasswordIndex !== -1 ? args[testpasswordIndex + 1] : undefined;
-const url = envIndex !== -1 ? args[envIndex + 1] : undefined;
-const ddHost = ddHostIndex !== -1 ? args[ddHostIndex + 1] : undefined;
-const ddKey = ddKeyIndex !== -1 ? args[ddKeyIndex + 1] : undefined;
+// Process the command line arguments
+const args = process.argv;
+args.forEach(arg => {
+    if (arg.includes('--') && arg.includes('=')) {
+        let [key, value] = arg.split('=');
+        key = key.replace('--', ''); // Remove '--' prefix
+
+        switch (key.toLowerCase()) {
+            case 'testtime':
+                testTime = parseInt(value, 10) * 1000; // Convert to milliseconds
+                break;
+            case 'headless':
+                headless = value !== 'false'; // Anything other than 'false' is considered true
+                break;
+            case 'browsertype':
+                browserType = value === 'mobile' ? 'mobile' : 'desktop'; // Only accept 'mobile' or defaults to 'desktop'
+                break;
+            case 'password':
+                password = value;
+                break;
+            case 'url':
+                url = value;
+                break;
+            case 'browserlocation':
+                browserLocation = value;
+                break;
+            case 'ddkey':
+                ddKey = value;
+                break;
+            case 'ddhost':
+                ddHost = value;
+                break;
+        }
+    }
+});
 
 async function setupBrowser() {
     if (!browserInstance) {
@@ -45,12 +69,13 @@ async function getBrowserInstance() {
 export {
     setupBrowser,
     getBrowserInstance,
-    browserType,
-    testTime,
     uploadDir,
-    login,
+    testTime,
+    headless,
+    browserType,
     password,
     url,
+    browserLocation,
     ddHost,
     ddKey
 };
