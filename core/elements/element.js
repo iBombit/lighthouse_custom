@@ -53,20 +53,27 @@ export default class Element {
     }
 
     // Action: count number of elements
-    async count(){
-        logger.debug(`[COUNT] ${this.locatorType}:${this.locator}`);
-        switch(this.locatorType){
+    async count() {
+        let elements = [];
+        switch (this.locatorType) {
             case "XPATH":
-                logger.debug(`[COUNT] Not implemented for XPath selectors`);
+                elements = await this.page.$$(`xpath/${this.locator}`);
+                logger.debug(`[COUNT] Found ${elements.length} elements for XPath: ${this.locator}`);
+                break;
+            case "CSS":
+                elements = await this.page.$$(this.locator);
+                logger.debug(`[COUNT] Found ${elements.length} elements for CSS: ${this.locator}`);
                 break;
             default:
-                return await this.page.evaluate((locator) => { return document.querySelectorAll(locator).length; }, this.locator);
+                logger.debug(`[COUNT] You shouldn't be here`);
+                return 0;
         }
+        return elements.length;
     }
 
     // Action: replace % in selector with actual data and return context for chaining
     replace(text){
-        logger.debug(`[REPLACE] ${this.locatorType}:${this.locator}`);
+        logger.debug(`[REPLACE] ${this.locatorType}:${this.originalLocator}`);
         this.locator = this.originalLocator.replace(/%/g, text)
         logger.debug(`[REPLACE] ${this.locatorType}:${this.locator}`);
         return this;

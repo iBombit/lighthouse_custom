@@ -98,7 +98,7 @@ class LighthouseBrowser {
       throw new Error(error);
     }
     logger.debug(`[COLDNAV] End:${name}`);
-    await this.page.waitForTimeout(timeout);
+    await this.waitTillRendered();
   }
 
   async warmNavigation(name, link, timeout = this.DEFAULT_TIMEOUT) {
@@ -108,13 +108,13 @@ class LighthouseBrowser {
     }
     await this.flow.navigate(link, { name: name, configContext: { settingsOverrides: { disableStorageReset: true } } });
     logger.debug(`[WARMNAV] End:${name}`);
-    await this.page.waitForTimeout(timeout);
+    await this.waitTillRendered();
   }
 
   async goToPage(link, timeout = this.DEFAULT_TIMEOUT) {
     logger.debug(`[GOTOPAGE] ${link}`);
     await this.page.goto(link);
-    await this.page.waitForTimeout(timeout);
+    await new Promise(resolve => setTimeout(resolve, timeout));
     await this.waitTillRendered();
   }
 
@@ -129,10 +129,10 @@ class LighthouseBrowser {
     while (checkCounts++ <= maxChecks) {
       let html = "PAGE UNKNOWN"
       try {
-        html = await page.content();
+        html = await this.page.content();
       }
       catch (error) {
-        console.log(error)
+        logger.debug(error)
         break;
       }
 
@@ -150,7 +150,7 @@ class LighthouseBrowser {
       }
 
       lastHTMLSize = currentHTMLSize;
-      await this.page.waitForTimeout(checkDurationMsecs);
+      await new Promise(resolve => setTimeout(resolve, checkDurationMsecs));
     }
   }
 
