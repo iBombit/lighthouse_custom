@@ -35,13 +35,9 @@ it("[ColdNavigation] Check HomePage", async function () {
     await Home.executeStep({ browserInstance: browser, type: 'coldNavigation', name: 'HomePage' });
 }).timeout(params.testTime);
 
-// it("[WarmNavigation] Check Home URL", async function () {
-//     await Home.executeStep({ 
-//         browserInstance: browser,
-//         type: 'warmNavigation', 
-//         name: 'Home URL' 
-//     });
-// }).timeout(params.testTime);
+it("[WarmNavigation] Check Home URL", async function () {
+    await Home.executeStep({ browserInstance: browser, type: 'warmNavigation', name: 'Home URL' });
+}).timeout(params.testTime);
 
 it("[Timespan] Click on 'Elements'", async function () {
     await Home.executeStep({
