@@ -34,7 +34,7 @@ after(afterHook);
 // Given: I am opening the browser
 // When: I am navigating to Home page
 // Then: I measure cold navigation performance of the page
-it("[ColdNavigation] Check " + Home.url, async function () {
+it("[ColdNavigation] Check Home URL", async function () {
     await browser.coldNavigation("Main Page", Home.url)
 }).timeout(params.testTime);
 
@@ -52,7 +52,7 @@ it("[Timespan] Click on 'Elements'", async function () {
 // Given: I am on the Main page "Elements" section
 // When: I am navigating to Main page "TextBox" section
 // Then: I measure cold navigation performance of the page
-it("[ColdNavigation] Check " + TextBox.url, async function () {
+it("[ColdNavigation] Check TextBox URL", async function () {
     await browser.coldNavigation("TextBox Page", TextBox.url)
 }).timeout(params.testTime);
 
@@ -77,7 +77,7 @@ it("[Timespan] Submit text box form", async function () {
 // Given: I am on the Main page "TextBox" section
 // When: I am navigating to Main page "CheckBox" section
 // Then: I measure cold navigation performance of the page
-it("[ColdNavigation] Check " + CheckBox.url, async function () {
+it("[ColdNavigation] Check CheckBox URL", async function () {
     await browser.coldNavigation("CheckBox Page", CheckBox.url)
 }).timeout(params.testTime);
 
@@ -123,7 +123,7 @@ it("[Timespan] Deselect 'Desktop' checkBox", async function () {
 // Given: I am on the Main page "CheckBox" section
 // When: I am navigating to Main page "Buttons" section
 // Then: I measure cold navigation performance of the page
-it("[ColdNavigation] Check " + Buttons.url, async function () {
+it("[ColdNavigation] Check Buttons URL", async function () {
     await browser.coldNavigation("Buttons Page", Buttons.url)
 }).timeout(params.testTime);
 
@@ -166,7 +166,7 @@ it("[Timespan] Right click button", async function () {
 // Given: I am on the Main page "Buttons" section
 // When: I am navigating to Main page "UploadDownload" section
 // Then: I measure cold navigation performance of the page
-it("[ColdNavigation] Check " + UploadDownload.url, async function () {
+it("[ColdNavigation] Check UploadDownload URL", async function () {
     await browser.coldNavigation("UploadDownload Page", UploadDownload.url)
 }).timeout(params.testTime);
 

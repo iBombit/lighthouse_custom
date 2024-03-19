@@ -96,7 +96,7 @@ class LighthouseBrowser {
     } catch (error) {
       throw new Error(error);
     }
-    await this.waitTillRendered();
+    await this.waitTillRendered(timeout);
   }
 
   async warmNavigation(name, link, timeout = this.DEFAULT_TIMEOUT) {
@@ -104,7 +104,7 @@ class LighthouseBrowser {
       link = this.page.url();
     }
     await this.flow.navigate(link, { name: name, configContext: { settingsOverrides: { disableStorageReset: true } } });
-    await this.waitTillRendered();
+    await this.waitTillRendered(timeout);
   }
 
   async timespan(stepName, actions) {
@@ -117,7 +117,7 @@ class LighthouseBrowser {
     logger.debug(`[GOTOPAGE] ${link}`);
     await this.page.goto(link);
     await new Promise(resolve => setTimeout(resolve, timeout));
-    await this.waitTillRendered();
+    await this.waitTillRendered(timeout);
   }
 
   async waitTillRendered(timeout = this.DEFAULT_TIMEOUT) {

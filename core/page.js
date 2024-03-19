@@ -28,6 +28,33 @@ export default class Page {
         return this[name]
     }
 
+    async executeStep(options) {
+        const {
+          browserInstance,
+          type,
+          name,
+          link = this.url,
+          timeout = this.DEFAULT_TIMEOUT,
+          actions,
+        } = options;
+    
+        switch (type) {
+            case 'coldNavigation':
+                await browserInstance.coldNavigation(name, link, timeout);
+                break;
+            case 'warmNavigation':
+                await browserInstance.warmNavigation(name, link, timeout);
+                break;
+            case 'timespan':
+                if (typeof actions !== "function") {
+                    throw new Error("actions must be a function");
+                }
+                await actions()
+                break;
+            default:
+                throw new Error(`Unsupported step type: ${type}`);
+        }
+    }
     /**
      * Navigates to the specified page URL in a "cold" state, simulating the scenario of a user 
      * opening the page for the first time without any cached resources.
