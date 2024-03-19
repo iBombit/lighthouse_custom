@@ -88,7 +88,6 @@ class LighthouseBrowser {
   }
 
   async coldNavigation(name, link, timeout = this.DEFAULT_TIMEOUT) {
-    logger.debug(`[COLDNAV] Start:${name}`);
     if (!link) {
       link = this.page.url();
     }
@@ -97,18 +96,21 @@ class LighthouseBrowser {
     } catch (error) {
       throw new Error(error);
     }
-    logger.debug(`[COLDNAV] End:${name}`);
     await this.waitTillRendered();
   }
 
   async warmNavigation(name, link, timeout = this.DEFAULT_TIMEOUT) {
-    logger.debug(`[WARMNAV] Start:${name}`);
     if (!link) {
       link = this.page.url();
     }
     await this.flow.navigate(link, { name: name, configContext: { settingsOverrides: { disableStorageReset: true } } });
-    logger.debug(`[WARMNAV] End:${name}`);
     await this.waitTillRendered();
+  }
+
+  async timespan(stepName, actions) {
+    await this.flow.startTimespan({ name: stepName })
+    await actions();
+    await this.flow.endTimespan()
   }
 
   async goToPage(link, timeout = this.DEFAULT_TIMEOUT) {

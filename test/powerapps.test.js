@@ -26,13 +26,12 @@ beforeEach(beforeEachHook);
 afterEach(afterEachHook);
 after(afterHook);
 
-
 // Given: I am opening the browser
 // When: I am navigating to Home page
 // Then: I measure cold navigation performance of the page
-it("[ColdNavigation] Check " + PowerApps.url, async function () {
-    await browser.coldNavigation("Main Page", PowerApps.url);
-    await browser.page.waitForTimeout(120000);
+it("[ColdNavigation] Check PowerApps URL", async function () {
+    await PowerApps.coldNavigation(browser);
+    await new Promise(resolve => setTimeout(resolve, 120000));
 }).timeout(params.testTime);
 
 // Given: I am on the Home page
@@ -40,12 +39,7 @@ it("[ColdNavigation] Check " + PowerApps.url, async function () {
 // Then: I wait for the new page to be rendered
 // And: I stop measuring action time performance of the page
 it("[Timespan] Click on 'marketing'", async function () {
-    await browser.flow.startTimespan({ stepName: "Click on 'marketing'" });
-    PowerApps.init(await PowerApps.appFrame.createIframe());
-    await PowerApps.marketing.click();
-    await PowerApps.marketingHeader.find();
-    await browser.waitTillRendered();
-    await browser.flow.endTimespan();
+    await PowerApps.clickOnMarketing(browser)
 }).timeout(params.testTime);
 
 // Given: I am on the "Marketing" page
@@ -53,8 +47,5 @@ it("[Timespan] Click on 'marketing'", async function () {
 // Then: I take the URL of the page that opened
 // And: I measure cold navigation performance of the new page URL
 it("[ColdNavigation] Check 'Teams' page", async function () {
-    PowerApps.init(browser.page);
-    await PowerApps.teamsIcon.click();
-    let newPage = await browser.getNewPageWhenLoaded();
-    await browser.coldNavigation("Teams Page", newPage.url());
+    await PowerApps.checkTeamsPage(browser);
 }).timeout(params.testTime);
