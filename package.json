@@ -6,7 +6,7 @@
     "node": ">=18.16"
   },
   "scripts": {
-    "test": "npx mocha --timeout 10000 .\\test\\huge.test.js",
+    "test": "npx mocha --timeout 10000 .\\test\\huge.test.steps.js",
     "crawl": "node crawler/crawler.js"
   },
   "dependencies": {

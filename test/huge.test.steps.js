@@ -31,7 +31,7 @@ beforeEach(beforeEachHook);
 afterEach(afterEachHook);
 after(afterHook);
 
-it("[ColdNavigation] Check HomePage", async function () {
+it(`[ColdNavigation] Check ${Home.getURL()}`, async function () {
     await Home.coldNavigation(browser)
 }).timeout(params.testTime);
 
@@ -43,7 +43,7 @@ it("[Timespan] Click on 'Elements'", async function () {
     await Home.clickOnElements(browser)
 }).timeout(params.testTime);
 
-it("[ColdNavigation] Check TextBox URL", async function () {
+it(`[ColdNavigation] Check ${TextBox.getURL()}`, async function () {
     await TextBox.coldNavigation(browser)
 }).timeout(params.testTime);
 
@@ -51,7 +51,7 @@ it("[Timespan] Submit text box form", async function () {
     await TextBox.submitTextForm(browser)
 }).timeout(params.testTime);
 
-it("[ColdNavigation] Check CheckBox URL", async function () {
+it(`[ColdNavigation] Check ${CheckBox.getURL()}`, async function () {
     await CheckBox.coldNavigation(browser)
 }).timeout(params.testTime);
 
@@ -67,7 +67,7 @@ it("[Timespan] Deselect 'Desktop' checkBox", async function () {
     await CheckBox.deselectDesktopCheckbox(browser)
 }).timeout(params.testTime);
 
-it("[ColdNavigation] Check Buttons URL", async function () {
+it(`[ColdNavigation] Check ${Buttons.getURL()}`, async function () {
     await Buttons.coldNavigation(browser)
 }).timeout(params.testTime);
 
@@ -83,7 +83,7 @@ it("[Timespan] Right click button", async function () {
     await Buttons.rightClickButton(browser)
 }).timeout(params.testTime);
 
-it("[ColdNavigation] Check UploadDownload URL", async function () {
+it(`[ColdNavigation] Check ${UploadDownload.getURL()}`, async function () {
     await UploadDownload.coldNavigation(browser)
 }).timeout(params.testTime);
 

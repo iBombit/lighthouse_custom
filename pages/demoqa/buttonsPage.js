@@ -5,12 +5,11 @@ import Element from "../../core/elements/element.js";
 export default class ButtonsPage extends Page {
     constructor(page) {
         super(page)
+        this.setPath('buttons');
     }
 
     init(page) {
         super.init(page)
-        this.url = "https://demoqa.com/buttons"
-
         this.clickBtn = new Button("//button[text()='Click Me']", page)
         this.clickVerify = new Element("#dynamicClickMessage", page)
         this.doubleClickBtn = new Button("//button[text()='Double Click Me']", page)
@@ -27,11 +26,11 @@ export default class ButtonsPage extends Page {
     // And: I measure action time performance of the page
     */
     async simpleClickButton(browser) {
-        await browser.flow.startTimespan({ name: "Simple click button" })
+        await browser.timespan("Simple click button", async () => {
             await this.clickBtn.click()
             await this.clickVerify.find()
             await browser.waitTillRendered()
-        await browser.flow.endTimespan()
+        })
     }
 
     /**

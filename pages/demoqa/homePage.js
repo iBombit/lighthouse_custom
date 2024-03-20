@@ -5,12 +5,11 @@ import TextField from "../../core/elements/textField.js";
 export default class HomePage extends Page {
     constructor(page) {
         super(page)
+        this.setPath('/');
     }
 
     init(page) {
         super.init(page)
-        this.url = "https://demoqa.com/"
-
         this.elements = new Button('//h5[text()="Elements"]', page)
         this.forms = new Button('//h5[text()="Forms"]', page)
         this.alertsFrameWindows = new Button('//h5[text()="Alerts, Frame & Windows"]', page)

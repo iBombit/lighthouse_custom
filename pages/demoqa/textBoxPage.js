@@ -6,12 +6,11 @@ import Element from "../../core/elements/element.js";
 export default class TextBoxPage extends Page {
     constructor(page) {
         super(page)
+        this.setPath('text-box');
     }
 
     init(page) {
         super.init(page)
-        this.url = "https://demoqa.com/text-box"
-
         this.fullName = new TextField("input[id='userName']", page)
         this.userEmail = new TextField("input[id='userEmail']", page)
         this.currentAddress = new TextField("textarea[id='currentAddress']", page)
