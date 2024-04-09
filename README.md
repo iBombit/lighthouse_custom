@@ -29,7 +29,7 @@ CMD params
 3. In repo dir execute run these commands:
 ```
 npm install
-npx mocha --timeout 10000 .\test\huge.test.js --browsertype=desktop --headless=false
+npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/"
 ```
 
 **With docker**
@@ -37,5 +37,5 @@ npx mocha --timeout 10000 .\test\huge.test.js --browsertype=desktop --headless=f
 2. Verify that headless mode is enabled via "--headless=false" flag
 3. In repo dir run this command:
 ```
-docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:11.6.0-alpine npx mocha --timeout 10000 .\test\huge.test.js --browsertype=desktop --headless=false
+docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:11.7.1-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/"
 ```
