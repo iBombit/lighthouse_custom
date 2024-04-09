@@ -18,6 +18,7 @@ export default class UploadField extends Element {
             await this.element.uploadFile(path);
         }
         catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw new Error(error);
         }
@@ -32,6 +33,7 @@ export default class UploadField extends Element {
             await this.element.uploadFile(path);
         }
         catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw new Error(error);
         }

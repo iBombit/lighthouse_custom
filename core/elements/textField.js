@@ -1,8 +1,9 @@
 import logger from "../../logger/logger.js";
 import Element from './element.js';
+import Button from './button.js';
 const TYPE_KEY_BY_KEY_TIMEOUT = 100;
 
-export default class TextField extends Element {
+export default class TextField extends Button {
     page;
     
     constructor(locator, page){
@@ -18,6 +19,7 @@ export default class TextField extends Element {
             await this.element.type(text, {delay: delay});
         }
         catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw error;
         }
@@ -33,6 +35,7 @@ export default class TextField extends Element {
             await this.page.keyboard.press('Backspace');
         }
         catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw new Error(error);
         }

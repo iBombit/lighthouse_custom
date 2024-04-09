@@ -18,6 +18,7 @@ export default class Button extends Element {
             await this.page.$eval(this.locator, element => element.click());
         }
         catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw new Error(error);
         }
@@ -31,6 +32,7 @@ export default class Button extends Element {
             await this.element.click();
         }
         catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw new Error(error);
         }
@@ -44,6 +46,7 @@ export default class Button extends Element {
             await this.element.click({clickCount: 2});
         }
         catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw new Error(error);
         }
@@ -57,6 +60,7 @@ export default class Button extends Element {
             await this.element.click({button: 'right',});
         }
         catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw new Error(error);
         }

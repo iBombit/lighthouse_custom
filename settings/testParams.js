@@ -8,6 +8,7 @@ const uploadDir = path.dirname(new URL(import.meta.url).pathname);
 let testTime = 120000; // 2 minutes
 let headless = true;
 let browserType = 'desktop';
+let login
 let password;
 let url;
 let browserLocation;
@@ -30,6 +31,9 @@ args.forEach(arg => {
                 break;
             case 'browsertype':
                 browserType = value === 'mobile' ? 'mobile' : 'desktop'; // Only accept 'mobile' or defaults to 'desktop'
+                break;
+            case 'login':
+                login = value;
                 break;
             case 'password':
                 password = value;
@@ -73,6 +77,7 @@ export {
     testTime,
     headless,
     browserType,
+    login,
     password,
     url,
     browserLocation,

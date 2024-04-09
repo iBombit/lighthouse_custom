@@ -4,7 +4,6 @@ import * as params from './testParams.js';
 import { setupBrowser } from './testParams.js';
 
 let browser;
-let startTime;
 
 export async function beforeHook() {
     browser = await setupBrowser();

@@ -87,7 +87,7 @@ class LighthouseBrowser {
     );
   }
 
-  async coldNavigation(name, link, timeout = this.DEFAULT_TIMEOUT) {
+  async coldNavigation(name, link, timeout = LighthouseBrowser.DEFAULT_TIMEOUT) {
     if (!link) {
       link = this.page.url();
     }
@@ -99,7 +99,7 @@ class LighthouseBrowser {
     await this.waitTillRendered(timeout);
   }
 
-  async warmNavigation(name, link, timeout = this.DEFAULT_TIMEOUT) {
+  async warmNavigation(name, link, timeout = LighthouseBrowser.DEFAULT_TIMEOUT) {
     if (!link) {
       link = this.page.url();
     }
@@ -113,14 +113,14 @@ class LighthouseBrowser {
     await this.flow.endTimespan()
   }
 
-  async goToPage(link, timeout = this.DEFAULT_TIMEOUT) {
+  async goToPage(link, timeout = LighthouseBrowser.DEFAULT_TIMEOUT) {
     logger.debug(`[GOTOPAGE] ${link}`);
     await this.page.goto(link);
     await new Promise(resolve => setTimeout(resolve, timeout));
     await this.waitTillRendered(timeout);
   }
 
-  async waitTillRendered(timeout = this.DEFAULT_TIMEOUT) {
+  async waitTillRendered(timeout = LighthouseBrowser.DEFAULT_TIMEOUT) {
     const checkDurationMsecs = 1000;
     const maxChecks = timeout / checkDurationMsecs;
     let lastHTMLSize = 0;
