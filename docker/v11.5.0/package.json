@@ -1,16 +1,12 @@
 {
   "name": "lightprobe",
-  "productName": "Lighthouse based UI performance testing framework",
-  "description": "Testing framework",
-  "keywords": [],
+  "version": "11.5.0",
   "type": "module",
-  "version": "2.0.0",
-  "author": "iBombit",
   "engines": {
     "node": ">=18.16"
   },
   "scripts": {
-    "test": "jest",
+    "test": "npx mocha --timeout 10000 .\\test\\huge.test.js",
     "crawl": "node crawler/crawler.js"
   },
   "dependencies": {
@@ -23,17 +19,5 @@
     "puppeteer": "^22.0.0",
     "winston": "^3.11.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/iBombit/lighthouse_custom.git"
-  },
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/iBombit/lighthouse_custom/issues"
-  },
-  "homepage": "https://github.com/iBombit/lighthouse_custom#readme",
-  "directories": {
-    "test": "test"
-  },
-  "main": "index.js"
+  "license": "Apache-2.0"
 }
