@@ -66,4 +66,17 @@ export default class Button extends Element {
         }
     }
 
+    // Action: click on element if present, otherwise do not fail
+    async clickIfAvailable(timeout=Element.DEFAULT_TIMEOUT){
+        logger.debug(`[CLICKIFAVAILABLE] ${this.locatorType}:${this.locator}`);
+        try {
+            await this.find(timeout);
+            await this.element.click();
+            logger.debug(`[CLICK] ${this.locatorType}:${this.locator} found and clicked`);
+        }
+        catch (error) {
+            logger.debug(`[SKIPPED] ${this.locatorType}:${this.locator} not available, skipping...`);
+        }
+    }
+
 }
