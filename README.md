@@ -1,3 +1,9 @@
+## What's Changed
+* lh v11.7.1 added; a few improvements and fixes by @iBombit in https://github.com/iBombit/lighthouse_custom/pull/9
+
+
+**Full Changelog**: https://github.com/iBombit/lighthouse_custom/compare/11.6.0...11.7.1
+
 CMD params
 - **`--browsertype`**  
   Specifies a browsertype. Usage: `--browsertype=desktop`
