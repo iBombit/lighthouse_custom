@@ -35,7 +35,8 @@ export default class Page {
     /**
      * @async
      * @function coldNavigation
-     * @param {string} name - The name associated with the navigation action, used for identification.
+     * @param {object} browser - The browser instance.
+     * @param {string} [link=this.getURL()] - The URL to navigate to.
      * @param {number} [timeout=this.DEFAULT_TIMEOUT] - The maximum time to wait for navigation to complete. 
      * @throws {Error} Throws an error if navigation fails.
      * @example
@@ -44,13 +45,15 @@ export default class Page {
      * // Then: I measure cold navigation performance of the page
      * await SomePage.coldNavigation(browser, 'https://example.com/home');
      */
-    async coldNavigation(browser, timeout = this.DEFAULT_TIMEOUT) {
-        await browser.coldNavigation(`${this.constructor.name} - cold`, this.getURL(), timeout)
+    async coldNavigation(browser, link = this.getURL(), timeout = this.DEFAULT_TIMEOUT) {
+        await browser.coldNavigation(`${this.constructor.name} - cold`, link, timeout)
     }
+
     /**
      * @async
      * @function warmNavigation
-     * @param {string} name - The name associated with the navigation action for identification purposes.
+     * @param {object} browser - The browser instance.
+     * @param {string} [link=this.getURL()] - The URL to navigate to.
      * @param {number} [timeout=this.DEFAULT_TIMEOUT] - The maximum time to wait for navigation to complete.
      * @throws {Error} - Throws an error if the navigation process fails.
      * @example
@@ -59,8 +62,8 @@ export default class Page {
      * // Then: I measure warm navigation performance of the page
      * await SomePage.warmNavigation(browser, 'https://example.com/home');
      */
-    async warmNavigation(browser, timeout = this.DEFAULT_TIMEOUT) {
-        await browser.warmNavigation(`${this.constructor.name} - warm`, this.getURL(), timeout)
+    async warmNavigation(browser, link = this.getURL(), timeout = this.DEFAULT_TIMEOUT) {
+        await browser.warmNavigation(`${this.constructor.name} - warm`, link, timeout)
     }
     /**
      * @async
