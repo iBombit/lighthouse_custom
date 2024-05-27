@@ -9,6 +9,7 @@ let loops = 1;
 let testTime = 360000; // 360 seconds or 6 minutes
 let headless = true;
 let browserType = 'desktop';
+let login;
 let password;
 let url;
 let browserLocation;
