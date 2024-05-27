@@ -5,26 +5,38 @@ on:
     branches: [ main ]
 
 jobs:
-
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    -
-        name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-    -
-        name: Get LH version
-        id: vars
-        run: echo ::set-output name=lh_version::$(jq -r .dependencies.lighthouse ./package.json | tr -d '^')
-    -
-       name: Build
-       run: |
-          docker build -t ibombit/lighthouse-puppeteer-chrome:${{ steps.vars.outputs.lh_version }}-alpine .
-    -
-       name: Push
-       run: |
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_TOKEN }}
+
+    - name: Get LH version
+      id: vars
+      run: echo ::set-output name=lh_version::$(jq -r .dependencies.lighthouse ./package.json | tr -d '^')
+
+    - name: Build the Docker image
+      run: |
+         docker build -t ibombit/lighthouse-puppeteer-chrome:${{ steps.vars.outputs.lh_version }}-alpine .
+
+    - name: Check if image exists
+      id: check_image
+      run: |
+        EXISTS=$(curl -s -o /dev/null -w "%{http_code}" https://hub.docker.com/v2/repositories/ibombit/lighthouse-puppeteer-chrome/tags/${{ steps.vars.outputs.lh_version }}-alpine)
+        if [ "$EXISTS" -eq 200 ]; then
+          echo "Image already exists."
+          echo "::set-output name=exists::true"
+        else
+          echo "Image does not exist."
+          echo "::set-output name=exists::false"
+        fi
+
+    - name: Push the Docker image
+      if: steps.check_image.outputs.exists == 'false'
+      run: |
          docker push ibombit/lighthouse-puppeteer-chrome:${{ steps.vars.outputs.lh_version }}-alpine
