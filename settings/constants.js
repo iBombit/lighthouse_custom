@@ -1,11 +1,11 @@
 import logger from "../logger/logger.js";
 
 export class Desktop {
-  get lighthouseReportName()    { return "High-End Desktop"};
-  get screenWidth()             { return 1920};
-  get screenHeight()            { return 1080};
+  get lighthouseReportName()    { return "Desktop"};
+  get screenWidth()             { return 1536};//1240
+  get screenHeight()            { return 864};//720
   get rttMs()                   { return 40};
-  get throughputKbps()          { return 10240 * 100};
+  get throughputKbps()          { return 10240};
   get cpuSlowdownMultiplier()   { return 1};
   get requestLatencyMs()        { return 0};
   get downloadThroughputKbps()  { return 0};
@@ -14,23 +14,25 @@ export class Desktop {
   get screenEmulationMobile()   { return false};
   get deviceScaleFactor()       { return 1};
   get screenEmulationDisabled() { return false};
+  get hasTouch()                { return false};
   get formFactor()              { return "desktop"};
 }
 
 export class Mobile {
   get lighthouseReportName()    { return "Mobile"};
-  get screenWidth()             { return 360};
-  get screenHeight()            { return 640};
+  get screenWidth()             { return 390};
+  get screenHeight()            { return 844};
   get rttMs()                   { return 40};
   get throughputKbps()          { return 10240};
   get cpuSlowdownMultiplier()   { return 1};
   get requestLatencyMs()        { return 0};
   get downloadThroughputKbps()  { return 0};
   get uploadThroughputKbps()    { return 0};
-  get throttlingMethod()        { return "simulate"};
+  get throttlingMethod()        { return "devtools"};
   get screenEmulationMobile()   { return true};
-  get deviceScaleFactor()       { return 2.625};
+  get deviceScaleFactor()       { return 3};
   get screenEmulationDisabled() { return false};
+  get hasTouch()                { return true};
   get formFactor()              { return "mobile"};
 }
 
@@ -44,7 +46,7 @@ export class Mobile4G {
   get requestLatencyMs()        { return 150};
   get downloadThroughputKbps()  { return 1.6 * 1024};
   get uploadThroughputKbps()    { return 1.6 * 1024};
-  get throttlingMethod()        { return "simulate"};
+  get throttlingMethod()        { return "devtools"};
   get screenEmulationMobile()   { return true};
   get deviceScaleFactor()       { return 2.625};
   get screenEmulationDisabled() { return false};
@@ -61,7 +63,7 @@ export class Mobile4G_Slow {
   get requestLatencyMs()        { return 150};
   get downloadThroughputKbps()  { return 1.6 * 1024};
   get uploadThroughputKbps()    { return 1.6 * 1024};
-  get throttlingMethod()        { return "simulate"};
+  get throttlingMethod()        { return "devtools"};
   get screenEmulationMobile()   { return true};
   get deviceScaleFactor()       { return 2.625};
   get screenEmulationDisabled() { return false};
@@ -78,13 +80,12 @@ export class Mobile3G {
   get requestLatencyMs()        { return 300};
   get downloadThroughputKbps()  { return 700};
   get uploadThroughputKbps()    { return 700};
-  get throttlingMethod()        { return "simulate"};
+  get throttlingMethod()        { return "devtools"};
   get screenEmulationMobile()   { return true};
   get deviceScaleFactor()       { return 2.625};
   get screenEmulationDisabled() { return false};
   get formFactor()              { return "mobile"};
 }
-
 
 export class BrowserLocations {
   constructor(os) {
