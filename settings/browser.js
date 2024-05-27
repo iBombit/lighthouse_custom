@@ -79,7 +79,7 @@ export class Browser {
             executablePath: browserLocation,
             "headless": false,
             args: [
-                `--window-size=${desktop.screenWidth},${desktop.screenHeight}`,
+                `--window-size=${mobile.screenWidth},${mobile.screenHeight}`,
                 '--allow-no-sandbox-job',
                 '--allow-sandbox-debugging',
                 '--no-sandbox',

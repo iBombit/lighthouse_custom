@@ -5,10 +5,10 @@ let browserInstance;
 const uploadDir = path.dirname(new URL(import.meta.url).pathname);
 
 // Initialize variables with default values
-let testTime = 120000; // 2 minutes
+let loops = 1;
+let testTime = 360000; // 360 seconds or 6 minutes
 let headless = true;
 let browserType = 'desktop';
-let login
 let password;
 let url;
 let browserLocation;
@@ -23,6 +23,9 @@ args.forEach(arg => {
         key = key.replace('--', ''); // Remove '--' prefix
 
         switch (key.toLowerCase()) {
+            case 'loops':
+                loops = parseInt(value, 10);
+                break;
             case 'testtime':
                 testTime = parseInt(value, 10) * 1000; // Convert to milliseconds
                 break;
@@ -30,7 +33,17 @@ args.forEach(arg => {
                 headless = value !== 'false'; // Anything other than 'false' is considered true
                 break;
             case 'browsertype':
-                browserType = value === 'mobile' ? 'mobile' : 'desktop'; // Only accept 'mobile' or defaults to 'desktop'
+                switch (value) {
+                    case 'mobile':
+                    case 'mobile3G':
+                    case 'mobile4G':
+                    case 'mobile4GSlow':
+                        browserType = value;
+                        break;
+                    default:
+                        browserType = 'desktop'; // Defaults to 'desktop'
+                        break;
+                }
                 break;
             case 'login':
                 login = value;
@@ -74,6 +87,7 @@ export {
     setupBrowser,
     getBrowserInstance,
     uploadDir,
+    loops,
     testTime,
     headless,
     browserType,

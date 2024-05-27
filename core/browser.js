@@ -3,7 +3,7 @@ import logger from "../logger/logger.js";
 import { Browser } from '../settings/browser.js';
 import { startFlow } from 'lighthouse/core/index.js';
 import { exec } from 'child_process';
-import { configDesktop, configMobile } from '../settings/lighthouse.js';
+import { configDesktop, configMobile, configMobile3G, configMobile4G, configMobile4GSlow } from '../settings/lighthouse.js';
 import * as os from 'os';
 
 class LighthouseBrowser {
@@ -21,7 +21,11 @@ class LighthouseBrowser {
   async init() {
     this.headless ? logger.debug(`[${this.browserType.toUpperCase()}] Starting HEADLESS browser (${this.browserLocation})`) : logger.debug(`[${this.browserType.toUpperCase()}] Starting HEADFUL browser (${this.browserLocation})`)
     switch (this.browserType) {
-      case "mobile": {
+      case "mobile": 
+      case "mobile3G":
+      case "mobile4G":
+      case "mobile4GSlow":
+      {
         this.browser = await puppeteer.launch(this.headless ? new Browser(this.browserLocation).headlessMobile : new Browser(this.browserLocation).headfulMobile);
         break;
       }
@@ -59,10 +63,17 @@ class LighthouseBrowser {
   }
 
   async startNewLighthouseFlow() {
-    //this.flow = await startFlow(this.page, this.browserType === "mobile" ? new LightHouse().configMobile : new LightHouse().configDesktop);
-    this.flow = await startFlow(this.page, this.browserType === "mobile" ? { config: configMobile, } : { config: configDesktop, });
+    const configMap = {
+        "desktop": configDesktop,
+        "mobile": configMobile,
+        "mobile3G": configMobile3G,
+        "mobile4G": configMobile4G,
+        "mobile4GSlow": configMobile4GSlow
+    };
+
+    this.flow = await startFlow(this.page, { config: configMap[this.browserType] || configDesktop });
     //logger.debug("[FLOW] " + JSON.stringify(this.flow));
-  }
+}
 
   async updateLighthouseFlow() {
     this.flow.options.page = this.page;
