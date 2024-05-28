@@ -1,90 +1,100 @@
 import logger from "../logger/logger.js";
 
 export class Desktop {
-  get lighthouseReportName()    { return "Desktop"};
-  get screenWidth()             { return 1536};//1240
-  get screenHeight()            { return 864};//720
-  get rttMs()                   { return 40};
-  get throughputKbps()          { return 10240};
-  get cpuSlowdownMultiplier()   { return 1};
-  get requestLatencyMs()        { return 0};
-  get downloadThroughputKbps()  { return 0};
-  get uploadThroughputKbps()    { return 0};
-  get throttlingMethod()        { return "devtools"};
-  get screenEmulationMobile()   { return false};
-  get deviceScaleFactor()       { return 1};
-  get screenEmulationDisabled() { return false};
-  get hasTouch()                { return false};
-  get formFactor()              { return "desktop"};
+  constructor() {
+    this.lighthouseReportName = 'Desktop Report';
+    this.rttMs = 40;
+    this.throughputKbps = 10240;
+    this.cpuSlowdownMultiplier = 1;
+    this.requestLatencyMs = 0; // Assuming values for demonstration
+    this.downloadThroughputKbps = 10240;
+    this.uploadThroughputKbps = 2048;
+    this.throttlingMethod = 'simulate';
+    this.screenEmulationMobile = false;
+    this.screenWidth = 1920;
+    this.screenHeight = 1080;
+    this.deviceScaleFactor = 1;
+    this.screenEmulationDisabled = false;
+    this.formFactor = 'desktop';
+  }
 }
 
 export class Mobile {
-  get lighthouseReportName()    { return "Mobile"};
-  get screenWidth()             { return 390};
-  get screenHeight()            { return 844};
-  get rttMs()                   { return 40};
-  get throughputKbps()          { return 10240};
-  get cpuSlowdownMultiplier()   { return 1};
-  get requestLatencyMs()        { return 0};
-  get downloadThroughputKbps()  { return 0};
-  get uploadThroughputKbps()    { return 0};
-  get throttlingMethod()        { return "devtools"};
-  get screenEmulationMobile()   { return true};
-  get deviceScaleFactor()       { return 3};
-  get screenEmulationDisabled() { return false};
-  get hasTouch()                { return true};
-  get formFactor()              { return "mobile"};
-}
-
-export class Mobile4G {
-  get lighthouseReportName()    { return "Mobile Regular4G"};
-  get screenWidth()             { return 360};
-  get screenHeight()            { return 640};
-  get rttMs()                   { return 150};
-  get throughputKbps()          { return 1.6 * 1024};
-  get cpuSlowdownMultiplier()   { return 4};
-  get requestLatencyMs()        { return 150};
-  get downloadThroughputKbps()  { return 1.6 * 1024};
-  get uploadThroughputKbps()    { return 1.6 * 1024};
-  get throttlingMethod()        { return "devtools"};
-  get screenEmulationMobile()   { return true};
-  get deviceScaleFactor()       { return 2.625};
-  get screenEmulationDisabled() { return false};
-  get formFactor()              { return "mobile"};
-}
-
-export class Mobile4G_Slow {
-  get lighthouseReportName()    { return "Mobile Slow4G"};
-  get screenWidth()             { return 360};
-  get screenHeight()            { return 640};
-  get rttMs()                   { return 150};
-  get throughputKbps()          { return 1.6 * 1024};
-  get cpuSlowdownMultiplier()   { return 4};
-  get requestLatencyMs()        { return 150};
-  get downloadThroughputKbps()  { return 1.6 * 1024};
-  get uploadThroughputKbps()    { return 1.6 * 1024};
-  get throttlingMethod()        { return "devtools"};
-  get screenEmulationMobile()   { return true};
-  get deviceScaleFactor()       { return 2.625};
-  get screenEmulationDisabled() { return false};
-  get formFactor()              { return "mobile"};
+  constructor() {
+    this.lighthouseReportName = 'Mobile';
+    this.screenWidth = 390;
+    this.screenHeight = 844;
+    this.rttMs = 40;
+    this.throughputKbps = 10240;
+    this.cpuSlowdownMultiplier = 1;
+    this.requestLatencyMs = 0;
+    this.downloadThroughputKbps = 0;
+    this.uploadThroughputKbps = 0;
+    this.throttlingMethod = 'devtools';
+    this.screenEmulationMobile = true;
+    this.deviceScaleFactor = 3;
+    this.screenEmulationDisabled = false;
+    this.formFactor = 'mobile';
+  }
 }
 
 export class Mobile3G {
-  get lighthouseReportName()    { return "Mobile Regular3G"};
-  get screenWidth()             { return 360};
-  get screenHeight()            { return 640};
-  get rttMs()                   { return 300};
-  get throughputKbps()          { return 700};
-  get cpuSlowdownMultiplier()   { return 4};
-  get requestLatencyMs()        { return 300};
-  get downloadThroughputKbps()  { return 700};
-  get uploadThroughputKbps()    { return 700};
-  get throttlingMethod()        { return "devtools"};
-  get screenEmulationMobile()   { return true};
-  get deviceScaleFactor()       { return 2.625};
-  get screenEmulationDisabled() { return false};
-  get formFactor()              { return "mobile"};
+  constructor() {
+    this.lighthouseReportName = 'Mobile Regular3G';
+    this.screenWidth = 360;
+    this.screenHeight = 640;
+    this.rttMs = 300;
+    this.throughputKbps = 700;
+    this.cpuSlowdownMultiplier = 4;
+    this.requestLatencyMs = 300;
+    this.downloadThroughputKbps = 700;
+    this.uploadThroughputKbps = 700;
+    this.throttlingMethod = 'devtools';
+    this.screenEmulationMobile = true;
+    this.deviceScaleFactor = 2.625;
+    this.screenEmulationDisabled = false;
+    this.formFactor = 'mobile';
+  }
+}
+
+export class Mobile4G {
+  constructor() {
+    this.lighthouseReportName = 'Mobile Regular4G';
+    this.screenWidth = 360;
+    this.screenHeight = 640;
+    this.rttMs = 150;
+    this.throughputKbps = 1.6 * 1024;
+    this.cpuSlowdownMultiplier = 4;
+    this.requestLatencyMs = 150;
+    this.downloadThroughputKbps = 1.6 * 1024;
+    this.uploadThroughputKbps = 1.6 * 1024;
+    this.throttlingMethod = 'devtools';
+    this.screenEmulationMobile = true;
+    this.deviceScaleFactor = 2.625;
+    this.screenEmulationDisabled = false;
+    this.formFactor = 'mobile';
+    this.hasTouch = true;
+  }
+}
+
+export class Mobile4G_Slow {
+  constructor() {
+    this.lighthouseReportName = 'Mobile Slow4G';
+    this.screenWidth = 360;
+    this.screenHeight = 640;
+    this.rttMs = 150;
+    this.throughputKbps = 1.6 * 1024 / 2;
+    this.cpuSlowdownMultiplier = 4;
+    this.requestLatencyMs = 150;
+    this.downloadThroughputKbps = 1.6 * 1024 / 2;
+    this.uploadThroughputKbps = 1.6 * 1024 / 2;
+    this.throttlingMethod = 'devtools';
+    this.screenEmulationMobile = true;
+    this.deviceScaleFactor = 2.625;
+    this.screenEmulationDisabled = false;
+    this.formFactor = 'mobile';
+    this.hasTouch = true;
+  }
 }
 
 export class BrowserLocations {
@@ -109,6 +119,8 @@ export class BrowserLocations {
 }
 
 export const myRelevantAudits = [
+  './settings/audits/network-longest-first-party.js',
+  './settings/audits/network-slowest-request',
   './settings/audits/network-requests',
   './settings/audits/network-server-latency',
 ];
