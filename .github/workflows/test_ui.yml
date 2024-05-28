@@ -25,6 +25,7 @@ jobs:
           pwd
           echo Files in current directory:
           ls -l
+
       - name: Get LH version
         id: vars
         run: echo ::set-output name=lh_version::$(jq -r .dependencies.lighthouse ./package.json | tr -d '^') 
@@ -34,6 +35,7 @@ jobs:
           docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:${{ steps.vars.outputs.lh_version }}-alpine npx mocha ${{ secrets.TEST_PATH }} --browsertype=desktop --headless=true --url="https://demoqa.com/"
 
       - name: Upload report files
+        if: always()
         uses: actions/upload-artifact@v3
         with:
           name: test-reports
