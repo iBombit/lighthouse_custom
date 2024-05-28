@@ -32,11 +32,14 @@ class SlowestNetworkRequest extends NetworkRequests {
             median: context.options.median,
         }, maxDuration);
 
+        // Round the duration for display to remove decimal places
+        const displayDuration = Math.round(maxDuration);
+
         return {
             score,
             numericValue: maxDuration,
             numericUnit: 'millisecond',
-            displayValue: `Slowest request took ${maxDuration} ms`,
+            displayValue: `Slowest request took ${displayDuration} ms`,
             details: Audit.makeTableDetails(parentAuditResult.details.headings, [slowestRequest]),
         };
     }

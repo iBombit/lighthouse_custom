@@ -50,11 +50,14 @@ class LongestFirstPartyRequest extends NetworkRequests {
             median: context.options.median,
         }, maxDuration);
 
+        // Round the duration for display to remove decimal places
+        const displayDuration = Math.round(maxDuration);
+
         return {
             score,
             numericValue: maxDuration,
             numericUnit: 'millisecond',
-            displayValue: `Longest first-party request took ${maxDuration} ms`,
+            displayValue: `Longest first-party request took ${displayDuration} ms`,
             details: Audit.makeTableDetails(parentAuditResult.details.headings, [longestFirstPartyRequest]),
         };
     }
