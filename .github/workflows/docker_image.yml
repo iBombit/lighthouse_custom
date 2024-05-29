@@ -18,7 +18,9 @@ jobs:
 
     - name: Get LH version
       id: vars
-      run: echo ::set-output name=lh_version::$(jq -r .dependencies.lighthouse ./package.json | tr -d '^')
+      run: |
+        LH_VERSION=$(jq -r .dependencies.lighthouse ./package.json | tr -d '^')
+        echo "lh_version=$LH_VERSION" >> $GITHUB_OUTPUT
 
     - name: Build the Docker image
       run: |
@@ -30,10 +32,10 @@ jobs:
         EXISTS=$(curl -s -o /dev/null -w "%{http_code}" https://hub.docker.com/v2/repositories/ibombit/lighthouse-puppeteer-chrome/tags/${{ steps.vars.outputs.lh_version }}-alpine)
         if [ "$EXISTS" -eq 200 ]; then
           echo "Image already exists."
-          echo "::set-output name=exists::true"
+          echo "exists=true" >> $GITHUB_OUTPUT
         else
           echo "Image does not exist."
-          echo "::set-output name=exists::false"
+          echo "exists=false" >> $GITHUB_OUTPUT
         fi
 
     - name: Push the Docker image
