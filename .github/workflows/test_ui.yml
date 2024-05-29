@@ -28,7 +28,9 @@ jobs:
 
       - name: Get LH version
         id: vars
-        run: echo ::set-output name=lh_version::$(jq -r .dependencies.lighthouse ./package.json | tr -d '^') 
+        run: |
+          LH_VERSION=$(jq -r .dependencies.lighthouse ./package.json | tr -d '^')
+          echo "lh_version=$LH_VERSION" >> $GITHUB_OUTPUT
 
       - name: Test with Lighthouse and Puppeteer
         run: |
@@ -40,5 +42,5 @@ jobs:
         with:
           name: test-reports
           path: |
-            ./user-flow.report.html
-            ./user-flow.report.json
+            ./reports/user-flow.report.html
+            ./reports/user-flow.report.json
