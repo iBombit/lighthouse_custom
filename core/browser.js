@@ -34,7 +34,7 @@ class LighthouseBrowser {
         break;
       }
       default: {
-        throw new Error('browserType is not correct! Needs to be mobile or desktop, received: ' + browserType);
+        throw new Error('browserType is not correct! Received: ' + browserType);
       }
     }
   }
