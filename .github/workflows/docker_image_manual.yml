@@ -4,28 +4,34 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version Number' # Description for the input
-        required: true # Make this input required
-        default: 'latest' # Default value if none is provided
+        description: 'Version Number'
+        required: true
+        default: 'latest'
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Login to DockerHub
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_TOKEN }}
 
-    # Removed the Get LH version step as we now use manual input for version
-
-    - name: Build the Docker image
+    - name: Find directories with Dockerfile, package.json, and matching version
+      id: find-dirs
       run: |
-         docker build -t ibombit/lighthouse-puppeteer-chrome:${{ github.event.inputs.version }}-alpine .
+        version=${{ github.event.inputs.version }}
+        dirs=$(find . -type f -name 'Dockerfile' -exec dirname {} \; | while read dir; do if [[ -f "$dir/package.json" && "$dir" == *"$version"* ]]; then echo "$dir"; fi; done)
+        echo "::set-output name=dirs::$dirs"
 
-    - name: Push the Docker image
+    - name: Build and Push Docker images
       run: |
-         docker push ibombit/lighthouse-puppeteer-chrome:${{ github.event.inputs.version }}-alpine
+        version=${{ github.event.inputs.version }}
+        for dir in ${{ steps.find-dirs.outputs.dirs }}
+        do
+          docker build -t ibombit/lighthouse-puppeteer-chrome:$version-alpine $dir
+          docker push ibombit/lighthouse-puppeteer-chrome:$version-alpine
+        done
