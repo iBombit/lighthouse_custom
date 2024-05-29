@@ -18,7 +18,8 @@
     "mocha": "^10.4.0",
     "puppeteer": "^22.10.0",
     "puppeteer-har": "^1.1.2",
-    "winston": "^3.13.0"
+    "winston": "^3.13.0",
+    "csv-parser": "^3.0.0"
   },
   "license": "Apache-2.0"
 }
