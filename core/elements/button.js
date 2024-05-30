@@ -79,4 +79,22 @@ export default class Button extends Element {
         }
     }
 
+    // Action: click and hold on button
+    async clickAndHold(timeout=Element.DEFAULT_TIMEOUT, holdTime = 2000){
+        logger.debug(`[CLICKANDHOLD] ${this.locatorType}:${this.locator}`);
+        try {
+            await this.find(timeout);
+            const box = await this.element.boundingBox(); // Move the mouse to the element's position
+            await this.page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+            await this.page.mouse.down();
+            await new Promise(resolve => setTimeout(resolve, holdTime));
+            await this.page.mouse.up();
+        }
+        catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
+            this.page.isSuccess = false;
+            throw new Error(error);
+        }
+    }
+
 }
