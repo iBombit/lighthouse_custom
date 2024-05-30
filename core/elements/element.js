@@ -26,6 +26,17 @@ export default class Element {
         return this.element
     }
 
+    // Hover method that reuses the find method
+    async hover(timeout = Element.DEFAULT_TIMEOUT) {
+        logger.debug(`[HOVER] ${this.locatorType}:${this.locator}`);
+        // Use the existing find method to locate the element
+        const element = await this.find(timeout);
+        if (element) {
+            await element.hover();
+            logger.debug(`[HOVER] Successfully hovered over ${this.locatorType}:${this.locator}`);
+        }
+    }
+
     // Action: get element from list on page
     async findFromList(timeout = Element.DEFAULT_TIMEOUT, index) {
         logger.debug(`[FIND] ${this.locatorType}:${this.locator} -- index ${index}`);
