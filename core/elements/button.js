@@ -11,13 +11,26 @@ export default class Button extends Element {
 
 
     // Action: click on button using JS click
-    async jsClick(timeout=Element.DEFAULT_TIMEOUT){
-        logger.debug(`[JSCLICK] ${this.locator}`);
+    async jsClick(timeout = Element.DEFAULT_TIMEOUT) {
+        logger.debug(`[JSCLICK] ${this.locatorType}:${this.locator}`);
         try {
-            await this.find(timeout);
-            await this.page.$eval(this.locator, element => element.click());
+            const element = await this.find(timeout);
+            await this.page.evaluate(element => element.click(), element);
+    
+        } catch (error) {
+            logger.debug(`[ERROR] check selector, it must contain page`);
+            this.page.isSuccess = false;
+            throw new Error(error);
         }
-        catch (error) {
+    }
+
+    async jsClickHidden(timeout = Element.DEFAULT_TIMEOUT) {
+        logger.debug(`[JSCLICK] ${this.locatorType}:${this.locator}`);
+        try {
+            const element = await this.findHidden(timeout);
+            await this.page.evaluate(element => element.click(), element);
+    
+        } catch (error) {
             logger.debug(`[ERROR] check selector, it must contain page`);
             this.page.isSuccess = false;
             throw new Error(error);
