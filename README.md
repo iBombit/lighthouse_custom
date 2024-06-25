@@ -14,8 +14,8 @@ CMD params
 - **`--password`**  
   Sets the password. Usage: `--password=PASSWORD`
 
-- **`--host`**  
-  Sets the host link. Usage: `--host=https://google.com`
+- **`--url`**  
+  Sets the host link. Usage: `--url=https://google.com`
 
 - **`--ddhost`**  
   Specifies the Datadog host link (exclude 'http://'). Usage: `--ddhost=api.datadoghq.eu`
@@ -37,5 +37,5 @@ npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --head
 2. Verify that headless mode is enabled via "--headless=false" flag
 3. In repo dir run this command:
 ```
-docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:12.0.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/"
+docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:12.1.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/"
 ```
