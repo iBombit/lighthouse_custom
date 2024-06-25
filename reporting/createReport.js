@@ -14,6 +14,8 @@ const performanceAudits = [
   'cumulative-layout-shift',
   'mainthread-work-breakdown',
   'network-requests',
+  'slowest-network-request',
+  'longest-first-party-request'
 ];
 
 export default class CreateReport {
