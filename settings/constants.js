@@ -45,7 +45,7 @@ export class Mobile3G {
     this.screenHeight = 640;
     this.rttMs = 300;
     this.throughputKbps = 700;
-    this.cpuSlowdownMultiplier = 4;
+    this.cpuSlowdownMultiplier = 1;
     this.requestLatencyMs = 300;
     this.downloadThroughputKbps = 700;
     this.uploadThroughputKbps = 700;
@@ -64,7 +64,7 @@ export class Mobile4G {
     this.screenHeight = 640;
     this.rttMs = 150;
     this.throughputKbps = 1.6 * 1024;
-    this.cpuSlowdownMultiplier = 4;
+    this.cpuSlowdownMultiplier = 1;
     this.requestLatencyMs = 150;
     this.downloadThroughputKbps = 1.6 * 1024;
     this.uploadThroughputKbps = 1.6 * 1024;
@@ -84,7 +84,7 @@ export class Mobile4G_Slow {
     this.screenHeight = 640;
     this.rttMs = 150;
     this.throughputKbps = 1.6 * 1024 / 2;
-    this.cpuSlowdownMultiplier = 4;
+    this.cpuSlowdownMultiplier = 1;
     this.requestLatencyMs = 150;
     this.downloadThroughputKbps = 1.6 * 1024 / 2;
     this.uploadThroughputKbps = 1.6 * 1024 / 2;
