@@ -15,12 +15,20 @@ let url;
 let browserLocation;
 let ddHost;
 let ddKey;
+let webhook;
+let influxUrl;
+let influxToken;
+let influxOrg;
+let influxBucket;
+let githubRunUrl;
+let teamsWorkflowUrl;
 
 // Process the command line arguments
 const args = process.argv;
 args.forEach(arg => {
     if (arg.includes('--') && arg.includes('=')) {
-        let [key, value] = arg.split('=');
+        let [key, ...valueParts] = arg.split('=');
+        let value = valueParts.join('='); // This ensures the value contains all the parts
         key = key.replace('--', ''); // Remove '--' prefix
 
         switch (key.toLowerCase()) {
@@ -64,6 +72,30 @@ args.forEach(arg => {
             case 'ddhost':
                 ddHost = value;
                 break;
+            case 'webhook':
+                webhook = value;
+                break;
+            case 'influxurl':
+                influxUrl = value;
+                break;
+            case 'influxtoken':
+                influxToken = value;
+                break;
+            case 'influxorg':
+                influxOrg = value;
+                break;
+            case 'influxbucket':
+                influxBucket = value;
+                break;
+            case 'githubrunurl':
+                githubRunUrl = value;
+                break;
+            case 'teamsworkflowurl':
+                teamsWorkflowUrl = value;
+                console.warn(teamsWorkflowUrl)
+                break;
+            default:
+                console.warn(`Unknown parameter specified: ${key}`)
         }
     }
 });
@@ -97,5 +129,12 @@ export {
     url,
     browserLocation,
     ddHost,
-    ddKey
+    ddKey,
+    webhook,
+    influxUrl,
+    influxToken,
+    influxOrg,
+    influxBucket,
+    githubRunUrl,
+    teamsWorkflowUrl
 };
