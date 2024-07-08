@@ -117,10 +117,3 @@ export class BrowserLocations {
     return location;
   }
 }
-
-export const myRelevantAudits = [
-  './settings/audits/network-longest-first-party.js',
-  './settings/audits/network-slowest-request',
-  './settings/audits/network-requests',
-  './settings/audits/network-server-latency',
-];

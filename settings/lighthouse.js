@@ -1,4 +1,4 @@
-import { Desktop, Mobile, Mobile3G, Mobile4G, Mobile4G_Slow, myRelevantAudits } from './constants.js';
+import { Desktop, Mobile, Mobile3G, Mobile4G, Mobile4G_Slow } from './constants.js';
 
 export const configDesktop = createBaseConfig(new Desktop());
 export const configMobile = createBaseConfig(new Mobile());
@@ -31,11 +31,17 @@ function createBaseConfig(device) {
     },
     artifacts: [
       { id: 'MemoryProfile', gatherer: './settings/gatherers/memory-gatherer.js' },
+      { id: 'DomContentLoadedTracker', gatherer: './settings/gatherers/dom-content-loaded-tracker.js' },
+      { id: 'NetworkIdle0Tracker', gatherer: './settings/gatherers/network-idle-0-tracker.js' },
+      { id: 'NetworkIdle2Tracker', gatherer: './settings/gatherers/network-idle-2-tracker.js' },
     ],
     audits: [
       './settings/audits/network-longest-first-party.js',
       './settings/audits/network-slowest-request.js',
       './settings/audits/memory-audit.js',
+      './settings/audits/dom-content-loaded-audit.js',
+      './settings/audits/network-idle-0-audit.js',
+      './settings/audits/network-idle-2-audit.js',
       './settings/audits/network-requests.js',
       './settings/audits/network-server-latency.js',
       './settings/audits/main-thread-tasks.js',
@@ -47,16 +53,19 @@ function createBaseConfig(device) {
         description: 'API loading speed, Server-side latency and screenshot times.',
         supportedModes: ['navigation', 'timespan'],
         auditRefs: [
-          { id: 'longest-first-party-request', weight: 1, group: 'metrics', acronym: 'FPA', relevantAudits: myRelevantAudits },
-          { id: 'slowest-network-request', weight: 1, group: 'metrics', acronym: 'FPA', relevantAudits: myRelevantAudits },
-          { id: 'network-requests', weight: 1, group: 'metrics', acronym: 'NR', relevantAudits: myRelevantAudits },
+          { id: 'longest-first-party-request', weight: 1, group: 'metrics', acronym: 'FPA'},
+          { id: 'slowest-network-request', weight: 1, group: 'metrics', acronym: 'FPA'},
+          { id: 'network-requests', weight: 1, group: 'metrics', acronym: 'NR'},
           { id: 'network-rtt', weight: 0, group: 'metrics', acronym: 'RTT' },
-          { id: 'network-server-latency', weight: 1, group: 'metrics', acronym: 'SBL', relevantAudits: myRelevantAudits },
+          { id: 'network-server-latency', weight: 1, group: 'metrics', acronym: 'SBL'},
           { id: 'main-thread-tasks', weight: 0, group: 'metrics' },
           { id: 'screenshot-thumbnails', weight: 0, group: 'metrics' },
           { id: 'final-screenshot', weight: 1, group: 'metrics', acronym: 'FS' },
           { id: 'mainthread-work-breakdown', weight: 0, group: 'metrics' },
           { id: 'memory-audit', weight: 1 },
+          { id: 'dom-content-loaded-audit', weight: 1, group: 'metrics' },
+          { id: 'network-idle-0-audit', weight: 1, group: 'metrics' },
+          { id: 'network-idle-2-audit', weight: 1, group: 'metrics' },
         ],
       },
     },
