@@ -64,7 +64,7 @@ function getRequestOptions(influxUrl, influxToken, org, bucket) {
     const url = new URL(influxUrl);
     return {
         hostname: url.hostname,
-        port: url.port, // Now explicitly setting the port
+        port: url.port,
         path: `/api/v2/write?org=${org}&bucket=${bucket}&precision=ms`,
         method: 'POST',
         headers: {

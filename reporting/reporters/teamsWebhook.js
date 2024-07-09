@@ -15,7 +15,7 @@ const performanceAuditsTeams = [
 ];
 
 export async function sendMetricsToTeams(webhookUrl, flowResult) {
-  logger.debug("[REPORT] Sending metrics to Teams...");
+  logger.debug("[REPORT] Sending metrics to Teams via webhook...");
 
   const auditNames = {
     'first-contentful-paint': 'FCP',
