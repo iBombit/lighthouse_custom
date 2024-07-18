@@ -29,7 +29,10 @@ export async function sendMetricsToTeams(webhookUrl, flowResult) {
     'network-requests': 'API time',
   };
 
-  let text = "**UI Performance test notification**" + "\n\n" + `${params.url} - ${params.githubRunUrl}`
+  let text = "**UI Performance test notification**" + "\n\n" 
+             + `Environment: ${params.url}` + "\n\n" 
+             + `Region: ${params.regions}` + "\n\n"
+             + `CI link: ${params.ciUrl}`;
 
   let tableHeader = "| Step | Score | " + performanceAuditsTeams.map(audit => auditNames[audit]).join(" | ") + " |";
   let tableDivider = "| --- | --- | " + performanceAuditsTeams.map(() => "---").join(" | ") + " |";

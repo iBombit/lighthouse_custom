@@ -4,15 +4,15 @@ import logger from "../../logger/logger.js";
 /**
  * Sends performance metrics to InfluxDB.
  * @param {string} influxUrl - The URL to your InfluxDB instance.
- * @param {string} influxToken - The authentication token for InfluxDB.
- * @param {string} org - Your InfluxDB organization.
- * @param {string} bucket - The bucket where data will be stored.
+ * @param {string} influxUsername - The username for InfluxDB.
+ * @param {string} influxPassword - The password for InfluxDB.
+ * @param {string} database - The database where data will be stored.
  * @param {Object} flowResult - The result object containing performance metrics.
  */
-export async function sendMetricsToInfluxV2(influxUrl, influxToken, org, bucket, flowResult) {
+export async function sendMetricsToInfluxV1(influxUrl, influxUsername, influxPassword, database, flowResult) {
     logger.debug("[REPORT] Sending metrics to InfluxDB...");
 
-    const dataPoints = flowResult.steps.flatMap(step => createDataPointsForStep(step, bucket)).join('\n');
+    const dataPoints = flowResult.steps.flatMap(step => createDataPointsForStep(step, database)).join('\n');
 
     if (!dataPoints) {
         logger.debug("[REPORT] No data points to send to InfluxDB.");
@@ -20,7 +20,7 @@ export async function sendMetricsToInfluxV2(influxUrl, influxToken, org, bucket,
     }
 
     try {
-        const options = getRequestOptions(influxUrl, influxToken, org, bucket);
+        const options = getRequestOptions(influxUrl, influxUsername, influxPassword, database);
         const req = http.request(options, res => {
             let responseBody = '';
             res.on('data', d => responseBody += d);
@@ -38,18 +38,18 @@ export async function sendMetricsToInfluxV2(influxUrl, influxToken, org, bucket,
     }
 }
 
-function createDataPointsForStep(step, bucket) {
+function createDataPointsForStep(step, database) {
     const timestamp = new Date().getTime();
     const performanceScore = Math.round(step.lhr.categories.performance.score * 100);
 
     let perfScorePoints = [
-        `performance,step=${sanitize(step.name)},bucket=${sanitize(bucket)} score=${performanceScore} ${timestamp}`
+        `performance,step=${sanitize(step.name)},database=${sanitize(database)} score=${performanceScore} ${timestamp}`
     ];
 
     const auditDataPoints = Object.entries(step.lhr.audits)
         .filter(([key, audit]) => audit.numericValue !== undefined)
         .map(([key, audit]) => {
-            return `performance,step=${sanitize(step.name)},bucket=${sanitize(bucket)} ${key}=${audit.numericValue} ${timestamp}`;
+            return `performance,step=${sanitize(step.name)},database=${sanitize(database)} ${key}=${audit.numericValue} ${timestamp}`;
         });
 
     return perfScorePoints.concat(auditDataPoints);
@@ -60,16 +60,16 @@ function sanitize(value) {
     return value.replace(/,/g, '\\,').replace(/ /g, '\\ ');
 }
 
-function getRequestOptions(influxUrl, influxToken, org, bucket) {
+function getRequestOptions(influxUrl, influxUsername, influxPassword, database) {
     const url = new URL(influxUrl);
     return {
         hostname: url.hostname,
         port: url.port,
-        path: `/api/v2/write?org=${org}&bucket=${bucket}&precision=ms`,
+        path: `/write?db=${database}&precision=ms`,
         method: 'POST',
         headers: {
             'Content-Type': 'text/plain; charset=utf-8',
-            'Authorization': `Token ${influxToken}`,
+            'Authorization': 'Basic ' + Buffer.from(influxUsername + ':' + influxPassword).toString('base64'),
         }
     };
 }
