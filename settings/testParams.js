@@ -6,8 +6,8 @@ const uploadDir = path.dirname(new URL(import.meta.url).pathname);
 
 // Initialize variables with default values
 let loops = 1;
-let testTime = 120; // 2 minutes
-let suitTime = 1800; // 30 minutes
+let testTime = 120000; // 2 minutes
+let suitTime = 1800000; // 30 minutes
 let headless = true;
 let browserType = 'desktop';
 let login

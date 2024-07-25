@@ -30,12 +30,12 @@ export default class CreateReport {
       {
         condition: () => params.influxUrl && params.influxUsername && params.influxPassword && params.influxDatabase,
         action: (flowResult) => sendMetricsToInfluxV1(params.influxUrl, params.influxUsername, params.influxPassword, params.influxDatabase, flowResult),
-        errorMessage: "[REPORT] InfluxDB configuration not provided. Skipping sending metrics"
+        errorMessage: "[REPORT] InfluxDB_V1 configuration not provided. Skipping sending metrics"
       },
       {
         condition: () => params.influxUrl && params.influxToken && params.influxOrg && params.influxBucket,
         action: (flowResult) => sendMetricsToInfluxV2(params.influxUrl, params.influxToken, params.influxOrg, params.influxBucket, flowResult),
-        errorMessage: "[REPORT] InfluxDB configuration not provided. Skipping sending metrics"
+        errorMessage: "[REPORT] InfluxDB_V2 configuration not provided. Skipping sending metrics"
       }
     ];
   }
