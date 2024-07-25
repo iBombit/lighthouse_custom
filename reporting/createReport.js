@@ -1,110 +1,66 @@
 import fs from 'fs/promises';
-import https from 'https';
 import logger from "../logger/logger.js";
+import * as params from '../settings/testParams.js';
+import { sendMetricsToDD } from './reporters/datadog.js';
+import { sendMetricsToTeams } from './reporters/teamsWebhook.js';
+import { sendMetricsToInfluxV1 } from './reporters/influx_v1.js';
+import { sendMetricsToInfluxV2 } from './reporters/influx_v2.js';
 
 const reportPath = './reports/user-flow.report.html';
 const reportPathJson = './reports/user-flow.report.json';
-const performanceAudits = [
-  'first-contentful-paint',
-  'speed-index',
-  'interactive',
-  'interaction-to-next-paint',
-  'total-blocking-time',
-  'largest-contentful-paint',
-  'cumulative-layout-shift',
-  'mainthread-work-breakdown',
-  'network-requests',
-  'slowest-network-request',
-  'longest-first-party-request'
-];
 
 export default class CreateReport {
-  constructor(ddHost, ddKey) {
-    this.ddHost = ddHost;
-    this.ddKey = ddKey;
+  constructor() {
+    this.reporters = [
+      {
+        condition: () => params.ddHost && params.ddKey,
+        action: (flowResult) => sendMetricsToDD(params.ddHost, params.ddKey, flowResult),
+        errorMessage: "[REPORT] Datadog API host or API key not provided. Skipping sending metrics"
+      },
+      {
+        condition: () => params.webhook,
+        action: (flowResult) => sendMetricsToTeams(params.webhook, flowResult),
+        errorMessage: "[REPORT] Teams Webhook URL not provided. Skipping sending metrics"
+      },
+      {
+        condition: () => params.teamsWorkflowUrl,
+        action: () => logger.debug("[REPORT] Teams Workflow not implemented yet, sorry"),
+        errorMessage: "[REPORT] Teams Workflow URL not provided. Skipping sending metrics"
+      },
+      {
+        condition: () => params.influxUrl && params.influxUsername && params.influxPassword && params.influxDatabase,
+        action: (flowResult) => sendMetricsToInfluxV1(params.influxUrl, params.influxUsername, params.influxPassword, params.influxDatabase, flowResult),
+        errorMessage: "[REPORT] InfluxDB_V1 configuration not provided. Skipping sending metrics"
+      },
+      {
+        condition: () => params.influxUrl && params.influxToken && params.influxOrg && params.influxBucket,
+        action: (flowResult) => sendMetricsToInfluxV2(params.influxUrl, params.influxToken, params.influxOrg, params.influxBucket, flowResult),
+        errorMessage: "[REPORT] InfluxDB_V2 configuration not provided. Skipping sending metrics"
+      }
+    ];
   }
 
   async createReports(flow) {
     const reportHTML = await flow.generateReport();
-    const flowResult = await flow.createFlowResult();
+    let flowResult = await flow.createFlowResult();
     const reportJSON = JSON.stringify(flowResult, null, 2);
 
     await fs.writeFile(reportPath, reportHTML);
     await fs.writeFile(reportPathJson, reportJSON);
 
-    logger.debug("[REPORT] HTML path: " + reportPath);
-    logger.debug("[REPORT] JSON path: " + reportPathJson);
+    logger.debug(`[REPORT] HTML path: ${reportPath}.html`);
+    logger.debug(`[REPORT] JSON path: ${reportPathJson}.json`);
 
-    if (this.ddHost && this.ddKey) {
-      await this.sendMetricsToDD(flowResult);
-    } else {
-      logger.debug("[REPORT] Datadog API host or API key not provided. Skipping sending metrics");
-    }
+    await this.sendReports(flowResult);
   }
 
-  async sendMetricsToDD(flowResult) {
-    logger.debug("[REPORT] Sending metrics to Datadog...");
-    const now = Math.floor(Date.now() / 1000);
-    try {
-      const metricsToSend = flowResult.steps.flatMap(step => {
-        const metrics = [];
-        const applicationName = this.extractApplicationName(step.lhr.finalDisplayedUrl);
-        const performanceScore = step.lhr.categories.performance.score * 100;
-
-        metrics.push({
-          metric: 'website.performance.score',
-          points: [[now, performanceScore]],
-          type: 'gauge',
-          tags: [`step_name:${step.name}`, `application_name:${applicationName}`, 'environment:test']
-        });
-
-        for (const audit of performanceAudits) {
-          const numericValue = step.lhr.audits[audit]?.numericValue;
-          if (numericValue != null) {
-            metrics.push({
-              metric: `website.performance.${audit.replace('-', '_')}`,
-              points: [[now, numericValue]],
-              type: 'gauge',
-              tags: [`step_name:${step.name}`, `application_name:${applicationName}`, 'environment:test']
-            });
-          }
-        }
-
-        return metrics;
-      });
-
-      const options = {
-        hostname: this.ddHost,
-        path: '/api/v1/series',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'DD-API-KEY': this.ddKey
-        }
-      };
-
-      const req = https.request(options, res => {
-        res.on('data', d => process.stdout.write(d));
-      });
-
-      req.on('error', e => {
-        logger.debug("[REPORT] Error sending metrics to Datadog: " + e.message);
-      });
-
-      req.write(JSON.stringify({ series: metricsToSend }));
-      req.end();
-    } catch (error) {
-      logger.debug(`[REPORT] Error sending metrics to Datadog: ${error}`);
-    }
-  }
-
-  extractApplicationName(url) {
-    try {
-      const urlObj = new URL(url);
-      return urlObj.hostname ? urlObj.hostname.split('.')[0] : '3rd-party';
-    } catch (e) {
-      logger.debug(e);
-      return '3rd-party';
+  async sendReports(flowResult) {
+    for (const reporter of this.reporters) {
+      if (reporter.condition()) {
+        await reporter.action(flowResult);
+      } else {
+        logger.debug(reporter.errorMessage);
+      }
     }
   }
 }

@@ -6,21 +6,34 @@ const uploadDir = path.dirname(new URL(import.meta.url).pathname);
 
 // Initialize variables with default values
 let loops = 1;
-let testTime = 360000; // 360 seconds or 6 minutes
+let testTime = 120000; // 2 minutes
+let suitTime = 1800000; // 30 minutes
 let headless = true;
 let browserType = 'desktop';
-let login;
+let login
 let password;
 let url;
+let regions = 'not set';
 let browserLocation;
 let ddHost;
 let ddKey;
+let webhook;
+let influxUrl;
+let influxToken;
+let influxOrg;
+let influxBucket;
+let influxUsername;
+let influxPassword;
+let influxDatabase;
+let ciUrl;
+let teamsWorkflowUrl;
 
 // Process the command line arguments
 const args = process.argv;
 args.forEach(arg => {
     if (arg.includes('--') && arg.includes('=')) {
-        let [key, value] = arg.split('=');
+        let [key, ...valueParts] = arg.split('=');
+        let value = valueParts.join('='); // This ensures the value contains all the parts
         key = key.replace('--', ''); // Remove '--' prefix
 
         switch (key.toLowerCase()) {
@@ -29,6 +42,9 @@ args.forEach(arg => {
                 break;
             case 'testtime':
                 testTime = parseInt(value, 10) * 1000; // Convert to milliseconds
+                break;
+            case 'suittime':
+                suitTime = parseInt(value, 10) * 1000; // Convert to milliseconds
                 break;
             case 'headless':
                 headless = value !== 'false'; // Anything other than 'false' is considered true
@@ -55,6 +71,9 @@ args.forEach(arg => {
             case 'url':
                 url = value;
                 break;
+            case 'regions':
+                regions = value.split(".");
+                break;
             case 'browserlocation':
                 browserLocation = value;
                 break;
@@ -64,6 +83,39 @@ args.forEach(arg => {
             case 'ddhost':
                 ddHost = value;
                 break;
+            case 'webhook':
+                webhook = value;
+                break;
+            case 'influxurl':
+                influxUrl = value;
+                break;
+            case 'influxtoken':
+                influxToken = value;
+                break;
+            case 'influxorg':
+                influxOrg = value;
+                break;
+            case 'influxbucket':
+                influxBucket = value;
+                break;
+            case 'influxusername':
+                influxUsername = value;
+                break;
+            case 'influxpassword':
+                influxPassword = value;
+                break;
+            case 'influxdatabase':
+                influxDatabase = value;
+                break;
+            case 'ciurl':
+                ciUrl = value;
+                break;
+            case 'teamsworkflowurl':
+                teamsWorkflowUrl = value;
+                console.warn(teamsWorkflowUrl)
+                break;
+            default:
+                console.warn(`Unknown parameter specified: ${key}`)
         }
     }
 });
@@ -90,12 +142,24 @@ export {
     uploadDir,
     loops,
     testTime,
+    suitTime,
     headless,
     browserType,
     login,
     password,
     url,
+    regions,
     browserLocation,
     ddHost,
-    ddKey
+    ddKey,
+    webhook,
+    influxUrl,
+    influxToken,
+    influxOrg,
+    influxBucket,
+    influxUsername,
+    influxPassword,
+    influxDatabase,
+    ciUrl,
+    teamsWorkflowUrl
 };
