@@ -35,7 +35,7 @@ export async function afterHook() {
             browser.page.isSuccess = false;
         }
         await browser.flow.snapshot({ name: 'Capturing last state of the test' });
-        await new CreateReport(params.ddHost, params.ddKey, params.webhook, params.teamsWorkflowUrl, params.influxUrl, params.influxToken, params.influxOrg, params.influxBucket).createReports(browser.flow);
+        await new CreateReport().createReports(browser.flow);
         await browser.closeBrowser();
     } catch (error) {
         logger.debug("[ERROR] afterHook " + error);
