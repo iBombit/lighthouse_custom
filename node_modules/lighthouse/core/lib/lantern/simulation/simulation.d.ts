@@ -1,0 +1,21 @@
+export { ConnectionPool } from "./ConnectionPool.js";
+export { Constants } from "./Constants.js";
+export { DNSCache } from "./DNSCache.js";
+export { NetworkAnalyzer } from "./NetworkAnalyzer.js";
+export { Simulator } from "./Simulator.js";
+export { SimulatorTimingMap } from "./SimulationTimingMap.js";
+export { TcpConnection } from "./TcpConnection.js";
+export type GraphNetworkNode<T = any> = Lantern.Simulation.GraphNetworkNode<T>;
+export type GraphNode<T = any> = Lantern.Simulation.GraphNode<T>;
+export type Result<T = any> = Lantern.Simulation.Result<T>;
+export type GraphCPUNode = Lantern.Simulation.GraphCPUNode;
+export type MetricCoefficients = Lantern.Simulation.MetricCoefficients;
+export type MetricComputationDataInput = Lantern.Simulation.MetricComputationDataInput;
+export type NodeTiming = Lantern.Simulation.NodeTiming;
+export type Options = Lantern.Simulation.Options;
+export type PrecomputedLanternData = Lantern.Simulation.PrecomputedLanternData;
+export type ProcessedNavigation = Lantern.Simulation.ProcessedNavigation;
+export type Settings = Lantern.Simulation.Settings;
+export type URL = Lantern.Simulation.URL;
+import * as Lantern from '../types/lantern.js';
+//# sourceMappingURL=simulation.d.ts.map
