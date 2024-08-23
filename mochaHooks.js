@@ -1,5 +1,5 @@
-import logger from "../logger/logger.js";
-import CreateReport from '../reporting/createReport.js';
+import logger from "logger-module/logger.js";
+import CreateReport from 'reporting-module/createReport.js';
 import * as params from './testParams.js';
 import { setupBrowser } from './testParams.js';
 

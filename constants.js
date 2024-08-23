@@ -1,4 +1,4 @@
-import logger from "../logger/logger.js";
+import logger from "logger-module/logger.js";
 
 export class Desktop {
   constructor() {
