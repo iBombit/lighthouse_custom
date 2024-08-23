@@ -1,7 +1,7 @@
-import Page from "../../core/page.js";
-import Button from "../../core/elements/button.js";
-import Element from "../../core/elements/element.js";
-import Iframe from "../../core/elements/iframe.js";
+import Page from "core-module/page.js";
+import Button from "core-module/elements/button.js";
+import Element from "core-module/elements/element.js";
+import Iframe from "core-module/elements/iframe.js";
 
 export default class PowerApps extends Page {
     constructor(page) {

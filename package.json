@@ -19,7 +19,11 @@
     "puppeteer": "^22.12.1",
     "puppeteer-har": "^1.1.2",
     "winston": "^3.13.0",
-    "csv-parser": "^3.0.0"
+    "csv-parser": "^3.0.0",
+    "core-module": "git+https://github.com/iBombit/lighthouse_custom.git#core",
+    "logger-module": "git+https://github.com/iBombit/lighthouse_custom.git#logger",
+    "settings-module": "git+https://github.com/iBombit/lighthouse_custom.git#settings",
+    "reporting-module": "git+https://github.com/iBombit/lighthouse_custom.git#reporting"
   },
   "license": "Apache-2.0"
 }

@@ -1,7 +1,7 @@
 // Import statements instead of require()
-import LighthouseBrowser from '../core/browser.js';
-import CreateReport from '../reporting/createReport.js';
-import logger from "../logger/logger.js";
+import LighthouseBrowser from 'core-module/browser.js';
+import CreateReport from 'reporting-module/createReport.js';
+import logger from "logger-module/logger.js";
 
 class Crawler {
     constructor(browserType, headless, startURL, maxDepth = 2, timeout) {

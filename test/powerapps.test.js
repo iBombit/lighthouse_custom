@@ -1,7 +1,7 @@
-import logger from "../logger/logger.js";
+import logger from "logger-module/logger.js";
 import PowerAppsPage from "../pages/PowerApps/pages.js";
-import { beforeHook, beforeEachHook, afterEachHook, afterHook } from '../settings/mochaHooks.js';
-import * as params from '../settings/testParams.js';
+import { beforeHook, beforeEachHook, afterEachHook, afterHook } from 'settings-module/mochaHooks.js';
+import * as params from 'settings-module/testParams.js';
 
 before(async () => {
     await browser.init();

@@ -1,6 +1,6 @@
-import Page from "../../core/page.js";
-import Button from "../../core/elements/button.js";
-import Element from "../../core/elements/element.js";
+import Page from "core-module/page.js";
+import Button from "core-module/elements/button.js";
+import Element from "core-module/elements/element.js";
 
 export default class CheckBoxPage extends Page {
     constructor(page) {
