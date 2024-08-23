@@ -1,6 +1,6 @@
 import https from 'https';
-import logger from "../../logger/logger.js";
-import * as params from '../../settings/testParams.js';
+import logger from "logger-module/logger.js";
+import * as params from 'settings-module/testParams.js';
 
 const performanceAuditsTeams = [
   'first-contentful-paint',

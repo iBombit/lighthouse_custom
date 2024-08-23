@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
-import logger from "../logger/logger.js";
-import * as params from '../settings/testParams.js';
+import logger from "logger-module/logger.js";
+import * as params from 'settings-module/testParams.js';
 import { sendMetricsToDD } from './reporters/datadog.js';
 import { sendMetricsToTeams } from './reporters/teamsWebhook.js';
 import { sendMetricsToInfluxV1 } from './reporters/influx_v1.js';

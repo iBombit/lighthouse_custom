@@ -1,5 +1,5 @@
 import http from 'http';
-import logger from "../../logger/logger.js";
+import logger from "logger-module/logger.js";
 
 /**
  * Sends performance metrics to InfluxDB.

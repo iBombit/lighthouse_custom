@@ -3,5 +3,9 @@
   "version": "1.0.0",
   "description": "Reporting functionality for the UI framework",
   "author": "Sergei Pashkevich",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "logger-module": "git+https://github.com/iBombit/lighthouse_custom.git#logger",
+    "settings-module": "git+https://github.com/iBombit/lighthouse_custom.git#settings"
+  }
 }

@@ -1,5 +1,5 @@
 import https from 'https';
-import logger from "../../logger/logger.js";
+import logger from "logger-module/logger.js";
 
 export async function sendMetricsToDD(ddHost, ddKey, flowResult) {
     logger.debug("[REPORT] Sending metrics to Datadog...");
