@@ -1,35 +1,91 @@
-## Command Line Parameters
-- `--browsertype`: Specifies the browser type. Usage: `--browsertype=desktop`
-- `--headless`: Runs tests in headless mode. Usage: `--headless=false`
-- `--browserLocation`: Sets a custom browser location. Usage: `--browserLocation="C:/Browser/start.exe"`
-- `--login`: Sets the login. Usage: `--login=example@email.com`
-- `--password`: Sets the password. Usage: `--password=PASSWORD`
-- `--url`: Sets the host link. Usage: `--url=https://google.com`
-- `--ddhost`: Specifies the Datadog host link (exclude 'http://'). Usage: `--ddhost=api.datadoghq.eu`
-- `--ddkey`: Provides the Datadog API key. Usage: `--ddkey=<Your_Datadog_API_Key>`
-- `--ciurl`: Sets the CI run URL. Usage: `--ciurl=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID`
-- `--webhook`: Sets the webhook URL. Usage: `--webhook="YOUR_WEBHOOK_URL"`
-- `--influxurl`: Required for both InfluxV1 and InfluxV2. Sets the InfluxDB URL. Usage: `--influxurl=http://YOUR_IP:8086/`
-- `--influxToken`: InfluxV2 specific. Sets the InfluxDB token. Usage: `--influxToken=YOUR_INFLUX_TOKEN`
-- `--influxorg`: InfluxV2 specific. Sets the InfluxDB organization. Usage: `--influxorg=YOUR_ORG`
-- `--influxbucket`: InfluxV2 specific. Sets the InfluxDB bucket. Usage: `--influxbucket=YOUR_BUCKET`
-- `--influxusername`: InfluxV1 specific. Sets the InfluxDB username. Usage: `--influxusername=YOUR_USERNAME`
-- `--influxpassword`: InfluxV1 specific. Sets the InfluxDB password. Usage: `--influxpassword=YOUR_PASSWORD`
-- `--influxdatabase`: InfluxV1 specific. Sets the InfluxDB database. Usage: `--influxdatabase=YOUR_DATABASE`
+# settings
 
-**Local runs**
-1. git clone https://github.com/iBombit/lighthouse_custom
-2. Install node.js
-3. In repo dir execute run these commands:
-```
-npm install
-npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/"
-```
+## settings/browser.js
 
-**With docker**
-1. git clone https://github.com/iBombit/lighthouse_custom
-2. Verify that headless mode is enabled via "--headless=false" flag
-3. In repo dir run this command:
-```
-docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:12.1.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/"
-```
+The `settings/browser.js` file provides configuration settings for different browser types.
+
+**Browser**
+
+- **Properties**:
+  - `os`: Operating system.
+  - `browserLocation`: Location of the browser executable.
+
+**Methods**
+
+- `constructor`: Initializes the browser with the operating system.
+- `headlessDesktop`: Returns configuration for a headless desktop browser.
+- `headfulDesktop`: Returns configuration for a headful desktop browser.
+- `headlessMobile`: Returns configuration for a headless mobile browser.
+- `headfulMobile`: Returns configuration for a headful mobile browser.
+
+## settings/constants.js
+
+The `settings/constants.js` file contains constants for desktop and mobile configurations.
+
+**Classes**
+
+- **Desktop**: Configuration for desktop environments.
+- **Mobile**: Configuration for mobile environments.
+- **Mobile3G**: Configuration for mobile environments with 3G connectivity.
+- **Mobile4G**: Configuration for mobile environments with 4G connectivity.
+- **Mobile4G_Slow**: Configuration for mobile environments with slow 4G connectivity.
+- **BrowserLocations**: Determines the browser executable location based on the operating system.
+
+**Constants**
+
+- **myRelevantAudits**: Array of relevant audit paths.
+
+## settings/lighthouse.js
+
+The `settings/lighthouse.js` file provides Lighthouse configuration settings for different device types.
+
+**Configurations**
+
+- **configDesktop**: Lighthouse configuration for desktop.
+- **configMobile**: Lighthouse configuration for mobile.
+- **configMobile3G**: Lighthouse configuration for mobile with 3G connectivity.
+- **configMobile4G**: Lighthouse configuration for mobile with 4G connectivity.
+- **configMobile4GSlow**: Lighthouse configuration for mobile with slow 4G connectivity.
+
+**Functions**
+
+- **createBaseConfig**: Creates a base Lighthouse configuration for a given device.
+
+## settings/mochaHooks.js
+
+The `settings/mochaHooks.js` file provides hooks for Mocha tests.
+
+**Hooks**
+
+- **beforeHook**: Sets up the browser before tests.
+- **beforeEachHook**: Checks if the previous flow finished successfully before each test.
+- **afterEachHook**: Logs the end of each test.
+- **afterHook**: Generates reports and closes the browser after all tests.
+- **getCurrentDate**: Returns the current date in a specific format.
+
+## settings/testParams.js
+
+The `settings/testParams.js` file processes command-line arguments and sets up the browser instance.
+
+**Variables**
+
+- **browserInstance**: Singleton instance of the browser.
+- **uploadDir**: Directory for file uploads.
+- **testTime**: Test timeout (default is 2 minutes).
+- **headless**: Boolean indicating if the browser should run in headless mode.
+- **browserType**: Type of browser (desktop/mobile/mobile3G/mobile4G/mobile4GSlow).
+- **login**: Login credentials.
+- **password**: Password credentials.
+- **url**: URL to be tested.
+- **browserLocation**: Location of the browser executable.
+- **ddHost**: Datadog host.
+- **ddKey**: Datadog API key.
+- **webhook**: Teams webhook URL.
+- **githubRunUrl**: GitHub run URL.
+- **testName**: Name of the test.
+
+**Functions**
+
+- **setupBrowser**: Initializes and starts the browser instance.
+- **getBrowserInstance**: Returns the browser instance if it has been initialized.
+- **processArgs**: Processes command-line arguments to set the configuration variables.

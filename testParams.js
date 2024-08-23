@@ -1,4 +1,4 @@
-import LighthouseBrowser from '../core/browser.js';
+import LighthouseBrowser from 'core-module/browser.js';
 import path from 'path';
 
 let browserInstance;
