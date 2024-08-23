@@ -1,7 +1,7 @@
-import Page from "../../core/page.js";
-import UploadField from "../../core/elements/uploadField.js";
-import Element from "../../core/elements/element.js";
-import * as params from '../../settings/testParams.js';
+import Page from "core-module/page.js";
+import UploadField from "core-module/elements/uploadField.js";
+import Element from "core-module/elements/element.js";
+import * as params from 'settings-module/testParams.js';
 
 export default class UploadDownloadPage extends Page {
     constructor(page) {
