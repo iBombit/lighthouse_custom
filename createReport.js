@@ -3,6 +3,7 @@ import logger from "logger-module/logger.js";
 import * as params from 'settings-module/testParams.js';
 import { sendMetricsToDD } from './reporters/datadog.js';
 import { sendMetricsToTeams } from './reporters/teamsWebhook.js';
+import { sendMetricsToSlack } from './reporters/slackWebhook.js';
 import { sendMetricsToInfluxV1 } from './reporters/influx_v1.js';
 import { sendMetricsToInfluxV2 } from './reporters/influx_v2.js';
 
@@ -18,9 +19,14 @@ export default class CreateReport {
         errorMessage: "[REPORT] Datadog API host or API key not provided. Skipping sending metrics"
       },
       {
-        condition: () => params.webhook,
-        action: (flowResult) => sendMetricsToTeams(params.webhook, flowResult),
+        condition: () => params.teamsWebhook,
+        action: (flowResult) => sendMetricsToTeams(params.teamsWebhook, flowResult),
         errorMessage: "[REPORT] Teams Webhook URL not provided. Skipping sending metrics"
+      },
+      {
+        condition: () => params.slackWebhook,
+        action: (flowResult) => sendMetricsToSlack(params.slackWebhook, flowResult),
+        errorMessage: "[REPORT] Slack Webhook URL not provided. Skipping sending metrics"
       },
       {
         condition: () => params.teamsWorkflowUrl,
