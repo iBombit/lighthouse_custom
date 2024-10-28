@@ -80,7 +80,8 @@ The `settings/testParams.js` file processes command-line arguments and sets up t
 - **browserLocation**: Location of the browser executable.
 - **ddHost**: Datadog host.
 - **ddKey**: Datadog API key.
-- **webhook**: Teams webhook URL.
+- **teamsWebhook**: Teams webhook URL.
+- **slackWebhook**: Slack webhook URL.
 - **githubRunUrl**: GitHub run URL.
 - **testName**: Name of the test.
 
