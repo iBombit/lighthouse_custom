@@ -8,7 +8,8 @@
 - `--ddhost`: Specifies the Datadog host link (exclude 'http://'). Usage: `--ddhost=api.datadoghq.eu`
 - `--ddkey`: Provides the Datadog API key. Usage: `--ddkey=<Your_Datadog_API_Key>`
 - `--ciurl`: Sets the CI run URL. Usage: `--ciurl=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID`
-- `--webhook`: Sets the webhook URL. Usage: `--webhook="YOUR_WEBHOOK_URL"`
+- `--teamswebhook`: Sets the Teams webhook URL. Usage: `--teamswebhook="YOUR_WEBHOOK_URL"`
+- `--slackwebhook`: Sets the Slack webhook URL. Usage: `--slackwebhook="YOUR_WEBHOOK_URL"`
 - `--influxurl`: Required for both InfluxV1 and InfluxV2. Sets the InfluxDB URL. Usage: `--influxurl=http://YOUR_IP:8086/`
 - `--influxToken`: InfluxV2 specific. Sets the InfluxDB token. Usage: `--influxToken=YOUR_INFLUX_TOKEN`
 - `--influxorg`: InfluxV2 specific. Sets the InfluxDB organization. Usage: `--influxorg=YOUR_ORG`
