@@ -1,7 +1,7 @@
 // Import statements instead of require()
-import LighthouseBrowser from 'core-module/browser.js';
-import CreateReport from 'reporting-module/createReport.js';
-import logger from "logger-module/logger.js";
+import LighthouseBrowser from 'lh-pptr-framework/core/browser.js';
+import CreateReport from 'lh-pptr-framework/reporting/createReport.js';
+import logger from "lh-pptr-framework/logger/logger.js";
 
 class Crawler {
     constructor(browserType, headless, startURL, maxDepth = 2, timeout) {
