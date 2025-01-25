@@ -1,6 +1,6 @@
 {
   "name": "lh-pptr-framework",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Customizable framework for UI testing multiple pages/SPA actions within a single Lighthouse report",
   "author": "Sergei Pashkevich",
   "license": "ISC",
