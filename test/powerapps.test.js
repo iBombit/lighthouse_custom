@@ -1,7 +1,7 @@
-import logger from "logger-module/logger.js";
-import PowerAppsPage from "../pages/PowerApps/pages.js";
-import { beforeHook, beforeEachHook, afterEachHook, afterHook } from 'settings-module/mochaHooks.js';
-import * as params from 'settings-module/testParams.js';
+import logger from "lh-pptr-framework/logger/logger.js";
+import PowerAppsPage from "../pages/powerapps/pages.js";
+import { beforeHook, beforeEachHook, afterEachHook, afterHook } from 'lh-pptr-framework/settings/mochaHooks.js';
+import * as params from 'lh-pptr-framework/settings/testParams.js';
 
 before(async () => {
     await browser.init();

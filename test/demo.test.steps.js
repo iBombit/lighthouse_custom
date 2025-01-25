@@ -1,11 +1,11 @@
-import logger from "logger-module/logger.js";
+import logger from "lh-pptr-framework/logger/logger.js";
 import HomePage from '../pages/demoqa/homePage.js';
 import TextBoxPage from '../pages/demoqa/textBoxPage.js';
 import UploadDownloadPage from '../pages/demoqa/uploadDownloadPage.js';
 import CheckBoxPage from '../pages/demoqa/checkBoxPage.js';
 import ButtonsPage from '../pages/demoqa/buttonsPage.js';
-import { beforeHook, beforeEachHook, afterEachHook, afterHook } from 'settings-module/mochaHooks.js';
-import * as params from 'settings-module/testParams.js';
+import { beforeHook, beforeEachHook, afterEachHook, afterHook } from 'lh-pptr-framework/settings/mochaHooks.js';
+import * as params from 'lh-pptr-framework/settings/testParams.js';
 
 let browser;
 const Home = new HomePage();

@@ -1,6 +1,6 @@
-import Page from "core-module/page.js";
-import Button from "core-module/elements/button.js";
-import TextField from "core-module/elements/textField.js";
+import Page from "lh-pptr-framework/core/page.js";
+import Button from "lh-pptr-framework/core/elements/button.js";
+import TextField from "lh-pptr-framework/core/elements/textField.js";
 
 export default class HomePage extends Page {
     constructor(page) {
