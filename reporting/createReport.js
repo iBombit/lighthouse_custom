@@ -22,7 +22,7 @@ export default class CreateReport {
       },
       {
         condition: () => params.teamsWebhook,
-        action: (flowResult) => sendMetricsToTeams(params.webhook, flowResult),
+        action: (flowResult) => sendMetricsToTeams(params.teamsWebhook, flowResult),
         errorMessage: "[REPORT] Teams Webhook URL not provided. Skipping sending metrics"
       },
       {
