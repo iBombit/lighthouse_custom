@@ -17,7 +17,8 @@ let regions = 'not set';
 let browserLocation;
 let ddHost;
 let ddKey;
-let webhook;
+let teamsWebhook;
+let slackWebhook;
 let influxUrl;
 let influxToken;
 let influxOrg;
@@ -83,9 +84,11 @@ args.forEach(arg => {
             case 'ddhost':
                 ddHost = value;
                 break;
-            case 'webhook':
-                webhook = value;
+            case 'teamswebhook':
+                teamsWebhook = value;
                 break;
+            case 'slackwebhook':
+                slackWebhook = value;
             case 'influxurl':
                 influxUrl = value;
                 break;
@@ -152,7 +155,8 @@ export {
     browserLocation,
     ddHost,
     ddKey,
-    webhook,
+    teamsWebhook,
+    slackWebhook,
     influxUrl,
     influxToken,
     influxOrg,

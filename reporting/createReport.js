@@ -21,7 +21,7 @@ export default class CreateReport {
         errorMessage: "[REPORT] Datadog API host or API key not provided. Skipping sending metrics"
       },
       {
-        condition: () => params.webhook,
+        condition: () => params.teamsWebhook,
         action: (flowResult) => sendMetricsToTeams(params.webhook, flowResult),
         errorMessage: "[REPORT] Teams Webhook URL not provided. Skipping sending metrics"
       },
