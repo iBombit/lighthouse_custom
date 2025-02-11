@@ -51,4 +51,25 @@ export default class Dropdown extends Element {
         }
     }
 
+    // Action: Select specific "option" based on value from "select" element
+    async selectOptionByValue(optionValue, timeout=Element.DEFAULT_TIMEOUT) {
+        logger.debug(`[SELECT] ${this.locator}`);
+
+        try {
+            await this.find(timeout);
+            await this.page.$eval(this.locator, element => element.click());
+            let options = await this.page.$eval(this.locator, element => Array.from(element.options).map(option => option.value));
+            logger.debug(`[SELECT] available options: ${options}`);
+            if (options.includes(optionValue)) {
+                logger.debug(`[SELECT] chosen value: ${optionValue}`);
+                await this.page.select(this.locator, optionValue);
+            } else {
+                throw new Error(`Option with value "${optionValue}" not found`);
+            }
+        }
+        catch (error) {
+            this.page.isSuccess = false;
+            throw new Error(error);
+        }
+    }
 }
