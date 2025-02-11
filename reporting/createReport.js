@@ -60,8 +60,8 @@ export default class CreateReport {
     await fs.writeFile(reportPath, reportHTML);
     await fs.writeFile(reportPathJson, reportJSON);
 
-    logger.debug(`[REPORT] HTML path: ${reportPath}.html`);
-    logger.debug(`[REPORT] JSON path: ${reportPathJson}.json`);
+    logger.debug(`[REPORT] HTML path: ${reportPath}`);
+    logger.debug(`[REPORT] JSON path: ${reportPathJson}`);
 
     await this.sendReports(flowResult);
   }
