@@ -9,7 +9,7 @@ export class Desktop {
     this.requestLatencyMs = 0; // Assuming values for demonstration
     this.downloadThroughputKbps = 10240;
     this.uploadThroughputKbps = 2048;
-    this.throttlingMethod = 'simulate';
+    this.throttlingMethod = 'devtools';
     this.screenEmulationMobile = false;
     this.screenWidth = 1920;
     this.screenHeight = 1080;
