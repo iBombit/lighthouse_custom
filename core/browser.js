@@ -21,14 +21,14 @@ class LighthouseBrowser {
   async init() {
     this.headless ? logger.debug(`[${this.browserType.toUpperCase()}] Starting HEADLESS browser (${this.browserLocation})`) : logger.debug(`[${this.browserType.toUpperCase()}] Starting HEADFUL browser (${this.browserLocation})`)
     switch (this.browserType) {
-      case "mobile": 
+      case "mobile":
       case "mobile3G":
       case "mobile4G":
       case "mobile4GSlow":
-      {
-        this.browser = await puppeteer.launch(this.headless ? new Browser(this.browserLocation).headlessMobile : new Browser(this.browserLocation).headfulMobile);
-        break;
-      }
+        {
+          this.browser = await puppeteer.launch(this.headless ? new Browser(this.browserLocation).headlessMobile : new Browser(this.browserLocation).headfulMobile);
+          break;
+        }
       case "desktop": {
         this.browser = await puppeteer.launch(this.headless ? new Browser(this.browserLocation).headlessDesktop : new Browser(this.browserLocation).headfulDesktop);
         break;
@@ -48,7 +48,7 @@ class LighthouseBrowser {
     }
   }
 
-  async restartBrowser() {
+  async restartBrowser(pages) {
     logger.debug('KILLING BROWSER');
     await this.page.close();
     await this.browser.close();
@@ -58,25 +58,31 @@ class LighthouseBrowser {
     } catch (error) {
       logger.debug("BROWSER KILLED (error was from non-existent PID, but we catch it)");
     }
-    this.init()
-    this.start()
+    await this.init()
+    await this.start()
+    if (typeof pages != "undefined") {
+      for (const page of pages) {
+        page.init(this.page); // Sets instance of puppeteer page to page objects
+      }
+    }
+    return this
   }
 
   async startNewLighthouseFlow() {
     const configMap = {
-        "desktop": configDesktop,
-        "mobile": configMobile,
-        "mobile3G": configMobile3G,
-        "mobile4G": configMobile4G,
-        "mobile4GSlow": configMobile4GSlow
+      "desktop": configDesktop,
+      "mobile": configMobile,
+      "mobile3G": configMobile3G,
+      "mobile4G": configMobile4G,
+      "mobile4GSlow": configMobile4GSlow
     };
 
     this.flow = await startFlow(this.page, { config: configMap[this.browserType] || configDesktop });
     //logger.debug("[FLOW] " + JSON.stringify(this.flow));
-}
+  }
 
   async updateLighthouseFlow() {
-    this.flow.options.page = this.page;
+    this.flow._page = this.page;
   }
 
   async getNewPageWhenLoaded() {
@@ -116,6 +122,12 @@ class LighthouseBrowser {
     }
     await this.flow.navigate(link, { name: name, configContext: { settingsOverrides: { disableStorageReset: true } } });
     await this.waitTillRendered(timeout);
+  }
+
+  async customNavigation(stepName, actions) {
+    await this.flow.startNavigation({ name: stepName })
+    await actions();
+    await this.flow.endNavigation()
   }
 
   async timespan(stepName, actions) {
