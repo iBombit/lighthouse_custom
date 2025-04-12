@@ -15,3 +15,5 @@ node_modules/
 reports/
 
 package-lock.json
+.promptLib
+.vscode

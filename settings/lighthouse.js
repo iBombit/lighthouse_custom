@@ -1,10 +1,8 @@
+import fs from 'fs';
+import path from 'path';
 import { Desktop, Mobile, Mobile3G, Mobile4G, Mobile4G_Slow } from 'lh-pptr-framework/settings/constants.js';
-
-export const configDesktop = createBaseConfig(new Desktop());
-export const configMobile = createBaseConfig(new Mobile());
-export const configMobile3G = createBaseConfig(new Mobile3G());
-export const configMobile4G = createBaseConfig(new Mobile4G());
-export const configMobile4GSlow = createBaseConfig(new Mobile4G_Slow());
+import logger from "lh-pptr-framework/logger/logger.js";
+import { configFilePath } from 'lh-pptr-framework/settings/testParams.js';
 
 function createBaseConfig(device) {
   return {
@@ -17,7 +15,7 @@ function createBaseConfig(device) {
         cpuSlowdownMultiplier: device.cpuSlowdownMultiplier,
         requestLatencyMs: device.requestLatencyMs,
         downloadThroughputKbps: device.downloadThroughputKbps,
-        uploadThroughputKbps: device.uploadThroughputKbps
+        uploadThroughputKbps: device.uploadThroughputKbps,
       },
       throttlingMethod: device.throttlingMethod,
       screenEmulation: {
@@ -25,7 +23,7 @@ function createBaseConfig(device) {
         width: device.screenWidth,
         height: device.screenHeight,
         deviceScaleFactor: device.deviceScaleFactor,
-        disabled: device.screenEmulationDisabled
+        disabled: device.screenEmulationDisabled,
       },
       formFactor: device.formFactor,
     },
@@ -39,13 +37,13 @@ function createBaseConfig(device) {
       'lh-pptr-framework/settings/audits/network-longest-first-party.js',
       'lh-pptr-framework/settings/audits/network-slowest-request.js',
       'lh-pptr-framework/settings/audits/memory-audit.js',
-      // 'lh-pptr-framework/settings/audits/dom-content-loaded-audit.js',
-      // 'lh-pptr-framework/settings/audits/network-idle-0-audit.js',
-      // 'lh-pptr-framework/settings/audits/network-idle-2-audit.js',
       'lh-pptr-framework/settings/audits/network-requests.js',
       'lh-pptr-framework/settings/audits/network-server-latency.js',
       'lh-pptr-framework/settings/audits/main-thread-tasks.js',
       'lh-pptr-framework/settings/audits/final-screenshot.js',
+      // 'lh-pptr-framework/settings/audits/dom-content-loaded-audit.js',
+      // 'lh-pptr-framework/settings/audits/network-idle-0-audit.js',
+      // 'lh-pptr-framework/settings/audits/network-idle-2-audit.js',
     ],
     categories: {
       'server-side': {
@@ -71,3 +69,37 @@ function createBaseConfig(device) {
     },
   };
 }
+
+function getConfigByBrowserType(browserType) {
+  const deviceMap = {
+    desktop: new Desktop(),
+    mobile: new Mobile(),
+    mobile3G: new Mobile3G(),
+    mobile4G: new Mobile4G(),
+    mobile4GSlow: new Mobile4G_Slow(),
+  };
+
+  const baseConfig = createBaseConfig(deviceMap[browserType] || new Desktop());
+
+  // Try to load and merge custom config file (if specified)
+  if (configFilePath) {
+    try {
+      const customConfig = JSON.parse(fs.readFileSync(path.resolve(configFilePath), 'utf-8'));
+      return {
+        ...baseConfig,
+        ...customConfig,
+        settings: {
+          ...baseConfig.settings,
+          ...customConfig.settings,
+        },
+      };
+    } catch (error) {
+      console.error(`Failed to load custom config file: ${error.message}`);
+      return baseConfig; // Fallback to base config if error occurs
+    }
+  }
+
+  return baseConfig; // Default config if no custom file is provided
+}
+
+export { getConfigByBrowserType };

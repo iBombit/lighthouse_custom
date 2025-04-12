@@ -6,7 +6,7 @@ export class Desktop {
     this.rttMs = 40;
     this.throughputKbps = 10240;
     this.cpuSlowdownMultiplier = 1;
-    this.requestLatencyMs = 0; // Assuming values for demonstration
+    this.requestLatencyMs = 0;
     this.downloadThroughputKbps = 10240;
     this.uploadThroughputKbps = 2048;
     this.throttlingMethod = 'devtools';
