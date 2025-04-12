@@ -13,3 +13,5 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Dependency and report directories
 node_modules/
 reports/
+.promptLib
+.vscode
