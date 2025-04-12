@@ -10,24 +10,13 @@ let testTime = 120000; // 2 minutes
 let suitTime = 1800000; // 30 minutes
 let headless = true;
 let browserType = 'desktop';
-let login
-let password;
-let url;
+let login, password, url;
 let regions = 'not set';
-let browserLocation;
-let ddHost;
-let ddKey;
-let teamsWebhook;
-let slackWebhook;
-let influxUrl;
-let influxToken;
-let influxOrg;
-let influxBucket;
-let influxUsername;
-let influxPassword;
-let influxDatabase;
-let ciUrl;
-let teamsWorkflowUrl;
+let browserLocation, ddHost, ddKey;
+let influxUrl, influxToken, influxOrg, influxBucket;
+let influxUsername, influxPassword, influxDatabase;
+let ciUrl, teamsWebhook, slackWebhook, teamsWorkflowUrl;
+let configFilePath;
 
 // Process the command line arguments
 const args = process.argv;
@@ -37,88 +26,34 @@ args.forEach(arg => {
         let value = valueParts.join('='); // This ensures the value contains all the parts
         key = key.replace('--', ''); // Remove '--' prefix
 
-        switch (key.toLowerCase()) {
-            case 'loops':
-                loops = parseInt(value, 10);
-                break;
-            case 'testtime':
-                testTime = parseInt(value, 10) * 1000; // Convert to milliseconds
-                break;
-            case 'suittime':
-                suitTime = parseInt(value, 10) * 1000; // Convert to milliseconds
-                break;
-            case 'headless':
-                headless = value !== 'false'; // Anything other than 'false' is considered true
-                break;
+        switch (key.replace('--', '').toLowerCase()) {
+            case 'loops': loops = parseInt(value, 10); break;
+            case 'testtime': testTime = parseInt(value, 10) * 1000; break;
+            case 'suittime': suitTime = parseInt(value, 10) * 1000; break;
+            case 'headless': headless = value !== 'false'; break;
             case 'browsertype':
-                switch (value) {
-                    case 'mobile':
-                    case 'mobile3G':
-                    case 'mobile4G':
-                    case 'mobile4GSlow':
-                        browserType = value;
-                        break;
-                    default:
-                        browserType = 'desktop'; // Defaults to 'desktop'
-                        break;
-                }
+                browserType = ['mobile', 'mobile3G', 'mobile4G', 'mobile4GSlow'].includes(value) ? value : 'desktop';
                 break;
-            case 'login':
-                login = value;
-                break;
-            case 'password':
-                password = value;
-                break;
-            case 'url':
-                url = value;
-                break;
-            case 'regions':
-                regions = value.split(".");
-                break;
-            case 'browserlocation':
-                browserLocation = value;
-                break;
-            case 'ddkey':
-                ddKey = value;
-                break;
-            case 'ddhost':
-                ddHost = value;
-                break;
-            case 'teamswebhook':
-                teamsWebhook = value;
-                break;
-            case 'slackwebhook':
-                slackWebhook = value;
-            case 'influxurl':
-                influxUrl = value;
-                break;
-            case 'influxtoken':
-                influxToken = value;
-                break;
-            case 'influxorg':
-                influxOrg = value;
-                break;
-            case 'influxbucket':
-                influxBucket = value;
-                break;
-            case 'influxusername':
-                influxUsername = value;
-                break;
-            case 'influxpassword':
-                influxPassword = value;
-                break;
-            case 'influxdatabase':
-                influxDatabase = value;
-                break;
-            case 'ciurl':
-                ciUrl = value;
-                break;
-            case 'teamsworkflowurl':
-                teamsWorkflowUrl = value;
-                console.warn(teamsWorkflowUrl)
-                break;
-            default:
-                console.warn(`Unknown parameter specified: ${key}`)
+            case 'login': login = value; break;
+            case 'password': password = value; break;
+            case 'url': url = value; break;
+            case 'regions': regions = value.split('.'); break;
+            case 'browserlocation': browserLocation = value; break;
+            case 'ddkey': ddKey = value; break;
+            case 'ddhost': ddHost = value; break;
+            case 'teamswebhook': teamsWebhook = value; break;
+            case 'slackwebhook': slackWebhook = value; break;
+            case 'influxurl': influxUrl = value; break;
+            case 'influxtoken': influxToken = value; break;
+            case 'influxorg': influxOrg = value; break;
+            case 'influxbucket': influxBucket = value; break;
+            case 'influxusername': influxUsername = value; break;
+            case 'influxpassword': influxPassword = value; break;
+            case 'influxdatabase': influxDatabase = value; break;
+            case 'ciurl': ciUrl = value; break;
+            case 'teamsworkflowurl': teamsWorkflowUrl = value; break;
+            case 'configfile': configFilePath = value; break;
+            default: console.warn(`Unknown parameter specified: ${key}`);
         }
     }
 });
@@ -144,26 +79,15 @@ export {
     getBrowserInstance,
     uploadDir,
     loops,
-    testTime,
-    suitTime,
-    headless,
-    browserType,
-    login,
-    password,
+    testTime, suitTime,
+    headless, browserType,
+    login, password,
     url,
     regions,
     browserLocation,
-    ddHost,
-    ddKey,
-    teamsWebhook,
-    slackWebhook,
-    influxUrl,
-    influxToken,
-    influxOrg,
-    influxBucket,
-    influxUsername,
-    influxPassword,
-    influxDatabase,
-    ciUrl,
-    teamsWorkflowUrl
+    ddHost, ddKey,
+    influxUrl, influxToken, influxOrg, influxBucket,
+    influxUsername, influxPassword, influxDatabase,
+    ciUrl, teamsWebhook, slackWebhook, teamsWorkflowUrl,
+    configFilePath
 };
