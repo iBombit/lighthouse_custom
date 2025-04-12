@@ -17,6 +17,37 @@
 - `--influxusername`: InfluxV1 specific. Sets the InfluxDB username. Usage: `--influxusername=YOUR_USERNAME`
 - `--influxpassword`: InfluxV1 specific. Sets the InfluxDB password. Usage: `--influxpassword=YOUR_PASSWORD`
 - `--influxdatabase`: InfluxV1 specific. Sets the InfluxDB database. Usage: `--influxdatabase=YOUR_DATABASE`
+- `--configFile`: Specifies a custom Lighthouse configuration file. Usage: `--configFile=path/to/config.json`
+
+---
+
+### Custom configuration file:
+
+- **`--configFile`**:  
+  This parameter allows you to pass a custom JSON file to override the default Lighthouse configuration. The settings in the custom JSON file are merged with the existing configuration to provide a highly customizable and flexible testing setup.
+
+  **Custom JSON Example** (`customConfig.json`):
+  ```json
+  {
+    "settings": {
+      "throttling": {
+        "rttMs": 100,
+        "throughputKbps": 15000,
+        "cpuSlowdownMultiplier": 2
+      },
+      "formFactor": "mobile",
+      "screenEmulation": {
+        "mobile": true,
+        "width": 375,
+        "height": 667,
+        "deviceScaleFactor": 2,
+        "disabled": false
+      }
+    }
+  }
+  ```
+
+---
 
 **Local runs**
 1. git clone https://github.com/iBombit/lighthouse_custom
