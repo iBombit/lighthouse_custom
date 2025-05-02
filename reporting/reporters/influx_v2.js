@@ -1,4 +1,5 @@
 import http from 'http';
+import https from 'https';
 import logger from "lh-pptr-framework/logger/logger.js";
 
 /**
@@ -21,7 +22,8 @@ export async function sendMetricsToInfluxV2(influxUrl, influxToken, org, bucket,
 
     try {
         const options = getRequestOptions(influxUrl, influxToken, org, bucket);
-        const req = http.request(options, res => {
+        const httpLib = influxUrl.startsWith('http://') ? http : https;
+        const req = httpLib.request(options, res => {
             let responseBody = '';
             res.on('data', d => responseBody += d);
             res.on('end', () => logger.debug(`[REPORT] Server response: ${responseBody}`));
