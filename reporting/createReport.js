@@ -9,8 +9,22 @@ import { sendMetricsToInfluxV1 } from 'lh-pptr-framework/reporting/reporters/inf
 import { sendMetricsToInfluxV2 } from 'lh-pptr-framework/reporting/reporters/influx_v2.js';
 
 const reportsDirectory = './reports';
+const errorReportsDirectory = './reports/errors';
 const reportPath = path.join(reportsDirectory, 'user-flow.report.html');
 const reportPathJson = path.join(reportsDirectory, 'user-flow.report.json');
+
+export async function saveHTMLSource(page, stepName) {
+  await fs.mkdir(reportsDirectory, { recursive: true });
+  await fs.mkdir(errorReportsDirectory, { recursive: true });
+  const htmlContent = await page.content();
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const htmlFileName = `${stepName.replace(/\s+/g, '_')}_${timestamp}.html`;
+  const htmlFilePath = path.join(errorReportsDirectory, htmlFileName);
+
+  await fs.mkdir(errorReportsDirectory, { recursive: true });
+  await fs.writeFile(htmlFilePath, htmlContent);
+  return htmlFilePath;
+}
 
 export default class CreateReport {
   constructor() {
@@ -49,7 +63,6 @@ export default class CreateReport {
   }
 
   async createReports(flow) {
-    // Ensure the reports directory exists
     await fs.mkdir(reportsDirectory, { recursive: true });
     logger.debug(`[REPORT] Reports directory ensured at ${reportsDirectory}`);
 

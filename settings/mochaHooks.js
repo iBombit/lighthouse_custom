@@ -2,6 +2,7 @@ import logger from "lh-pptr-framework/logger/logger.js";
 import CreateReport from 'lh-pptr-framework/reporting/createReport.js';
 import * as params from 'lh-pptr-framework/settings/testParams.js';
 import { setupBrowser } from 'lh-pptr-framework/settings/testParams.js';
+import { saveHTMLSource } from 'lh-pptr-framework/reporting/createReport.js';
 
 let browser;
 
@@ -24,8 +25,17 @@ export async function beforeEachHook() {
 
 export async function afterEachHook() {
     logger.debug(`[ENDED] ${this.currentTest.title}`);
-};
 
+    if (this.currentTest.state === 'failed') {
+        const stepName = this.currentTest.title;
+        try {
+            const htmlFilePath = await saveHTMLSource(browser.page, stepName);
+            logger.debug(`[HTML SAVED] ${htmlFilePath}`);
+        } catch (error) {
+            logger.error(`[HTML ERROR] Failed to save HTML source: ${error.message}`);
+        }
+    }
+};
 
 export async function afterHook() {
     this.timeout(300000); // consider increasing this time if it can't create reports within the limit
