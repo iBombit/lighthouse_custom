@@ -20,6 +20,13 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_TOKEN }}
 
+    - name: Find directories with Dockerfile, package.json, and matching version
+      id: find-dirs
+      run: |
+        version=${{ github.event.inputs.version }}
+        dirs=$(find . -type f -name 'Dockerfile' -exec dirname {} \; | while read dir; do if [[ -f "$dir/package.json" && "$dir" == *"$version"* ]]; then echo "$dir"; fi; done)
+        echo "dirs=$dirs" >> $GITHUB_OUTPUT
+
     - name: Build and Push Docker images
       run: |
         version=${{ github.event.inputs.version }}
