@@ -23,8 +23,5 @@ jobs:
     - name: Build and Push Docker images
       run: |
         version=${{ github.event.inputs.version }}
-        for dir in ${{ steps.find-dirs.outputs.dirs }}
-        do
-          docker build -t ibombit/lighthouse-puppeteer-chrome:$version-alpine $dir
-          docker push ibombit/lighthouse-puppeteer-chrome:$version-alpine
-        done
+        docker build -t ibombit/lighthouse-puppeteer-chrome:$version-alpine $dir
+        docker push ibombit/lighthouse-puppeteer-chrome:$version-alpine
