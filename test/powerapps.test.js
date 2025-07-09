@@ -3,21 +3,17 @@ import PowerAppsPage from "../pages/powerapps/pages.js";
 import { beforeHook, beforeEachHook, afterEachHook, afterHook } from 'lh-pptr-framework/settings/mochaHooks.js';
 import * as params from 'lh-pptr-framework/settings/testParams.js';
 
-before(async () => {
-    await browser.init();
-    await browser.start();
-    browser.page.isSuccess = true;
-    PowerApps.init(browser.page);
-});
-
 let browser;
 const PowerApps = new PowerAppsPage();
+const pages = [PowerApps];
 
 // Extend the common beforeHook with additional setup
 const customBeforeHook = async () => {
     await beforeHook(); // Perform the common setup first (browser startup)
     browser = await params.getBrowserInstance();
-    PowerApps.init(browser.page); // Sets instance of puppeteer page to PowerApps page object
+    for (const page of pages) {
+        page.init(browser.page); // Sets instance of puppeteer page to page objects
+    }
 };
 
 // Specify all mocha hooks
@@ -26,26 +22,15 @@ beforeEach(beforeEachHook);
 afterEach(afterEachHook);
 after(afterHook);
 
-// Given: I am opening the browser
-// When: I am navigating to Home page
-// Then: I measure cold navigation performance of the page
-it("[ColdNavigation] Check PowerApps URL", async function () {
-    await PowerApps.coldNavigation(browser);
+it("[N]_PowerApps_URL", async function () {
+    await PowerApps.navigation(browser, this);
     await new Promise(resolve => setTimeout(resolve, 120000));
 }).timeout(params.testTime);
 
-// Given: I am on the Home page
-// When: I click on "marketing" inside iframe
-// Then: I wait for the new page to be rendered
-// And: I stop measuring action time performance of the page
-it("[Timespan] Click on 'marketing'", async function () {
-    await PowerApps.clickOnMarketing(browser)
+it("[T]_Click_on_'marketing'", async function () {
+    await PowerApps.clickOnMarketing(browser, this)
 }).timeout(params.testTime);
 
-// Given: I am on the "Marketing" page
-// When: I click on "Teams" icon
-// Then: I take the URL of the page that opened
-// And: I measure cold navigation performance of the new page URL
-it("[ColdNavigation] Check 'Teams' page", async function () {
-    await PowerApps.checkTeamsPage(browser);
+it("[N]_Teams_page", async function () {
+    await PowerApps.checkTeamsPage(browser, this);
 }).timeout(params.testTime);
