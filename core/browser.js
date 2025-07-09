@@ -65,6 +65,7 @@ class LighthouseBrowser {
         page.init(this.page); // Sets instance of puppeteer page to page objects
       }
     }
+    await new Promise(resolve => setTimeout(resolve, 10000)); // Assuming 10sec is enough to launch the browser
     return this
   }
 
@@ -97,27 +98,19 @@ class LighthouseBrowser {
     );
   }
 
-  async coldNavigation(name, link, timeout = LighthouseBrowser.DEFAULT_TIMEOUT) {
-    if (!link) {
-      link = this.page.url();
-    }
+  async navigation(name, link, pages) {
+    if (pages) await this.restartBrowser(pages)
+    if (!link) link = this.page.url();
     try {
-      await this.flow.navigate(link, { name: name });
+      await this.flow.navigate(link, { name: name, configContext: { settingsOverrides: { disableStorageReset: true } } });
     } catch (error) {
       throw new Error(error);
     }
-    await this.waitTillRendered(timeout);
+    return this;
   }
 
-  async warmNavigation(name, link, timeout = LighthouseBrowser.DEFAULT_TIMEOUT) {
-    if (!link) {
-      link = this.page.url();
-    }
-    await this.flow.navigate(link, { name: name, configContext: { settingsOverrides: { disableStorageReset: true } } });
-    await this.waitTillRendered(timeout);
-  }
-
-  async customNavigation(stepName, actions) {
+  async customNavigation(stepName, actions, pages) {
+    if (pages) await this.restartBrowser(pages)
     await this.flow.startNavigation({ name: stepName })
     await actions();
     await this.flow.endNavigation()
