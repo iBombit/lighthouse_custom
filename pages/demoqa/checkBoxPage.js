@@ -10,6 +10,7 @@ export default class CheckBoxPage extends Page {
 
     init(page) {
         super.init(page)
+        this.pageValidate = new Element("//*[@id='tree-node']//span[text()='Desktop']", page)
         this.homeCheckBox = new Button("label[for='tree-node-home']", page)
         this.homeSelectVerify = new Element("//*[@id='result']/span[text()='home']", page)
         this.checkBoxExpandHome = new Button("#tree-node > ol > li > span > button", page)
@@ -25,8 +26,8 @@ export default class CheckBoxPage extends Page {
     // Then: I wait for 'Home' checkbox to be selected
     // And: I measure action time performance of the page
     */
-    async selectHomeCheckbox(browser) {
-        await browser.timespan("Select 'Home' checkBox", async () => {
+    async selectHomeCheckbox(browser, testContext) {
+        await browser.timespan(`${testContext?.test?.title}`, async () => {
             await this.homeCheckBox.click()
             await this.homeSelectVerify.find()
             await browser.waitTillRendered()
@@ -40,8 +41,8 @@ export default class CheckBoxPage extends Page {
     // Then: I wait for 'Home' treeNode to be expanded
     // And: I measure action time performance of the page
     */
-    async expandHomeTreeNode(browser) {
-        await browser.timespan("Expand 'Home' treeNode", async () => {
+    async expandHomeTreeNode(browser, testContext) {
+        await browser.timespan(`${testContext?.test?.title}`, async () => {
             await this.checkBoxExpandHome.click()
             await this.checkBoxSelectVerify.find()
             await browser.waitTillRendered()
@@ -56,8 +57,8 @@ export default class CheckBoxPage extends Page {
     // Then: I wait for 'Desktop' checkbox to be deselected
     // And: I measure action time performance of the page
     */
-    async deselectDesktopCheckbox(browser) {
-        await browser.timespan("Deselect 'Desktop' checkBox", async () => {
+    async deselectDesktopCheckbox(browser, testContext) {
+        await browser.timespan(`${testContext?.test?.title}`, async () => {
             await this.desktopCheckbox.click()
             await this.desktopCheckboxVerify.findHidden()
             await browser.waitTillRendered()

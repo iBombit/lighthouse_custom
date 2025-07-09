@@ -14,15 +14,16 @@ const UploadDownload = new UploadDownloadPage();
 const CheckBox = new CheckBoxPage();
 const Buttons = new ButtonsPage();
 
+const pages = [Home, TextBox, UploadDownload, 
+               CheckBox, Buttons];
+
 // Extend the common beforeHook with additional setup
 const customBeforeHook = async () => {
     await beforeHook(); // Perform the common setup first (browser startup)
     browser = await params.getBrowserInstance();
-    Home.init(browser.page); // Sets instance of puppeteer page to Home page object
-    TextBox.init(browser.page); // Sets instance of puppeteer page to TextBox page object
-    UploadDownload.init(browser.page); // Sets instance of puppeteer page to UploadDownload page object
-    CheckBox.init(browser.page); // Sets instance of puppeteer page to CheckBox page object
-    Buttons.init(browser.page); // Sets instance of puppeteer page to Buttons page object
+    for (const page of pages) {
+        page.init(browser.page); // Sets instance of puppeteer page to page objects
+    }
 };
 
 // Specify all mocha hooks
@@ -31,62 +32,62 @@ beforeEach(beforeEachHook);
 afterEach(afterEachHook);
 after(afterHook);
 
-it(`[ColdNavigation] Check ${Home.getURL()}`, async function () {
-    await Home.coldNavigation(browser)
+it(`[N]_${Home.getURL()}`, async function () {
+    await Home.navigation(browser, this)
 }).timeout(params.testTime);
 
-it("[WarmNavigation] Check Home URL", async function () {
-    await Home.warmNavigation(browser)
+it("[N]_Home_URL", async function () {
+    await Home.navigation(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Click on 'Elements'", async function () {
-    await Home.clickOnElements(browser)
+it("[T]_Click_on_Elements", async function () {
+    await Home.clickOnElements(browser, this)
 }).timeout(params.testTime);
 
-it(`[ColdNavigation] Check ${TextBox.getURL()}`, async function () {
-    await TextBox.coldNavigation(browser)
+it(`[N]_${TextBox.getURL()}`, async function () {
+    await TextBox.navigation(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Submit text box form", async function () {
-    await TextBox.submitTextForm(browser)
+it("[T]_Submit_text_box_form", async function () {
+    await TextBox.submitTextForm(browser, this)
 }).timeout(params.testTime);
 
-it(`[ColdNavigation] Check ${CheckBox.getURL()}`, async function () {
-    await CheckBox.coldNavigation(browser)
+it(`[N]_${CheckBox.getURL()}`, async function () {
+    await CheckBox.navigation(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Select 'Home' checkBox", async function () {
-    await CheckBox.selectHomeCheckbox(browser)
+it("[T]_Select_Home_checkBox", async function () {
+    await CheckBox.selectHomeCheckbox(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Expand 'Home' treeNode", async function () {
-    await CheckBox.expandHomeTreeNode(browser)
+it("[T]_Expand_Home_treeNode", async function () {
+    await CheckBox.expandHomeTreeNode(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Deselect 'Desktop' checkBox", async function () {
-    await CheckBox.deselectDesktopCheckbox(browser)
+it("[T]_Deselect_Desktop_checkBox", async function () {
+    await CheckBox.deselectDesktopCheckbox(browser, this)
 }).timeout(params.testTime);
 
-it(`[ColdNavigation] Check ${Buttons.getURL()}`, async function () {
-    await Buttons.coldNavigation(browser)
+it(`[N]_${Buttons.getURL()}`, async function () {
+    await Buttons.navigation(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Simple click button", async function () {
-    await Buttons.simpleClickButton(browser)
+it("[T]_Simple_click_button", async function () {
+    await Buttons.simpleClickButton(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Double click button", async function () {
-    await Buttons.doubleClickButton(browser)
+it("[T]_Double_click_button", async function () {
+    await Buttons.doubleClickButton(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Right click button", async function () {
-    await Buttons.rightClickButton(browser)
+it("[T]_Right_click_button", async function () {
+    await Buttons.rightClickButton(browser, this)
 }).timeout(params.testTime);
 
-it(`[ColdNavigation] Check ${UploadDownload.getURL()}`, async function () {
-    await UploadDownload.coldNavigation(browser)
+it(`[N]_${UploadDownload.getURL()}`, async function () {
+    await UploadDownload.navigation(browser, this)
 }).timeout(params.testTime);
 
-it("[Timespan] Upload file into 'Choose File'", async function () {
-    await UploadDownload.uploadFileIntoInput(browser)
+it("[T]_Upload_file_into_input", async function () {
+    await UploadDownload.uploadFileIntoInput(browser, this)
 }).timeout(params.testTime);

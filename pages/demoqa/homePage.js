@@ -1,4 +1,5 @@
 import Page from "lh-pptr-framework/core/page.js";
+import Element from "lh-pptr-framework/core/elements/element.js";
 import Button from "lh-pptr-framework/core/elements/button.js";
 import TextField from "lh-pptr-framework/core/elements/textField.js";
 
@@ -10,6 +11,7 @@ export default class HomePage extends Page {
 
     init(page) {
         super.init(page)
+        this.pageValidate = new Element('//h5[text()="Elements"]', page)
         this.elements = new Button('//h5[text()="Elements"]', page)
         this.forms = new Button('//h5[text()="Forms"]', page)
         this.alertsFrameWindows = new Button('//h5[text()="Alerts, Frame & Windows"]', page)
@@ -26,8 +28,8 @@ export default class HomePage extends Page {
     // Then: I wait for the new page to be rendered
     // And: I stop measuring action time performance of the page
     */
-    async clickOnElements(browser) {
-        await browser.timespan("Click on 'Elements'", async () => {
+    async clickOnElements(browser, testContext) {
+        await browser.timespan(`${testContext?.test?.title}`, async () => {
             await this.elements.count()
             await this.elements.click()
             await browser.waitTillRendered()
