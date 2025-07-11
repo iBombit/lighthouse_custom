@@ -17,6 +17,7 @@ let influxUrl, influxToken, influxOrg, influxBucket;
 let influxUsername, influxPassword, influxDatabase;
 let ciUrl, teamsWebhook, slackWebhook, teamsWorkflowUrl;
 let configFilePath;
+let includeTimestamp = false;
 
 // Process the command line arguments
 const args = process.argv;
@@ -53,6 +54,7 @@ args.forEach(arg => {
             case 'ciurl': ciUrl = value; break;
             case 'teamsworkflowurl': teamsWorkflowUrl = value; break;
             case 'configfile': configFilePath = value; break;
+            case 'includetimestamp': includeTimestamp = value !== 'false'; break;
             default: console.warn(`Unknown parameter specified: ${key}`);
         }
     }
@@ -89,5 +91,6 @@ export {
     influxUrl, influxToken, influxOrg, influxBucket,
     influxUsername, influxPassword, influxDatabase,
     ciUrl, teamsWebhook, slackWebhook, teamsWorkflowUrl,
-    configFilePath
+    configFilePath,
+    includeTimestamp
 };

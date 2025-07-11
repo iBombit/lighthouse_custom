@@ -10,8 +10,23 @@ import { sendMetricsToInfluxV2 } from 'lh-pptr-framework/reporting/reporters/inf
 
 const reportsDirectory = './reports';
 const errorReportsDirectory = './reports/errors';
-const reportPath = path.join(reportsDirectory, 'user-flow.report.html');
-const reportPathJson = path.join(reportsDirectory, 'user-flow.report.json');
+
+// Generate timestamp if includeTimestamp parameter is true
+const generateTimestamp = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+};
+
+const getReportFileName = (baseName, extension) => {
+  if (params.includeTimestamp) {
+    const timestamp = generateTimestamp();
+    return `${baseName}_${timestamp}.${extension}`;
+  }
+  return `${baseName}.${extension}`;
+};
+
+const reportPath = path.join(reportsDirectory, getReportFileName('user-flow.report', 'html'));
+const reportPathJson = path.join(reportsDirectory, getReportFileName('user-flow.report', 'json'));
 
 export async function saveHTMLSource(page, stepName) {
   await fs.mkdir(reportsDirectory, { recursive: true });
