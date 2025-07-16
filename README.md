@@ -18,7 +18,7 @@
 - `--influxpassword`: InfluxV1 specific. Sets the InfluxDB password. Usage: `--influxpassword=YOUR_PASSWORD`
 - `--influxdatabase`: InfluxV1 specific. Sets the InfluxDB database. Usage: `--influxdatabase=YOUR_DATABASE`
 - `--configFile`: Specifies a custom Lighthouse configuration file. Usage: `--configFile=path/to/config.json`
-
+- `--includetimestamp`: Adds timestamp to report file names. By default is false. Usage: `--includetimestamp=true`
 ---
 
 ### Custom configuration file:
@@ -58,10 +58,18 @@ npm install
 npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/"
 ```
 
-**With docker**
+**With docker (from root user)**
 1. git clone https://github.com/iBombit/lighthouse_custom
 2. Verify that headless mode is enabled via "--headless=true" flag
 3. In repo dir run this command:
 ```
 docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:12.7.1-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/"
+```
+
+**With docker (from current user)**
+1. git clone https://github.com/iBombit/lighthouse_custom
+2. Verify that headless mode is enabled via "--headless=true" flag
+3. In repo dir run this command:
+```
+docker run --rm -v "$PWD:$PWD" -w "$PWD"  --user "$(id -u):$(id -g)" ibombit/lighthouse-puppeteer-chrome:12.7.1-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/"
 ```
