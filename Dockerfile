@@ -14,3 +14,7 @@ RUN npm ci --production
 FROM alpine:latest
 RUN apk add --no-cache nodejs npm chromium
 COPY --from=build /app .
+# Set environment variables for Chromium to avoid issues with Puppeteer
+# See: https://github.com/puppeteer/puppeteer/issues/11023#issuecomment-1776247197
+ENV XDG_CONFIG_HOME=/tmp/.chromium
+ENV XDG_CACHE_HOME=/tmp/.chromium
