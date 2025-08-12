@@ -47,19 +47,51 @@ export default class Page {
      */
     async navigationValidate(browser, testContext, link = this.getURL(), pages) {
         const stepName = testContext?.test?.title || `[N]_${this.constructor.name}`;
-        browser = await browser.navigation(stepName, link, pages);
+        let validationSuccessful = false;
+        let validationError = null;
+        
+        await browser.customNavigation(stepName, async () => {
+            logger.debug(`[GOTOPAGE] ${link}`);
+            const navigationStartTime = Date.now();
+            await browser.page.goto(link);
+            try {
+                if (this.pageValidate) {
+                    await this.pageValidate.find(60000);
+                    const currentTime = Date.now()
+                    const selectorTime = currentTime - navigationStartTime;
+                    // Store timing data for Lighthouse gatherer
+                    await browser.page.evaluate((timing, stepName, selector) => {
+                        window.pageValidateTiming = {
+                            duration: timing,
+                            stepName: stepName,
+                            selector: selector,
+                            timestamp: Date.now()
+                        };
+                    }, selectorTime, stepName, this.pageValidate.originalLocator);
+                    validationSuccessful = true;
+                }
+                else {
+                    logger.debug("[ERROR] Page validation element is not defined in the page object, snaphot checking is skipped.");
+                }
+            } catch (error) {
+                validationError = error;
+            }
+        }, pages);
+        
+        // Take snapshots after navigation is complete
         try {
-            if (this.pageValidate) {
-                await this.pageValidate.find(5000);
+            if (validationSuccessful) {
                 await browser.flow.snapshot({ name: stepName.replace('[N]_', '[S]_') + '_SUCCESS' });
+            } else if (validationError) {
+                await browser.flow.snapshot({ name: stepName.replace('[N]_', '[S]_') + '_FAILED' });
+                throw new Error(`Page validation failed for ${link}: ${validationError.message}`);
             }
-            else {
-                logger.debug("[ERROR] Page validation element is not defined in the page object, snaphot checking is skipped.");
+        } catch (snapshotError) {
+            if (!validationError) {
+                throw snapshotError;
             }
-        } catch (error) {
-            await browser.flow.snapshot({ name: stepName.replace('[N]_', '[S]_') + '_FAILED' });
-            throw new Error(`Page validation failed for ${link}: ${error.message}`);
         }
+        
         return browser;
     }
 
