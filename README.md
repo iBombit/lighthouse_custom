@@ -82,7 +82,7 @@ This parameter allows you to pass a custom JSON file to override the default Lig
 2. Verify that headless mode is enabled via the `--headless=true` flag.
 3. In the repository directory, run the following command:
    ```bash
-   docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:12.8.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/"
+   docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:12.8.1-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/"
    ```
 
 ### From Current User:
@@ -94,5 +94,5 @@ This parameter allows you to pass a custom JSON file to override the default Lig
 2. Verify that headless mode is enabled via the `--headless=true` flag.
 3. In the repository directory, run the following command:
    ```bash
-   docker run --rm -v "$PWD:$PWD" -w "$PWD" --user "$(id -u):$(id -g)" ibombit/lighthouse-puppeteer-chrome:12.8.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/"
+   docker run --rm -v "$PWD:$PWD" -w "$PWD" --user "$(id -u):$(id -g)" ibombit/lighthouse-puppeteer-chrome:12.8.1-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/"
    ```
