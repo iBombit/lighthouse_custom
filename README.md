@@ -22,6 +22,7 @@
 | `--influxdatabase`   | InfluxV1 specific. Sets the InfluxDB database.                            | `--influxdatabase=YOUR_DATABASE`                                            |
 | `--configFile`       | Specifies a custom Lighthouse configuration file.                        | `--configFile=path/to/config.json`                                          |
 | `--includetimestamp` | Adds timestamp to report file names (default is false).                   | `--includetimestamp=true`                                                   |
+| `--generatecsv`      | Generates CSV performance analysis report (default is false).            | `--generatecsv=true`                                                        |
 
 ---
 
