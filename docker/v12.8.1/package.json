@@ -10,7 +10,7 @@
     "crawl": "node crawler/crawler.js"
   },
   "dependencies": {
-    "lh-pptr-framework": "1.2.2",
+    "lh-pptr-framework": "1.2.3",
     "lighthouse": "^12.8.1",
     "puppeteer": "^24.16.1",
     "chai": "^5.2.1",
