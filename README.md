@@ -1,28 +1,28 @@
 ## Command Line Parameters
 
-| Parameter            | Description                                                                 | Example Usage                                                                 |
-|----------------------|-----------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| `--browsertype`      | Specifies the browser type.                                                | `--browsertype=desktop`                                                     |
-| `--headless`         | Runs tests in headless mode.                                               | `--headless=false`                                                          |
-| `--browserLocation`  | Sets a custom browser location.                                            | `--browserLocation="C:/Browser/start.exe"`                                  |
-| `--login`            | Sets the login.                                                           | `--login=example@email.com`                                                 |
-| `--password`         | Sets the password.                                                        | `--password=PASSWORD`                                                       |
-| `--url`              | Sets the host link.                                                       | `--url=https://google.com`                                                  |
-| `--ddhost`           | Specifies the Datadog host link (exclude 'http://').                      | `--ddhost=api.datadoghq.eu`                                                 |
-| `--ddkey`            | Provides the Datadog API key.                                             | `--ddkey=<Your_Datadog_API_Key>`                                            |
-| `--ciurl`            | Sets the CI run URL.                                                      | `--ciurl=https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID` |
-| `--teamswebhook`     | Sets the Teams webhook URL.                                               | `--teamswebhook="YOUR_WEBHOOK_URL"`                                         |
-| `--slackwebhook`     | Sets the Slack webhook URL.                                               | `--slackwebhook="YOUR_WEBHOOK_URL"`                                         |
-| `--influxurl`        | Required for both InfluxV1 and InfluxV2. Sets the InfluxDB URL.            | `--influxurl=http://YOUR_IP:8086/`                                          |
-| `--influxToken`      | InfluxV2 specific. Sets the InfluxDB token.                               | `--influxToken=YOUR_INFLUX_TOKEN`                                           |
-| `--influxorg`        | InfluxV2 specific. Sets the InfluxDB organization.                        | `--influxorg=YOUR_ORG`                                                      |
-| `--influxbucket`     | InfluxV2 specific. Sets the InfluxDB bucket.                              | `--influxbucket=YOUR_BUCKET`                                                |
-| `--influxusername`   | InfluxV1 specific. Sets the InfluxDB username.                            | `--influxusername=YOUR_USERNAME`                                            |
-| `--influxpassword`   | InfluxV1 specific. Sets the InfluxDB password.                            | `--influxpassword=YOUR_PASSWORD`                                            |
-| `--influxdatabase`   | InfluxV1 specific. Sets the InfluxDB database.                            | `--influxdatabase=YOUR_DATABASE`                                            |
-| `--configFile`       | Specifies a custom Lighthouse configuration file.                        | `--configFile=path/to/config.json`                                          |
-| `--includetimestamp` | Adds timestamp to report file names (default is false).                   | `--includetimestamp=true`                                                   |
-| `--generatecsv`      | Generates CSV performance analysis report (default is false).            | `--generatecsv=true`                                                        |
+| Parameter         | Description                                          | Example Usage                          |
+|-------------------|------------------------------------------------------|----------------------------------------|
+| `browsertype`     | Specifies the browser type.                          | `--browsertype=desktop`               |
+| `headless`        | Runs tests in headless mode.                         | `--headless=false`                    |
+| `browserLocation` | Sets a custom browser location.                      | `--browserLocation="C:/Browser/start.exe"` |
+| `login`           | Sets the login.                                      | `--login=example@email.com`           |
+| `password`        | Sets the password.                                   | `--password=PASSWORD`                 |
+| `url`             | Sets the host link.                                  | `--url=https://google.com`            |
+| `ddhost`          | Specifies the Datadog host link (exclude 'http://'). | `--ddhost=api.datadoghq.eu`           |
+| `ddkey`           | Provides the Datadog API key.                        | `--ddkey=<Your_Datadog_API_Key>`      |
+| `ciurl`           | Sets the CI run URL.                                 | `--ciurl="YOUR_CI_URL"`               |
+| `teamswebhook`    | Sets the Teams webhook URL.                          | `--teamswebhook="YOUR_WEBHOOK_URL"`   |
+| `slackwebhook`    | Sets the Slack webhook URL.                          | `--slackwebhook="YOUR_WEBHOOK_URL"`   |
+| `influxurl`       | Sets the InfluxDB URL (required for V1 and V2).       | `--influxurl=http://YOUR_IP:8086/`    |
+| `influxToken`     | InfluxV2 specific. Sets the InfluxDB token.          | `--influxToken=YOUR_INFLUX_TOKEN`     |
+| `influxorg`       | InfluxV2 specific. Sets the InfluxDB organization.   | `--influxorg=YOUR_ORG`                |
+| `influxbucket`    | InfluxV2 specific. Sets the InfluxDB bucket.         | `--influxbucket=YOUR_BUCKET`          |
+| `influxusername`  | InfluxV1 specific. Sets the InfluxDB username.       | `--influxusername=YOUR_USERNAME`      |
+| `influxpassword`  | InfluxV1 specific. Sets the InfluxDB password.       | `--influxpassword=YOUR_PASSWORD`      |
+| `influxdatabase`  | InfluxV1 specific. Sets the InfluxDB database.       | `--influxdatabase=YOUR_DATABASE`      |
+| `configFile`      | Specifies a custom Lighthouse configuration file.    | `--configFile=path/to/config.json`    |
+| `includetimestamp`| Adds timestamp to report file names (default false). | `--includetimestamp=true`             |
+| `generatecsv`     | Generates CSV performance analysis report (default false). | `--generatecsv=true`              |
 
 ---
 
