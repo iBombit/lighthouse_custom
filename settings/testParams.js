@@ -18,16 +18,17 @@ let influxUsername, influxPassword, influxDatabase;
 let ciUrl, teamsWebhook, slackWebhook, teamsWorkflowUrl;
 let configFilePath;
 let includeTimestamp = false;
+let generateCSV = false;
 
 // Process the command line arguments
 const args = process.argv;
 args.forEach(arg => {
     if (arg.includes('--') && arg.includes('=')) {
         let [key, ...valueParts] = arg.split('=');
-        let value = valueParts.join('='); // This ensures the value contains all the parts
-        key = key.replace('--', ''); // Remove '--' prefix
+        let value = valueParts.join('=');
+        key = key.replace('--', '');
 
-        switch (key.replace('--', '').toLowerCase()) {
+        switch (key.toLowerCase()) {
             case 'loops': loops = parseInt(value, 10); break;
             case 'testtime': testTime = parseInt(value, 10) * 1000; break;
             case 'suittime': suitTime = parseInt(value, 10) * 1000; break;
@@ -55,6 +56,7 @@ args.forEach(arg => {
             case 'teamsworkflowurl': teamsWorkflowUrl = value; break;
             case 'configfile': configFilePath = value; break;
             case 'includetimestamp': includeTimestamp = value !== 'false'; break;
+            case 'generatecsv': generateCSV = value === 'true'; break;
             default: console.warn(`Unknown parameter specified: ${key}`);
         }
     }
@@ -92,5 +94,6 @@ export {
     influxUsername, influxPassword, influxDatabase,
     ciUrl, teamsWebhook, slackWebhook, teamsWorkflowUrl,
     configFilePath,
-    includeTimestamp
+    includeTimestamp,
+    generateCSV
 };

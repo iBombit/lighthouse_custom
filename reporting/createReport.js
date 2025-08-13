@@ -7,6 +7,7 @@ import { sendMetricsToTeams } from 'lh-pptr-framework/reporting/reporters/teamsW
 import { sendMetricsToSlack } from 'lh-pptr-framework/reporting/reporters/slackWebhook.js';
 import { sendMetricsToInfluxV1 } from 'lh-pptr-framework/reporting/reporters/influx_v1.js';
 import { sendMetricsToInfluxV2 } from 'lh-pptr-framework/reporting/reporters/influx_v2.js';
+import { sendMetricsToCSV } from 'lh-pptr-framework/reporting/reporters/csv.js';
 
 const reportsDirectory = './reports';
 const errorReportsDirectory = './reports/errors';
@@ -73,6 +74,11 @@ export default class CreateReport {
         condition: () => params.influxUrl && params.influxToken && params.influxOrg && params.influxBucket,
         action: (flowResult) => sendMetricsToInfluxV2(params.influxUrl, params.influxToken, params.influxOrg, params.influxBucket, flowResult),
         errorMessage: "[REPORT] InfluxDB_V2 configuration not provided. Skipping sending metrics"
+      },
+      {
+        condition: () => params.generateCSV,
+        action: (flowResult) => sendMetricsToCSV(flowResult),
+        errorMessage: "[REPORT] CSV generation disabled. Use --generatecsv=true to enable CSV report generation"
       }
     ];
   }
