@@ -6,9 +6,9 @@ import { EntityClassification } from 'lighthouse/core/computed/entity-classifica
 import * as i18n from 'lighthouse/core/lib/i18n/i18n.js';
 
 const UIStrings = {
-    title: 'XHR Network Requests',
-    failureTitle: 'XHR Network Requests',
-    description: 'Lists the XHR/AJAX network requests that were made during page load, excluding static resources like images, CSS, and JS files.',
+    title: 'XHR requests are fast',
+    failureTitle: 'XHR Network Requests took too long',
+    description: 'Lists the XHR/AJAX network requests that were made during page load, excluding static resources like images, CSS, and JS files. Long XHR durations can impact user experience.',
     columnCategory: 'Category',
 };
 
@@ -18,8 +18,9 @@ class NetworkXHRAudit extends Audit {
     static get meta() {
         return {
             id: 'network-xhr-audit',
-            scoreDisplayMode: Audit.SCORING_MODES.INFORMATIVE,
+            scoreDisplayMode: Audit.SCORING_MODES.NUMERIC,
             title: str_(UIStrings.title),
+            failureTitle: str_(UIStrings.failureTitle),
             description: str_(UIStrings.description),
             requiredArtifacts: ['devtoolsLogs', 'URL', 'GatherContext'],
         };
@@ -27,8 +28,10 @@ class NetworkXHRAudit extends Audit {
 
     static get defaultOptions() {
         return {
-            p10: 1000,
-            median: 2500,
+            // Scoring thresholds for total XHR duration - match CSV thresholds
+            // Good: <= 500ms total, Poor: >= 2000ms
+            p10: 500,
+            median: 2000,
         };
     }
 
