@@ -116,19 +116,20 @@ class NetworkXHRAudit extends Audit {
         const normalizedRecords = xhrRecords.map(record => normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId));
 
         const maxExecutionTime = getMaxExecutionTime(normalizedRecords);
-        const averageResponseTime = getAverageResponseTime(normalizedRecords);
+        const totalDuration = getTotalDuration(normalizedRecords);
         const totalTransferSize = getTotalTransferSize(normalizedRecords);
 
-        const score = calculateScore(context, averageResponseTime);
+        const score = calculateScore(context, totalDuration);
 
         return {
             score,
-            numericValue: averageResponseTime,
+            numericValue: totalDuration,
             numericUnit: 'millisecond',
-            displayValue: str_(i18n.UIStrings.seconds, { timeInMs: averageResponseTime }),
+            displayValue: str_(i18n.UIStrings.seconds, { timeInMs: totalDuration }),
             details: createTableDetails(normalizedRecords, earliestRendererStartTime, {
                 totalXHRRequests: normalizedRecords.length,
                 totalTransferSize: totalTransferSize,
+                totalDuration: totalDuration,
                 maxExecutionTime: maxExecutionTime
             }),
         };
@@ -174,21 +175,19 @@ function getMaxExecutionTime(records) {
     return Math.max(...records.map(record => record.networkEndTime || 0));
 }
 
-function getAverageResponseTime(records) {
-    if (records.length === 0) return 0;
-    const totalDuration = records.reduce((sum, record) => sum + (record.duration || 0), 0);
-    return totalDuration / records.length;
+function getTotalDuration(records) {
+    return records.reduce((sum, record) => sum + (record.duration || 0), 0);
 }
 
 function getTotalTransferSize(records) {
     return records.reduce((sum, record) => sum + (record.transferSize || 0), 0);
 }
 
-function calculateScore(context, averageResponseTime) {
+function calculateScore(context, time) {
     return Audit.computeLogNormalScore({
         p10: context.options.p10,
         median: context.options.median,
-    }, averageResponseTime);
+    }, time);
 }
 
 function createTableDetails(records, earliestRendererStartTime, summary) {
@@ -217,7 +216,7 @@ function createTableDetails(records, earliestRendererStartTime, summary) {
     return Audit.makeTableDetails(headings, items, {
         networkStartTimeTs: Number.isFinite(earliestRendererStartTime) ? earliestRendererStartTime * 1000 : undefined,
         summary: {
-            wastedMs: summary.totalXHRRequests > 0 ? Math.round(summary.maxExecutionTime) : 0,
+            wastedMs: summary.totalXHRRequests > 0 ? Math.round(summary.totalDuration) : 0,
         }
     });
 }

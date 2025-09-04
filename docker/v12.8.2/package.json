@@ -1,0 +1,27 @@
+{
+  "name": "lightprobe",
+  "version": "12.8.1",
+  "type": "module",
+  "engines": {
+    "node": ">=18.16"
+  },
+  "scripts": {
+    "test": "npx mocha --timeout 10000",
+    "crawl": "node crawler/crawler.js"
+  },
+  "dependencies": {
+    "lh-pptr-framework": "1.2.4",
+    "lighthouse": "^12.8.2",
+    "puppeteer": "^24.19.0",
+    "chai": "^6.0.1",
+    "es-main": "^1.4.0",
+    "express": "^5.1.0",
+    "logform": "^2.7.0",
+    "mocha": "^11.7.2",
+    "puppeteer-har": "^1.1.2",
+    "winston": "^3.17.0",
+    "csv-parser": "^3.2.0",
+    "request": "^2.88.2"
+  },
+  "license": "Apache-2.0"
+}
