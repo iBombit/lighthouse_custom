@@ -26,6 +26,10 @@ const PERFORMANCE_THRESHOLDS = {
     'uses-text-compression': { good: 10, poor: 40, unit: 'KB', category: 'Network' },
     'longest-first-party-request': { good: 1000, poor: 3000, unit: 'ms', category: 'Network' },
     'slowest-network-request': { good: 1000, poor: 3000, unit: 'ms', category: 'Network' },
+    
+    // XHR Metrics
+    'network-xhr-audit': { good: 500, poor: 2000, unit: 'ms', category: 'XHR' },
+    'xhr-count-audit': { good: 5, poor: 15, unit: 'count', category: 'XHR' },
 };
 
 function getThresholdStatus(value, thresholds, metricKey) {
@@ -39,7 +43,8 @@ function getThresholdStatus(value, thresholds, metricKey) {
         'max-potential-fid', 'network-rtt', 'network-server-latency',
         'longest-first-party-request', 'slowest-network-request',
         'main-thread-tasks', 'network-requests',
-        'total-byte-weight', 'uses-optimized-images', 'uses-text-compression'
+        'total-byte-weight', 'uses-optimized-images', 'uses-text-compression',
+        'network-xhr-audit', 'xhr-count-audit'
     ];
 
     const isLowerBetter = lowerIsBetterMetrics.includes(metricKey);
@@ -80,7 +85,6 @@ export async function generateCSVReport(flowResult) {
             'URL',
             'Application',
             'Device Type',
-            'Performance Score',
             'Metric Name',
             'Metric Value',
             'Metric Unit',
@@ -121,6 +125,10 @@ export async function generateCSVReport(flowResult) {
 
             if (step.lhr?.audits) {
                 Object.entries(step.lhr.audits).forEach(([auditKey, audit]) => {
+                    if (auditKey === 'network-xhr-audit' || auditKey === 'xhr-count-audit') {
+                        return;
+                    }
+
                     if (audit.numericValue !== undefined && PERFORMANCE_THRESHOLDS[auditKey]) {
                         let value = audit.numericValue;
 
@@ -137,6 +145,27 @@ export async function generateCSVReport(flowResult) {
                     }
                 });
 
+                // Handle XHR specific audits with custom titles
+                const xhrAudit = step.lhr.audits['network-xhr-audit'];
+                if (xhrAudit && xhrAudit.numericValue !== undefined) {
+                    metrics.push({
+                        key: 'network-xhr-audit',
+                        title: 'XHR Requests Duration',
+                        value: Math.round(xhrAudit.numericValue),
+                        unit: null
+                    });
+                }
+
+                const xhrCountAudit = step.lhr.audits['xhr-count-audit'];
+                if (xhrCountAudit && xhrCountAudit.numericValue !== undefined) {
+                    metrics.push({
+                        key: 'xhr-count-audit',
+                        title: 'XHR Requests Count',
+                        value: xhrCountAudit.numericValue,
+                        unit: null
+                    });
+                }
+
             }
 
             metrics.forEach(metric => {
@@ -152,7 +181,6 @@ export async function generateCSVReport(flowResult) {
                         url,
                         applicationName,
                         deviceType,
-                        performanceScore ? Math.round(performanceScore * 100) : 'N/A',
                         metric.title,
                         formatMetricValue(metric.value),
                         metric.unit || threshold.unit,

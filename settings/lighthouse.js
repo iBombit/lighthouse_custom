@@ -40,6 +40,8 @@ function createBaseConfig(device) {
       'lh-pptr-framework/settings/audits/final-screenshot.js',
       'lh-pptr-framework/settings/audits/selector-timing-audit.js',
       'lh-pptr-framework/settings/audits/enhanced-screenshot-thumbnails.js',
+      'lh-pptr-framework/settings/audits/network-xhr-audit.js',
+      'lh-pptr-framework/settings/audits/xhr-count-audit.js',
     ],
     categories: {
       'server-side': {
@@ -58,6 +60,8 @@ function createBaseConfig(device) {
           { id: 'mainthread-work-breakdown', weight: 0, group: 'metrics' },
           { id: 'memory-audit', weight: 1 },
           { id: 'selector-timing-audit', weight: 1, group: 'metrics', acronym: 'STV' },
+          { id: 'network-xhr-audit', weight: 1, group: 'metrics', acronym: 'XHR' },
+          { id: 'xhr-count-audit', weight: 1, group: 'metrics', acronym: 'XHC' },
         ],
       },
     },
