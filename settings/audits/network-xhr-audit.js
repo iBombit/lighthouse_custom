@@ -8,7 +8,7 @@ import * as i18n from 'lighthouse/core/lib/i18n/i18n.js';
 const UIStrings = {
     title: 'XHR requests are fast',
     failureTitle: 'XHR Network Requests took too long',
-    description: 'Lists the XHR/AJAX network requests that were made during page load, excluding static resources like images, CSS, and JS files. Long XHR durations can impact user experience.',
+    description: 'Lists the XHR/AJAX network requests that were made during page load, including request bodies for POST/PUT requests, excluding static resources like images, CSS, and JS files. Long XHR durations can impact user experience.',
     columnCategory: 'Category',
 };
 
@@ -22,7 +22,7 @@ class NetworkXHRAudit extends Audit {
             title: str_(UIStrings.title),
             failureTitle: str_(UIStrings.failureTitle),
             description: str_(UIStrings.description),
-            requiredArtifacts: ['devtoolsLogs', 'URL', 'GatherContext'],
+            requiredArtifacts: ['devtoolsLogs', 'URL', 'GatherContext', 'NetworkRequestBodies'],
         };
     }
 
@@ -111,12 +111,13 @@ class NetworkXHRAudit extends Audit {
         const records = await NetworkRecords.request(devtoolsLog, context);
         const classifiedEntities = await EntityClassification.request({ URL: artifacts.URL, devtoolsLog }, context);
         const mainFrameId = await getMainFrameId(artifacts, context);
+        const networkRequestBodies = artifacts.NetworkRequestBodies || { requestBodies: {} };
 
         // Filter only XHR requests
         const xhrRecords = records.filter(record => NetworkXHRAudit.isXHRRequest(record));
 
         const earliestRendererStartTime = getEarliestRendererStartTime(records);
-        const normalizedRecords = xhrRecords.map(record => normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId));
+        const normalizedRecords = xhrRecords.map(record => normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId, networkRequestBodies));
 
         const maxExecutionTime = getMaxExecutionTime(normalizedRecords);
         const totalDuration = getTotalDuration(normalizedRecords);
@@ -151,10 +152,27 @@ function getEarliestRendererStartTime(records) {
     return records.reduce((min, record) => Math.min(min, record.rendererStartTime), Infinity);
 }
 
-function normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId) {
+function normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId, networkRequestBodies) {
     const entity = classifiedEntities.entityByUrl.get(record.url);
     const normalizedTime = time => time < earliestRendererStartTime || !Number.isFinite(time) ? undefined : (time - earliestRendererStartTime);
     const duration = normalizedTime(record.networkEndTime) - normalizedTime(record.networkRequestTime);
+
+    // Find matching request body data by URL and timing
+    let requestBodyData = null;
+    const requestBodies = networkRequestBodies.requestBodies || {};
+    
+    for (const [requestId, bodyData] of Object.entries(requestBodies)) {
+        if (bodyData.url === record.url) {
+            // Match by URL and approximate timing (within 100ms)
+            const recordTime = record.networkRequestTime;
+            const bodyTime = bodyData.timestamp * 1000; // Convert to milliseconds
+            
+            if (Math.abs(recordTime - bodyTime) < 100) {
+                requestBodyData = bodyData;
+                break;
+            }
+        }
+    }
 
     return {
         url: UrlUtils.elideDataURI(record.url),
@@ -171,6 +189,8 @@ function normalizeRecord(record, classifiedEntities, earliestRendererStartTime, 
         isLinkPreload: record.isLinkPreload || undefined,
         experimentalFromMainFrame: mainFrameId ? ((record.frameId === mainFrameId) || undefined) : undefined,
         entity: entity?.name,
+        requestBody: requestBodyData?.formattedPostData || null,
+        hasRequestBody: !!(requestBodyData?.hasPostData || requestBodyData?.postData),
     };
 }
 
@@ -197,6 +217,7 @@ function createTableDetails(records, earliestRendererStartTime, summary) {
     const headings = [
         { key: 'url', valueType: 'url', label: 'URL' },
         { key: 'requestMethod', valueType: 'text', label: 'Method' },
+        { key: 'requestBody', valueType: 'code', label: 'Request Body' },
         { key: 'networkRequestTime', valueType: 'ms', granularity: 1, label: 'Request Time' },
         { key: 'networkEndTime', valueType: 'ms', granularity: 1, label: 'End Time' },
         { key: 'duration', valueType: 'ms', granularity: 1, label: 'Duration' },
@@ -208,6 +229,7 @@ function createTableDetails(records, earliestRendererStartTime, summary) {
 
     const items = records.map(record => ({
         ...record,
+        requestBody: record.requestBody || (record.hasRequestBody ? '[Binary Data]' : ''),
         networkRequestTime: record.networkRequestTime ? Math.round(record.networkRequestTime) : undefined,
         networkEndTime: record.networkEndTime ? Math.round(record.networkEndTime) : undefined,
         duration: record.duration ? Math.round(record.duration) : undefined,

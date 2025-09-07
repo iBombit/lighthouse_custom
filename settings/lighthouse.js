@@ -29,6 +29,7 @@ function createBaseConfig(device) {
     artifacts: [
       { id: 'MemoryProfile', gatherer: 'lh-pptr-framework/settings/gatherers/memory-gatherer.js' },
       { id: 'SelectorTiming', gatherer: 'lh-pptr-framework/settings/gatherers/selector-timing-gatherer.js' },
+      { id: 'NetworkRequestBodies', gatherer: 'lh-pptr-framework/settings/gatherers/network-request-bodies-gatherer.js' },
     ],
     audits: [
       'lh-pptr-framework/settings/audits/network-longest-first-party.js',
