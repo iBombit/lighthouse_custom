@@ -11,8 +11,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production
 
-FROM alpine:latest
-RUN apk add --no-cache nodejs npm chromium
+FROM alpine:3.22.1
+RUN apk add --no-cache nodejs npm chromium && \
+    rm -rf /var/cache/apk/*
 COPY --from=build /app .
 # Set environment variables for Chromium to avoid issues with Puppeteer
 # See: https://github.com/puppeteer/puppeteer/issues/11023#issuecomment-1776247197

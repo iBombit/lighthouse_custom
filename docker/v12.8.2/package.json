@@ -10,16 +10,16 @@
     "crawl": "node crawler/crawler.js"
   },
   "dependencies": {
-    "lh-pptr-framework": "1.2.7",
+    "lh-pptr-framework": "1.2.8",
     "lighthouse": "^12.8.2",
     "puppeteer": "^24.19.0",
-    "chai": "^6.0.1",
+    "chai": "^6.2.0",
     "es-main": "^1.4.0",
     "express": "^5.1.0",
     "logform": "^2.7.0",
-    "mocha": "^11.7.2",
+    "mocha": "^11.7.4",
     "puppeteer-har": "^1.1.2",
-    "winston": "^3.17.0",
+    "winston": "^3.18.3",
     "csv-parser": "^3.2.0",
     "request": "^2.88.2"
   },
