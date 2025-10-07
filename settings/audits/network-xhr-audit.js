@@ -117,7 +117,10 @@ class NetworkXHRAudit extends Audit {
         const xhrRecords = records.filter(record => NetworkXHRAudit.isXHRRequest(record));
 
         const earliestRendererStartTime = getEarliestRendererStartTime(records);
-        const normalizedRecords = xhrRecords.map(record => normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId, networkRequestBodies));
+        
+        const availableRequestBodies = { ...networkRequestBodies.requestBodies };
+        
+        const normalizedRecords = xhrRecords.map(record => normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId, availableRequestBodies));
 
         const maxExecutionTime = getMaxExecutionTime(normalizedRecords);
         const totalDuration = getTotalDuration(normalizedRecords);
@@ -152,25 +155,49 @@ function getEarliestRendererStartTime(records) {
     return records.reduce((min, record) => Math.min(min, record.rendererStartTime), Infinity);
 }
 
-function normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId, networkRequestBodies) {
+function normalizeRecord(record, classifiedEntities, earliestRendererStartTime, mainFrameId, availableRequestBodies) {
     const entity = classifiedEntities.entityByUrl.get(record.url);
     const normalizedTime = time => time < earliestRendererStartTime || !Number.isFinite(time) ? undefined : (time - earliestRendererStartTime);
     const duration = normalizedTime(record.networkEndTime) - normalizedTime(record.networkRequestTime);
 
     // Find matching request body data by URL and timing
     let requestBodyData = null;
-    const requestBodies = networkRequestBodies.requestBodies || {};
     
-    for (const [requestId, bodyData] of Object.entries(requestBodies)) {
-        if (bodyData.url === record.url) {
-            // Match by URL and approximate timing (within 100ms)
-            const recordTime = record.networkRequestTime;
-            const bodyTime = bodyData.timestamp * 1000; // Convert to milliseconds
-            
-            if (Math.abs(recordTime - bodyTime) < 100) {
-                requestBodyData = bodyData;
-                break;
+    // match by request ID first
+    for (const [requestId, bodyData] of Object.entries(availableRequestBodies)) {
+        if (bodyData.url === record.url && bodyData.requestId === record.requestId) {
+            requestBodyData = bodyData;
+            delete availableRequestBodies[requestId];
+            break;
+        }
+    }
+    
+    // If no exact ID match, fall back to timing-based matching with content validation
+    if (!requestBodyData) {
+        let bestMatch = null;
+        let bestTimeDiff = Infinity;
+        let bestMatchKey = null;
+        
+        for (const [requestId, bodyData] of Object.entries(availableRequestBodies)) {
+            if (bodyData.url === record.url) {
+                // Match by URL and precise timing
+                const recordTime = record.networkRequestTime;
+                const bodyTime = bodyData.timestamp * 1000; // Convert to milliseconds
+                const timeDiff = Math.abs(recordTime - bodyTime);
+                
+                // Accept matches within 100ms, but prefer the closest timing match
+                if (timeDiff < 100 && timeDiff < bestTimeDiff) {
+                    bestMatch = bodyData;
+                    bestTimeDiff = timeDiff;
+                    bestMatchKey = requestId;
+                }
             }
+        }
+        
+        // Use the best timing match
+        if (bestMatch && bestMatchKey) {
+            requestBodyData = bestMatch;
+            delete availableRequestBodies[bestMatchKey];
         }
     }
 

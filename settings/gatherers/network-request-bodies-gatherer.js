@@ -18,23 +18,25 @@ class NetworkRequestBodiesGatherer extends Gatherer {
   constructor() {
     super();
     this.requestBodies = new Map();
+    this.requestCounter = 0;
+    
+    // Bind methods to maintain context for event listeners
+    this.onRequestWillBeSent = this.onRequestWillBeSent.bind(this);
+    this.onResponseReceived = this.onResponseReceived.bind(this);
   }
 
   async startInstrumentation(context) {
     const session = context.driver.defaultSession;
+    this.session = session; // Store session reference for async operations
     
     // Enable Network domain to capture request data
     await session.sendCommand('Network.enable');
     
     // Listen for network request events to capture request bodies
-    session.on('Network.requestWillBeSent', (params) => {
-      this.onRequestWillBeSent(params);
-    });
+    session.on('Network.requestWillBeSent', this.onRequestWillBeSent);
 
     // Listen for response received to get response bodies if needed
-    session.on('Network.responseReceived', (params) => {
-      this.onResponseReceived(params);
-    });
+    session.on('Network.responseReceived', this.onResponseReceived);
   }
 
   async stopInstrumentation(context) {
@@ -45,24 +47,68 @@ class NetworkRequestBodiesGatherer extends Gatherer {
     session.off('Network.responseReceived', this.onResponseReceived);
   }
 
-  onRequestWillBeSent(params) {
+  async onRequestWillBeSent(params) {
     const request = params.request;
     const requestId = params.requestId;
     
     // Only capture XHR and Fetch requests that might have bodies
     if (this.isXHROrFetchRequest(request)) {
+      // Always increment counter first to ensure unique keys
+      this.requestCounter++;
+      const uniqueKey = `${requestId}_${this.requestCounter}`;
+      
+      let postData = request.postData || null;
+      
+      // Store initial request data immediately
       const requestData = {
         requestId: requestId,
+        uniqueKey: uniqueKey,
         url: request.url,
         method: request.method,
         headers: request.headers,
-        postData: request.postData || null,
+        postData: postData,
         hasPostData: request.hasPostData || false,
         timestamp: params.timestamp,
         wallTime: params.wallTime,
       };
 
-      this.requestBodies.set(requestId, requestData);
+      this.requestBodies.set(uniqueKey, requestData);
+      
+      // Try to get request body asynchronously if not immediately available
+      if (request.hasPostData && !postData && this.session) {
+        try {
+          // Use a slight delay to ensure the request is fully processed
+          setTimeout(async () => {
+            try {
+              const postDataResponse = await this.session.sendCommand('Network.getRequestPostData', {
+                requestId: requestId
+              });
+              
+              // Update the stored request data with the retrieved post data
+              const storedData = this.requestBodies.get(uniqueKey);
+              if (storedData) {
+                storedData.postData = postDataResponse.postData;
+                this.requestBodies.set(uniqueKey, storedData);
+              }
+            } catch (error) {
+              // Some requests might not have retrievable post data
+              console.warn(`Could not retrieve post data for request ${requestId}:`, error.message);
+            }
+          }, 10); // Small delay to ensure request is processed
+        } catch (error) {
+          console.warn(`Error setting up post data retrieval for request ${requestId}:`, error.message);
+        }
+      }
+    }
+  }
+  
+  extractOperationName(postData) {
+    if (!postData) return null;
+    try {
+      const parsed = JSON.parse(postData);
+      return parsed.operationName || null;
+    } catch (e) {
+      return null;
     }
   }
 
@@ -70,13 +116,16 @@ class NetworkRequestBodiesGatherer extends Gatherer {
     const response = params.response;
     const requestId = params.requestId;
     
-    // Update existing request data with response information
-    if (this.requestBodies.has(requestId)) {
-      const requestData = this.requestBodies.get(requestId);
-      requestData.responseStatus = response.status;
-      requestData.responseHeaders = response.headers;
-      requestData.responseMimeType = response.mimeType;
-      this.requestBodies.set(requestId, requestData);
+    // Find the corresponding request data by requestId (there might be multiple with same requestId)
+    for (const [uniqueKey, requestData] of this.requestBodies) {
+      if (requestData.requestId === requestId && !requestData.responseStatus) {
+        // Update the first matching request that doesn't have response data yet
+        requestData.responseStatus = response.status;
+        requestData.responseHeaders = response.headers;
+        requestData.responseMimeType = response.mimeType;
+        this.requestBodies.set(uniqueKey, requestData);
+        break; // Only update the first matching request
+      }
     }
   }
 
@@ -125,23 +174,48 @@ class NetworkRequestBodiesGatherer extends Gatherer {
     if (!postData) return null;
     
     try {
-      // Try to parse as JSON for better formatting
+      // Try to parse as JSON to extract operation name
       const parsed = JSON.parse(postData);
-      return JSON.stringify(parsed, null, 2);
+      
+      return {
+        content: postData, // Raw content for the audit
+        operationName: parsed.operationName || null,
+        type: 'json'
+      };
     } catch (e) {
-      // If not JSON, return as-is but truncate if too long
-      return postData.length > 500 ? postData.substring(0, 500) + '...' : postData;
+      // If not JSON, return raw content
+      return {
+        content: postData,
+        type: 'text'
+      };
     }
   }
 
   async getArtifact(context) {
-    // Convert Map to object for serialization
+    // Convert Map to object structure expected by audits
     const requestBodiesData = {};
     
-    for (const [requestId, requestData] of this.requestBodies) {
-      requestBodiesData[requestId] = {
-        ...requestData,
-        formattedPostData: this.formatRequestBody(requestData.postData),
+    for (const [uniqueKey, requestData] of this.requestBodies) {
+      const formattedBody = this.formatRequestBody(requestData.postData);
+      
+      // Create entry in the format expected by audits
+      requestBodiesData[uniqueKey] = {
+        requestId: requestData.requestId,
+        uniqueKey: uniqueKey,
+        url: requestData.url,
+        method: requestData.method,
+        headers: requestData.headers,
+        postData: requestData.postData,
+        hasPostData: requestData.hasPostData,
+        timestamp: requestData.timestamp,
+        wallTime: requestData.wallTime,
+        responseStatus: requestData.responseStatus || null,
+        responseHeaders: requestData.responseHeaders || null,
+        responseMimeType: requestData.responseMimeType || null,
+        // This is what the audit is looking for:
+        formattedPostData: formattedBody?.content || requestData.postData || null,
+        operationName: formattedBody?.operationName || null,
+        summary: this.createRequestSummary(requestData, formattedBody),
       };
     }
 
@@ -149,6 +223,22 @@ class NetworkRequestBodiesGatherer extends Gatherer {
       requestBodies: requestBodiesData,
       totalRequests: this.requestBodies.size,
     };
+  }
+
+  createRequestSummary(requestData, formattedBody) {
+    const url = new URL(requestData.url);
+    let summary = `${requestData.method} ${url.pathname}`;
+    
+    // Add operation name for GraphQL requests
+    if (formattedBody && formattedBody.operationName) {
+      summary += ` (${formattedBody.operationName})`;
+    }
+    
+    // Add timestamp for uniqueness
+    const date = new Date(requestData.wallTime * 1000);
+    summary += ` at ${date.toISOString()}`;
+    
+    return summary;
   }
 }
 
