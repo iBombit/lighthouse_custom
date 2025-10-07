@@ -6,7 +6,7 @@
 # Puppeteer-core doesn't have a browser
 # so having executablePath in LH browser settings in mandatory
 
-FROM node:alpine AS build
+FROM node:alpine3.22 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production
