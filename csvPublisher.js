@@ -23,8 +23,8 @@ class CSVPublisher {
   constructor(config) {
     // Use environment variables or .env values as defaults
     this.url = config.url || process.env.GALLOPER_URL || '';
-    this.projectId = config.projectId || process.env.PROJECT_ID || '';
-    this.authToken = config.authToken || process.env.TOKEN || '';
+    this.projectId = config.projectId || process.env.project_id || '';
+    this.authToken = config.authToken || process.env.token || '';
     this.bucket = config.bucket || process.env.RESULTS_BUCKET || '';
     this.reportId = config.reportId || process.env.REPORT_ID || '';
     this.verbose = config.verbose || false;
@@ -37,10 +37,10 @@ class CSVPublisher {
     const errors = [];
     
     if (!this.url) errors.push('url (GALLOPER_URL)');
-    if (!this.projectId) errors.push('PROJECT_ID');
-    if (!this.authToken) errors.push('TOKEN');
-    if (!this.bucket) errors.push('RESULTS_BUCKET');
-    if (!this.reportId) errors.push('REPORT_ID');
+    if (!this.projectId) errors.push('project_id');
+    if (!this.authToken) errors.push('auth_token (token)');
+    if (!this.bucket) errors.push('bucket (RESULTS_BUCKET)');
+    if (!this.reportId) errors.push('reportId (REPORT_ID)');
     
     if (errors.length > 0) {
       throw new Error(`Missing required configuration: ${errors.join(', ')}`);
@@ -236,8 +236,8 @@ Options:
 
 Configuration (via environment variables):
   GALLOPER_URL        Platform URL (e.g., https://platform.getcarrier.io)
-  PROJECT_ID          Project identifier
-  TOKEN               Authentication token
+  project_id          Project identifier
+  token               Authentication token
   RESULTS_BUCKET      Target bucket name
   REPORT_ID           Zip file name (e.g., 33a83cbd-9cfe-4385-87c2-37ae2762a7e3)
 
