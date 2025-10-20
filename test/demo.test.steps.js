@@ -22,7 +22,19 @@ const customBeforeHook = async () => {
 before(customBeforeHook);
 beforeEach(beforeEachHook);
 afterEach(afterEachHook);
-after(afterHook);
+
+after(async function() {
+    await afterHook.call(this);
+    
+    // Check if publishArtifacts flag is passed via command line
+    const publishArtifacts = process.argv.includes('--publishArtifacts=true');
+    
+    if (publishArtifacts) {
+        const { CSVPublisher } = await import('../csvPublisher.js');
+        const publisher = new CSVPublisher({ verbose: true });
+        await publisher.publish();
+    }
+});
 
 it(`[N]_${Home.getURL()}`, async function () {
     await Home.navigationValidate(browser, this)
