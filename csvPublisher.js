@@ -10,10 +10,8 @@ try {
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import archiver from 'archiver';
 
-const execPromise = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 
 /**
@@ -91,37 +89,52 @@ class CSVPublisher {
       console.log(`📦 Creating zip file: ${zipFileName}`);
     }
 
-    try {
-      // Use different zip command based on OS
-      const isWindows = process.platform === 'win32';
-      let zipCommand;
+    return new Promise((resolve, reject) => {
+      try {
+        // Create write stream for the zip file
+        const output = fs.createWriteStream(zipFilePath);
+        const archive = archiver('zip', {
+          zlib: { level: 9 } // Maximum compression
+        });
 
-      if (isWindows) {
-        // For Windows, use PowerShell Compress-Archive
-        const reportsPath = reportsDir.replace(/\\/g, '\\\\');
-        const zipPath = zipFilePath.replace(/\\/g, '\\\\');
-        zipCommand = `powershell -command "Compress-Archive -Path '${reportsPath}\\*' -DestinationPath '${zipPath}' -Force"`;
-      } else {
-        // For Unix-like systems, use zip command
-        zipCommand = `cd "${reportsDir}" && zip -r "${zipFilePath}" .`;
+        // Handle stream events
+        output.on('close', () => {
+          const zipStats = fs.statSync(zipFilePath);
+          if (this.verbose) {
+            console.log(`✅ Zip file created successfully (${zipStats.size} bytes)`);
+          }
+          resolve(zipFilePath);
+        });
+
+        output.on('error', (err) => {
+          reject(new Error(`Failed to write zip file: ${err.message}`));
+        });
+
+        archive.on('error', (err) => {
+          reject(new Error(`Failed to create zip archive: ${err.message}`));
+        });
+
+        archive.on('warning', (err) => {
+          if (err.code === 'ENOENT') {
+            console.warn('Archive warning:', err);
+          } else {
+            reject(err);
+          }
+        });
+
+        // Pipe archive data to the file
+        archive.pipe(output);
+
+        // Add all files from reports directory
+        archive.directory(reportsDir, false);
+
+        // Finalize the archive
+        archive.finalize();
+
+      } catch (error) {
+        reject(new Error(`Failed to create zip file: ${error.message}`));
       }
-
-      await execPromise(zipCommand);
-
-      if (!fs.existsSync(zipFilePath)) {
-        throw new Error('Zip file was not created');
-      }
-
-      const zipStats = fs.statSync(zipFilePath);
-      if (this.verbose) {
-        console.log(`✅ Zip file created successfully (${zipStats.size} bytes)`);
-      }
-
-      return zipFilePath;
-
-    } catch (error) {
-      throw new Error(`Failed to create zip file: ${error.message}`);
-    }
+    });
   }
 
   /**

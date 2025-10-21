@@ -22,7 +22,8 @@
     "puppeteer-har": "^1.1.2",
     "winston": "^3.18.3",
     "csv-parser": "^3.2.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "archiver": "^7.0.1"
   },
   "license": "Apache-2.0"
 }
