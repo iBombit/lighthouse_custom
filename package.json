@@ -14,6 +14,7 @@
     "lighthouse": "^12.8.2",
     "puppeteer": "^24.19.0",
     "chai": "^6.2.0",
+    "dotenv": "^16.4.5",
     "es-main": "^1.4.0",
     "express": "^5.1.0",
     "logform": "^2.7.0",
@@ -21,7 +22,8 @@
     "puppeteer-har": "^1.1.2",
     "winston": "^3.18.3",
     "csv-parser": "^3.2.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "archiver": "^7.0.1"
   },
   "license": "Apache-2.0"
 }
