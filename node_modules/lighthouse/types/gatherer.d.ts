@@ -133,12 +133,11 @@ declare module Gatherer {
   type AnyGathererInstance = GathererInstanceExpander<Gatherer.DependencyKey>
 
   namespace Simulation {
-    type GraphNode = Lantern.Simulation.GraphNode<Artifacts.NetworkRequest>;
-    type GraphNetworkNode = Lantern.Simulation.GraphNetworkNode<Artifacts.NetworkRequest>;
-    type GraphCPUNode = Lantern.Simulation.GraphCPUNode;
+    type GraphNode = Lantern.Graph.Node<Artifacts.NetworkRequest>;
+    type GraphNetworkNode = Lantern.Graph.NetworkNode<Artifacts.NetworkRequest>;
+    type GraphCPUNode = Lantern.Graph.CPUNode<Artifacts.NetworkRequest>;
     type Simulator = Lantern.Simulation.Simulator<Artifacts.NetworkRequest>;
-    type NodeTiming = Lantern.Simulation.NodeTiming;
-    type MetricCoefficients = Lantern.Simulation.MetricCoefficients;
+    type NodeTiming = Lantern.Types.Simulation.NodeTiming;
     type Result = Lantern.Simulation.Result<Artifacts.NetworkRequest>;
   }
 }

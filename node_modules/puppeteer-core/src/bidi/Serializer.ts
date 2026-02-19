@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import {isDate, isPlainObject, isRegExp} from '../common/util.js';
 
@@ -120,7 +120,7 @@ export class BidiSerializer {
     }
 
     throw new UnserializableError(
-      'Custom object serialization not possible. Use plain objects instead.'
+      'Custom object serialization not possible. Use plain objects instead.',
     );
   }
 }

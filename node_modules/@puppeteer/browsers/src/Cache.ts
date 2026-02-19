@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import debug from 'debug';
 
@@ -38,7 +38,7 @@ export class InstalledBrowser {
     cache: Cache,
     browser: Browser,
     buildId: string,
-    platform: BrowserPlatform
+    platform: BrowserPlatform,
   ) {
     this.#cache = cache;
     this.browser = browser;
@@ -59,7 +59,7 @@ export class InstalledBrowser {
     return this.#cache.installationDir(
       this.browser,
       this.platform,
-      this.buildId
+      this.buildId,
     );
   }
 
@@ -93,6 +93,9 @@ export interface ComputeExecutablePathOptions {
   buildId: string;
 }
 
+/**
+ * @public
+ */
 export interface Metadata {
   // Maps an alias (canary/latest/dev/etc.) to a buildId.
   aliases: Record<string, string>;
@@ -166,7 +169,7 @@ export class Cache {
   installationDir(
     browser: Browser,
     platform: BrowserPlatform,
-    buildId: string
+    buildId: string,
   ): string {
     return path.join(this.browserRoot(browser), `${platform}-${buildId}`);
   }
@@ -183,7 +186,7 @@ export class Cache {
   uninstall(
     browser: Browser,
     platform: BrowserPlatform,
-    buildId: string
+    buildId: string,
   ): void {
     const metadata = this.readMetadata(browser);
     for (const alias of Object.keys(metadata.aliases)) {
@@ -212,7 +215,7 @@ export class Cache {
       return files
         .map(file => {
           const result = parseFolderPath(
-            path.join(this.browserRoot(browser), file)
+            path.join(this.browserRoot(browser), file),
           );
           if (!result) {
             return null;
@@ -221,7 +224,7 @@ export class Cache {
             this,
             browser,
             result.buildId,
-            result.platform as BrowserPlatform
+            result.platform as BrowserPlatform,
           );
         })
         .filter((item: InstalledBrowser | null): item is InstalledBrowser => {
@@ -234,7 +237,7 @@ export class Cache {
     options.platform ??= detectBrowserPlatform();
     if (!options.platform) {
       throw new Error(
-        `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`
+        `Cannot download a binary for the provided platform: ${os.platform()} (${os.arch()})`,
       );
     }
     try {
@@ -246,20 +249,20 @@ export class Cache {
     const installationDir = this.installationDir(
       options.browser,
       options.platform,
-      options.buildId
+      options.buildId,
     );
     return path.join(
       installationDir,
       executablePathByBrowser[options.browser](
         options.platform,
-        options.buildId
-      )
+        options.buildId,
+      ),
     );
   }
 }
 
 function parseFolderPath(
-  folderPath: string
+  folderPath: string,
 ): {platform: string; buildId: string} | undefined {
   const name = path.basename(folderPath);
   const splits = name.split('-');

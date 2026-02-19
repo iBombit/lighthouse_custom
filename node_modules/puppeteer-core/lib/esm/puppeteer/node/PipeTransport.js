@@ -1,4 +1,4 @@
-import { EventSubscription } from '../common/EventEmitter.js';
+import { EventEmitter } from '../common/EventEmitter.js';
 import { debugError } from '../common/util.js';
 import { assert } from '../util/assert.js';
 import { DisposableStack } from '../util/disposable.js';
@@ -9,21 +9,29 @@ export class PipeTransport {
     #pipeWrite;
     #subscriptions = new DisposableStack();
     #isClosed = false;
-    #pendingMessage = '';
+    #pendingMessage = [];
     onclose;
     onmessage;
     constructor(pipeWrite, pipeRead) {
         this.#pipeWrite = pipeWrite;
-        this.#subscriptions.use(new EventSubscription(pipeRead, 'data', (buffer) => {
+        const pipeReadEmitter = this.#subscriptions.use(
+        // NodeJS event emitters don't support `*` so we need to typecast
+        // As long as we don't use it we should be OK.
+        new EventEmitter(pipeRead));
+        pipeReadEmitter.on('data', buffer => {
             return this.#dispatch(buffer);
-        }));
-        this.#subscriptions.use(new EventSubscription(pipeRead, 'close', () => {
+        });
+        pipeReadEmitter.on('close', () => {
             if (this.onclose) {
                 this.onclose.call(null);
             }
-        }));
-        this.#subscriptions.use(new EventSubscription(pipeRead, 'error', debugError));
-        this.#subscriptions.use(new EventSubscription(pipeWrite, 'error', debugError));
+        });
+        pipeReadEmitter.on('error', debugError);
+        const pipeWriteEmitter = this.#subscriptions.use(
+        // NodeJS event emitters don't support `*` so we need to typecast
+        // As long as we don't use it we should be OK.
+        new EventEmitter(pipeWrite));
+        pipeWriteEmitter.on('error', debugError);
     }
     send(message) {
         assert(!this.#isClosed, '`PipeTransport` is closed.');
@@ -32,25 +40,29 @@ export class PipeTransport {
     }
     #dispatch(buffer) {
         assert(!this.#isClosed, '`PipeTransport` is closed.');
-        let end = buffer.indexOf('\0');
-        if (end === -1) {
-            this.#pendingMessage += buffer.toString();
+        this.#pendingMessage.push(buffer);
+        if (buffer.indexOf('\0') === -1) {
             return;
         }
-        const message = this.#pendingMessage + buffer.toString(undefined, 0, end);
-        if (this.onmessage) {
-            this.onmessage.call(null, message);
-        }
-        let start = end + 1;
-        end = buffer.indexOf('\0', start);
+        const concatBuffer = Buffer.concat(this.#pendingMessage);
+        let start = 0;
+        let end = concatBuffer.indexOf('\0');
         while (end !== -1) {
-            if (this.onmessage) {
-                this.onmessage.call(null, buffer.toString(undefined, start, end));
-            }
+            const message = concatBuffer.toString(undefined, start, end);
+            setImmediate(() => {
+                if (this.onmessage) {
+                    this.onmessage.call(null, message);
+                }
+            });
             start = end + 1;
-            end = buffer.indexOf('\0', start);
+            end = concatBuffer.indexOf('\0', start);
         }
-        this.#pendingMessage = buffer.toString(undefined, start);
+        if (start >= concatBuffer.length) {
+            this.#pendingMessage = [];
+        }
+        else {
+            this.#pendingMessage = [concatBuffer.subarray(start)];
+        }
     }
     close() {
         this.#isClosed = true;

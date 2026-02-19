@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
 import type {ElementHandle} from '../api/ElementHandle.js';
 import {JSHandle} from '../api/JSHandle.js';
@@ -19,7 +19,7 @@ import type {BidiRealm} from './Realm.js';
 export class BidiJSHandle<T = unknown> extends JSHandle<T> {
   static from<T>(
     value: Bidi.Script.RemoteValue,
-    realm: BidiRealm
+    realm: BidiRealm,
   ): BidiJSHandle<T> {
     return new BidiJSHandle(value, realm);
   }

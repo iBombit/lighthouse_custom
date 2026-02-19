@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {createWriteStream} from 'fs';
-import * as http from 'http';
-import * as https from 'https';
-import {URL, urlToHttpOptions} from 'url';
+import {createWriteStream} from 'node:fs';
+import * as http from 'node:http';
+import * as https from 'node:https';
+import {URL, urlToHttpOptions} from 'node:url';
 
 import {ProxyAgent} from 'proxy-agent';
 
@@ -21,7 +21,7 @@ export function headHttpRequest(url: URL): Promise<boolean> {
         response.resume();
         resolve(response.statusCode === 200);
       },
-      false
+      false,
     );
     request.on('error', () => {
       resolve(false);
@@ -33,7 +33,7 @@ export function httpRequest(
   url: URL,
   method: string,
   response: (x: http.IncomingMessage) => void,
-  keepAlive = true
+  keepAlive = true,
 ): http.ClientRequest {
   const options: http.RequestOptions = {
     protocol: url.protocol,
@@ -75,7 +75,7 @@ export function httpRequest(
 export function downloadFile(
   url: URL,
   destinationPath: string,
-  progressCallback?: (downloadedBytes: number, totalBytes: number) => void
+  progressCallback?: (downloadedBytes: number, totalBytes: number) => void,
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     let downloadedBytes = 0;
@@ -89,7 +89,7 @@ export function downloadFile(
     const request = httpRequest(url, 'GET', response => {
       if (response.statusCode !== 200) {
         const error = new Error(
-          `Download failed: server returned code ${response.statusCode}. URL: ${url}`
+          `Download failed: server returned code ${response.statusCode}. URL: ${url}`,
         );
         // consume response data to free up memory
         response.resume();
@@ -97,10 +97,18 @@ export function downloadFile(
         return;
       }
       const file = createWriteStream(destinationPath);
-      file.on('finish', () => {
+      file.on('close', () => {
+        // The 'close' event is emitted when the stream and any of its
+        // underlying resources (a file descriptor, for example) have been
+        // closed. The event indicates that no more events will be emitted, and
+        // no further computation will occur.
         return resolve();
       });
       file.on('error', error => {
+        // The 'error' event may be emitted by a Readable implementation at any
+        // time. Typically, this may occur if the underlying stream is unable to
+        // generate data due to an underlying internal failure, or when a stream
+        // implementation attempts to push an invalid chunk of data.
         return reject(error);
       });
       response.pipe(file);
@@ -145,7 +153,7 @@ export function getText(url: URL): Promise<string> {
           }
         });
       },
-      false
+      false,
     );
     request.on('error', err => {
       reject(err);

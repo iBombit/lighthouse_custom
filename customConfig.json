@@ -1,0 +1,20 @@
+{
+    "settings": {
+      "throttling": {
+        "rttMs": 0,
+        "throughputKbps": 20480,
+        "requestLatencyMs": 0,
+        "downloadThroughputKbps": 20480,
+        "uploadThroughputKbps": 20480,
+        "cpuSlowdownMultiplier": 1
+      },
+      "formFactor": "desktop",
+      "screenEmulation": {
+        "mobile": false,
+        "width": 1920,
+        "height": 1080,
+        "deviceScaleFactor": 1,
+        "disabled": false
+      }
+    }
+  }

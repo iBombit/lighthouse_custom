@@ -4,19 +4,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import type { JSHandle } from '../api/JSHandle.js';
-import type PuppeteerUtil from '../injected/injected.js';
+import type { PuppeteerInjectedUtil } from '../injected/injected.js';
 /**
  * @internal
  */
 export interface PuppeteerUtilWrapper {
-    puppeteerUtil: Promise<JSHandle<PuppeteerUtil>>;
+    puppeteerUtil: Promise<JSHandle<PuppeteerInjectedUtil>>;
 }
 /**
  * @internal
  */
 export declare class LazyArg<T, Context = PuppeteerUtilWrapper> {
     #private;
-    static create: <T_1>(get: (context: PuppeteerUtilWrapper) => T_1 | Promise<T_1>) => T_1;
+    static create: <T_1>(get: (context: PuppeteerUtilWrapper) => Promise<T_1> | T_1) => T_1;
     private constructor();
     get(context: Context): Promise<T>;
 }

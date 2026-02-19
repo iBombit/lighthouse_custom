@@ -17,16 +17,14 @@ const assert_js_1 = require("../util/assert.js");
  * ```ts
  * import puppeteer from 'puppeteer';
  *
- * (async () => {
- *   const browser = await puppeteer.launch();
- *   const page = await browser.newPage();
- *   page.on('dialog', async dialog => {
- *     console.log(dialog.message());
- *     await dialog.dismiss();
- *     await browser.close();
- *   });
- *   page.evaluate(() => alert('1'));
- * })();
+ * const browser = await puppeteer.launch();
+ * const page = await browser.newPage();
+ * page.on('dialog', async dialog => {
+ *   console.log(dialog.message());
+ *   await dialog.dismiss();
+ *   await browser.close();
+ * });
+ * await page.evaluate(() => alert('1'));
  * ```
  *
  * @public
@@ -35,7 +33,10 @@ class Dialog {
     #type;
     #message;
     #defaultValue;
-    #handled = false;
+    /**
+     * @internal
+     */
+    handled = false;
     /**
      * @internal
      */
@@ -71,8 +72,8 @@ class Dialog {
      *
      */
     async accept(promptText) {
-        (0, assert_js_1.assert)(!this.#handled, 'Cannot accept dialog which is already handled!');
-        this.#handled = true;
+        (0, assert_js_1.assert)(!this.handled, 'Cannot accept dialog which is already handled!');
+        this.handled = true;
         await this.handle({
             accept: true,
             text: promptText,
@@ -82,8 +83,8 @@ class Dialog {
      * A promise which will resolve once the dialog has been dismissed
      */
     async dismiss() {
-        (0, assert_js_1.assert)(!this.#handled, 'Cannot dismiss dialog which is already handled!');
-        this.#handled = true;
+        (0, assert_js_1.assert)(!this.handled, 'Cannot dismiss dialog which is already handled!');
+        this.handled = true;
         await this.handle({
             accept: false,
         });

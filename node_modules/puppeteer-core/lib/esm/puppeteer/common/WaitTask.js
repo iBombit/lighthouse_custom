@@ -18,6 +18,7 @@ export class WaitTask {
     #fn;
     #args;
     #timeout;
+    #genericError = new Error('Waiting failed');
     #timeoutError;
     #result = Deferred.create();
     #poller;
@@ -28,9 +29,7 @@ export class WaitTask {
         this.#polling = options.polling;
         this.#root = options.root;
         this.#signal = options.signal;
-        this.#signal?.addEventListener('abort', () => {
-            void this.terminate(this.#signal?.reason);
-        }, {
+        this.#signal?.addEventListener('abort', this.#onAbortSignal, {
             once: true,
         });
         switch (typeof fn) {
@@ -109,19 +108,21 @@ export class WaitTask {
             }
             const badError = this.getBadError(error);
             if (badError) {
-                await this.terminate(badError);
+                this.#genericError.cause = badError;
+                await this.terminate(this.#genericError);
             }
         }
     }
     async terminate(error) {
         this.#world.taskManager.delete(this);
+        this.#signal?.removeEventListener('abort', this.#onAbortSignal);
         clearTimeout(this.#timeout);
         if (error && !this.#result.finished()) {
             this.#result.reject(error);
         }
         if (this.#poller) {
             try {
-                await this.#poller.evaluateHandle(async (poller) => {
+                await this.#poller.evaluate(async (poller) => {
                     await poller.stop();
                 });
                 if (this.#poller) {
@@ -157,7 +158,7 @@ export class WaitTask {
             }
             // Errors coming from WebDriver BiDi. TODO: Adjust messages after
             // https://github.com/w3c/webdriver-bidi/issues/540 is resolved.
-            if (error.message.includes("AbortError: Actor 'MessageHandlerFrame' destroyed")) {
+            if (error.message.includes('DiscardedBrowsingContextError')) {
                 return;
             }
             return error;
@@ -166,6 +167,9 @@ export class WaitTask {
             cause: error,
         });
     }
+    #onAbortSignal = () => {
+        void this.terminate(this.#signal?.reason);
+    };
 }
 /**
  * @internal

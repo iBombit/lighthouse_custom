@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import type * as Bidi from 'chromium-bidi/lib/cjs/protocol/protocol.js';
+import type * as Bidi from 'webdriver-bidi-protocol';
 
+import type {BrowserContextOptions} from '../../api/Browser.js';
+import {UnsupportedOperation} from '../../common/Errors.js';
 import {EventEmitter} from '../../common/EventEmitter.js';
 import {inertIfDisposed, throwIfDisposed} from '../../util/decorators.js';
 import {DisposableStack, disposeSymbol} from '../../util/disposable.js';
@@ -66,7 +68,7 @@ export class Browser extends EventEmitter<{
 
   async #initialize() {
     const sessionEmitter = this.#disposables.use(
-      new EventEmitter(this.session)
+      new EventEmitter(this.session),
     );
     sessionEmitter.once('ended', ({reason}) => {
       this.dispose(reason);
@@ -78,7 +80,7 @@ export class Browser extends EventEmitter<{
       }
       this.#sharedWorkers.set(
         info.realm,
-        SharedWorkerRealm.from(this, info.realm, info.origin)
+        SharedWorkerRealm.from(this, info.realm, info.origin),
       );
     });
 
@@ -127,7 +129,7 @@ export class Browser extends EventEmitter<{
     this.#userContexts.set(userContext.id, userContext);
 
     const userContextEmitter = this.#disposables.use(
-      new EventEmitter(userContext)
+      new EventEmitter(userContext),
     );
     userContextEmitter.once('closed', () => {
       userContextEmitter.removeAllListeners();
@@ -180,7 +182,7 @@ export class Browser extends EventEmitter<{
   })
   async addPreloadScript(
     functionDeclaration: string,
-    options: AddPreloadScriptOptions = {}
+    options: AddPreloadScriptOptions = {},
   ): Promise<string> {
     const {
       result: {script},
@@ -218,14 +220,73 @@ export class Browser extends EventEmitter<{
     // SAFETY: By definition of `disposed`, `#reason` is defined.
     return browser.#reason!;
   })
-  async createUserContext(): Promise<UserContext> {
+  async createUserContext(
+    options: BrowserContextOptions,
+  ): Promise<UserContext> {
+    const proxyConfig: Bidi.Session.ProxyConfiguration | undefined =
+      options.proxyServer === undefined
+        ? undefined
+        : {
+            proxyType: 'manual',
+            httpProxy: options.proxyServer,
+            sslProxy: options.proxyServer,
+            noProxy: options.proxyBypassList,
+          };
     const {
-      result: {userContext: context},
-    } = await this.session.send('browser.createUserContext', {});
-    return this.#createUserContext(context);
+      result: {userContext},
+    } = await this.session.send('browser.createUserContext', {
+      proxy: proxyConfig,
+    });
+    if (options.downloadBehavior?.policy === 'allowAndName') {
+      throw new UnsupportedOperation(
+        '`allowAndName` is not supported in WebDriver BiDi',
+      );
+    }
+    if (options.downloadBehavior?.policy === 'allow') {
+      if (options.downloadBehavior.downloadPath === undefined) {
+        throw new UnsupportedOperation(
+          '`downloadPath` is required in `allow` download behavior',
+        );
+      }
+      await this.session.send('browser.setDownloadBehavior', {
+        downloadBehavior: {
+          type: 'allowed',
+          destinationFolder: options.downloadBehavior.downloadPath,
+        },
+        userContexts: [userContext],
+      });
+    }
+    if (options.downloadBehavior?.policy === 'deny') {
+      await this.session.send('browser.setDownloadBehavior', {
+        downloadBehavior: {type: 'denied'},
+        userContexts: [userContext],
+      });
+    }
+    return this.#createUserContext(userContext);
   }
 
-  [disposeSymbol](): void {
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async installExtension(path: string): Promise<string> {
+    const {
+      result: {extension},
+    } = await this.session.send('webExtension.install', {
+      extensionData: {type: 'path', path},
+    });
+    return extension;
+  }
+
+  @throwIfDisposed<Browser>(browser => {
+    // SAFETY: By definition of `disposed`, `#reason` is defined.
+    return browser.#reason!;
+  })
+  async uninstallExtension(id: string): Promise<void> {
+    await this.session.send('webExtension.uninstall', {extension: id});
+  }
+
+  override [disposeSymbol](): void {
     this.#reason ??=
       'Browser was disconnected, probably because the session ended.';
     if (this.closed) {

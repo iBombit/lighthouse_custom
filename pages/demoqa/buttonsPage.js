@@ -1,6 +1,6 @@
-import Page from "../../core/page.js";
-import Button from "../../core/elements/button.js";
-import Element from "../../core/elements/element.js";
+import Page from "lh-pptr-framework/core/page.js";
+import Button from "lh-pptr-framework/core/elements/button.js";
+import Element from "lh-pptr-framework/core/elements/element.js";
 
 export default class ButtonsPage extends Page {
     constructor(page) {
@@ -10,6 +10,7 @@ export default class ButtonsPage extends Page {
 
     init(page) {
         super.init(page)
+        this.pageValidate = new Element("//button[text()='Click Me']", page)
         this.clickBtn = new Button("//button[text()='Click Me']", page)
         this.clickVerify = new Element("#dynamicClickMessage", page)
         this.doubleClickBtn = new Button("//button[text()='Double Click Me']", page)
@@ -25,8 +26,8 @@ export default class ButtonsPage extends Page {
     // Then: I wait for click message to appear
     // And: I measure action time performance of the page
     */
-    async simpleClickButton(browser) {
-        await browser.timespan("Simple click button", async () => {
+    async simpleClickButton(browser, testContext) {
+        await browser.timespan(`${testContext?.test?.title}`, async () => {
             await this.clickBtn.click()
             await this.clickVerify.find()
             await browser.waitTillRendered()
@@ -40,8 +41,8 @@ export default class ButtonsPage extends Page {
     // Then: I wait for click message to appear
     // And: I measure action time performance of the page
     */
-    async doubleClickButton(browser) {
-        await browser.timespan("Double click button", async () => {
+    async doubleClickButton(browser, testContext) {
+        await browser.timespan(`${testContext?.test?.title}`, async () => {
             await this.doubleClickBtn.doubleClick()
             await this.doubleClickVerify.find()
             await browser.waitTillRendered()
@@ -55,8 +56,8 @@ export default class ButtonsPage extends Page {
     // Then: I wait for click message to appear
     // And: I measure action time performance of the page
     */
-    async rightClickButton(browser) {
-        await browser.timespan("Right click button", async () => {
+    async rightClickButton(browser, testContext) {
+        await browser.timespan(`${testContext?.test?.title}`, async () => {
             await this.rightClickBtn.rightClick()
             await this.rightClickVerify.find()
             await browser.waitTillRendered()
