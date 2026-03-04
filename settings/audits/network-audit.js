@@ -1,7 +1,7 @@
 import { Audit } from 'lighthouse/core/audits/audit.js';
 import { taskGroups } from 'lighthouse/core/lib/tracehouse/task-groups.js';
-import i18n from 'lighthouse/core/lib/i18n/i18n.js';
-import MainThreadTasks from 'lighthouse/core/computed/main-thread-tasks.js';
+import * as i18n from 'lighthouse/core/lib/i18n/i18n.js';
+import { MainThreadTasks } from 'lighthouse/core/computed/main-thread-tasks.js';
 
 const UIStrings = {
     title: 'Minimizes main-thread work',
@@ -23,7 +23,7 @@ class CustomNetworkAudit extends Audit {
             failureTitle: str_(UIStrings.failureTitle),
             description: str_(UIStrings.description),
             scoreDisplayMode: Audit.SCORING_MODES.INFORMATIVE,
-            requiredArtifacts: ['traces'],
+            requiredArtifacts: ['Trace'],
         };
     }
 
@@ -58,7 +58,7 @@ class CustomNetworkAudit extends Audit {
 
     static async audit(artifacts, context) {
         const settings = context.settings || {};
-        const trace = artifacts.traces[Audit.DEFAULT_PASS];
+        const trace = artifacts.Trace;
 
         const tasks = await MainThreadTasks.request(trace, context);
         const multiplier =

@@ -87,9 +87,12 @@ export default class CreateReport {
     await fs.mkdir(reportsDirectory, { recursive: true });
     logger.debug(`[REPORT] Reports directory ensured at ${reportsDirectory}`);
 
-    const reportHTML = await flow.generateReport();
+    let reportHTML = await flow.generateReport();
     let flowResult = await flow.createFlowResult();
     const reportJSON = JSON.stringify(flowResult, null, 2);
+
+    // Inject custom CSS for the waterfall audit image
+    reportHTML = injectWaterfallStyles(reportHTML);
 
     await fs.writeFile(reportPath, reportHTML);
     await fs.writeFile(reportPathJson, reportJSON);
@@ -109,4 +112,33 @@ export default class CreateReport {
       }
     }
   }
+}
+
+/**
+ * Inject CSS into the Lighthouse HTML report so the network-waterfall
+ * audit thumbnail renders as a full-width image instead of a tiny square.
+ */
+function injectWaterfallStyles(html) {
+  const css = `
+<style>
+  /* ── Network Waterfall: full-width image ──────────────────────── */
+  [id="network-waterfall"] .lh-table-column--thumbnail {
+    width: 100%;
+  }
+  [id="network-waterfall"] .lh-thumbnail {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    pointer-events: none;   /* hides the base64 title tooltip */
+  }
+  [id="network-waterfall"] thead {
+    display: none;           /* hide empty table header */
+  }
+  [id="network-waterfall"] .lh-details {
+    overflow-x: auto;
+  }
+</style>`;
+
+  return html.replace('</head>', css + '\n</head>');
 }

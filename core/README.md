@@ -1,158 +1,109 @@
-# core
+# 🧩 core
+
+Puppeteer + Lighthouse browser automation layer. Manages browser lifecycle, page objects, and UI element interactions.
+
+---
 
 ## core/browser.js
 
-The `core/browser.js` file is a core component of the UI framework, responsible for managing the browser instance and orchestrating Lighthouse flows.
+Orchestrates the Puppeteer browser instance and Lighthouse user flows.
 
 **LighthouseBrowser**
 
-- **Static Property**: `DEFAULT_TIMEOUT` - Default timeout for operations (30 seconds).
-- **Properties**:
-  - `browser`: Puppeteer browser instance.
-  - `page`: Puppeteer page instance.
-  - `flow`: Lighthouse flow instance.
-  - `browserType`: Type of browser (desktop, mobile, etc.).
-  - `headless`: Boolean indicating if the browser should run in headless mode.
-  - `browserLocation`: Location of the browser executable.
+- **`DEFAULT_TIMEOUT`** — 30 000 ms
+- **Properties**: `browser` · `page` · `flow` · `browserType` · `headless` · `browserLocation`
 
-**Methods**
+| Method | Purpose |
+|--------|---------|
+| `init()` | Launches Puppeteer with the correct device profile (desktop / mobile variants) |
+| `start()` | Opens a new page and starts (or updates) the Lighthouse flow |
+| `restartBrowser(pages)` | Kills & relaunches the browser — used for long tests (>20 steps) to avoid OOM |
+| `startNewLighthouseFlow()` | Creates a new `startFlow()` with the device-specific Lighthouse config |
+| `updateLighthouseFlow()` | Points the existing flow at the new page after restart |
+| `getNewPageWhenLoaded()` | Resolves when a newly opened tab finishes loading |
+| `navigation(name, link, pages)` | Warm navigation — keeps storage, measures with Lighthouse |
+| `customNavigation(stepName, actions, pages)` | Wraps arbitrary actions between `startNavigation` / `endNavigation` |
+| `timespan(stepName, actions)` | Wraps actions in a Lighthouse timespan measurement |
+| `goToPage(link, timeout)` | Simple Puppeteer navigation + `waitTillRendered` |
+| `waitTillRendered(timeout)` | Polls HTML size until stable (3 consecutive identical readings) |
+| `closeBrowser()` | Graceful shutdown |
 
-- `constructor`: Initializes the browser type, headless mode, and browser location.
-- `init`: Launches the browser based on the specified type and mode.
-- `start`: Opens a new page and starts or updates the Lighthouse flow.
-- `restartBrowser`: Closes and reopens the browser, used rarely for long tests >20 steps when we hit OOM error.
-- `startNewLighthouseFlow`: Starts a new Lighthouse flow with the appropriate configuration.
-- `updateLighthouseFlow`: Updates the existing Lighthouse flow with the new page.
-- `getNewPageWhenLoaded`: Returns a promise that resolves when a new page is fully loaded.
-- `coldNavigation`: Navigates to a URL and waits for the page to be fully rendered.
-- `warmNavigation`: Navigates to a URL without resetting storage and waits for the page to be fully rendered.
-- `timespan`: Measures the time taken for a series of actions.
-- `goToPage`: Navigates to a URL and waits for the page to be fully rendered.
-- `waitTillRendered`: Waits until the page is fully rendered by checking the HTML size.
-- `closeBrowser`: Closes the browser instance.
+---
 
 ## core/page.js
 
-The `core/page.js` file is another essential component of the UI framework, responsible for managing page interactions and navigation.
+Base page-object class. Extend it per page in your test suite.
 
 **Page**
 
-- **Static Property**: `baseUrl` - Base URL for the application.
-- **Properties**:
-  - `path`: Path for the specific page.
-  - `p`: Puppeteer page instance.
+- **`baseUrl`** — static, set from `--url` CLI param
+- **Properties**: `path` · `p` (Puppeteer page handle)
 
-**Methods**
+| Method | Purpose |
+|--------|---------|
+| `init(page)` | Binds the Puppeteer page instance |
+| `navigation(browser, testContext, link, pages)` | Warm navigation with Lighthouse measurement |
+| `navigationValidate(browser, testContext, link, pages)` | Custom navigation that waits for a `pageValidate` element, stores selector timing, and takes a success/failure snapshot |
+| `openURL(browser, link, timeout)` | Simple go-to without Lighthouse measurement |
+| `setPath(path)` / `getURL()` | Path helpers — builds full URL from `baseUrl + path` |
 
-- `constructor`: Initializes the page path.
-- `init`: Initializes the Puppeteer page instance.
-- `btn`: Registers a button element.
-- `input`: Registers a text field element.
-- `upload`: Registers an upload field element.
-- `coldNavigation`: Performs a cold navigation to a specified URL.
-- `warmNavigation`: Performs a warm navigation to a specified URL.
-- `openURL`: Opens a specified URL.
-- `setPath`: Sets the path for the page.
-- `getURL`: Constructs the full URL for the page.
-- `close`: Closes the Puppeteer page instance.
+---
 
-## core/elements/element.js
+## core/elements/
 
-The `core/elements/element.js` file is a fundamental part of the UI framework, responsible for managing individual elements on a web page.
+Reusable UI element wrappers around Puppeteer handles. Supports CSS and XPath locators.
 
-**Element**
+### Element (base class)
 
-- **Static Property**: `DEFAULT_TIMEOUT` - Default timeout for operations (60 seconds).
-- **Properties**:
-  - `locator`: Locator for the element.
-  - `element`: Puppeteer element handle.
-  - `locatorType`: Type of locator (CSS or XPath).
+- **`DEFAULT_TIMEOUT`** — 60 000 ms
+- **Properties**: `locator` · `element` · `locatorType`
 
-**Methods**
+| Method | Purpose |
+|--------|---------|
+| `find(timeout)` | Waits for the element to appear |
+| `findHidden(timeout)` | Waits for a hidden element |
+| `findFromList(index)` | Picks an element from a list by index |
+| `hover()` | Hovers over the element |
+| `count()` | Returns the number of matches |
+| `replace(data)` | Replaces `{placeholders}` in the locator with actual values |
 
-- `constructor`: Initializes the element with a locator and page instance.
-- `find`: Finds the element on the page with a timeout.
-- `hover`: Hovers over the element.
-- `findFromList`: Finds an element from a list based on the index.
-- `findHidden`: Finds a hidden element on the page with a timeout.
-- `count`: Counts the number of elements matching the locator.
-- `replace`: Replaces placeholders in the locator with actual data.
+### Button `extends Element`
 
-## core/elements/button.js
+| Method | Purpose |
+|--------|---------|
+| `click()` | Standard Puppeteer click |
+| `jsClick()` | Click via `evaluate()` |
+| `jsClickHidden()` | Click a hidden element via JS |
+| `doubleClick()` | Double-click |
+| `rightClick()` | Context-menu click |
+| `clickIfAvailable()` | Clicks if the element exists, silently continues otherwise |
+| `clickAndHold(duration)` | Mouse-down for a specified duration |
 
-The `core/elements/button.js` file extends the `Element` class to provide specific actions for button elements.
+### TextField `extends Button`
 
-**Button**
+Inherits all Button + Element methods, plus:
 
-- **Properties**:
-  - `page`: Puppeteer page instance.
+| Method | Purpose |
+|--------|---------|
+| `type(text)` | Types into the field |
+| `clear()` | Clears the field |
 
-**Methods**
+### Dropdown `extends Element`
 
-- `constructor`: Initializes the button with a locator and page instance.
-- `jsClick`: Clicks on the button using JavaScript.
-- `jsClickHidden`: Clicks on a hidden button using JavaScript.
-- `click`: Clicks on the button using Puppeteer.
-- `doubleClick`: Double-clicks on the button using Puppeteer.
-- `rightClick`: Right-clicks on the button using Puppeteer.
-- `clickIfAvailable`: Clicks on the button if it is available, proceeds the execution if element is not available.
-- `clickAndHold`: Clicks and holds the button for a specified duration.
+| Method | Purpose |
+|--------|---------|
+| `selectRandom()` | Picks a random option |
+| `selectNthOption(index)` | Picks option by index |
 
-## core/elements/textField.js
+### Iframe `extends Element`
 
-The `core/elements/textField.js` file extends the `Button` class to provide specific actions for text field elements. As the result, text fields can be also treated as `Element` or `Button`.
+| Method | Purpose |
+|--------|---------|
+| `createIframe()` | Returns the iframe's content frame from the selector |
 
-**TextField**
+### UploadField `extends Element`
 
-- **Properties**:
-  - `page`: Puppeteer page instance.
-
-**Methods**
-
-- `constructor`: Initializes the text field with a locator and page instance.
-- `type`: Types text into the text field.
-- `clear`: Clears the text field.
-
-## core/elements/dropdown.js
-
-The `core/elements/dropdown.js` file extends the `Element` class to provide specific actions for dropdown elements.
-
-**Dropdown**
-
-- **Properties**:
-  - `page`: Puppeteer page instance.
-
-**Methods**
-
-- `constructor`: Initializes the dropdown with a locator and page instance.
-- `selectRandom`: Selects a random option from the dropdown.
-- `selectNthOption`: Selects a specific option from the dropdown by index.
-
-## core/elements/iframe.js
-
-The `core/elements/iframe.js` file extends the `Element` class to provide specific actions for iframe elements.
-
-**Iframe**
-
-- **Properties**:
-  - `page`: Puppeteer page instance.
-
-**Methods**
-
-- `constructor`: Initializes the iframe with a locator and page instance.
-- `createIframe`: Creates an iframe from selector.
-
-## core/elements/uploadField.js
-
-The `core/elements/uploadField.js` file extends the `Element` class to provide specific actions for file upload elements.
-
-**UploadField**
-
-- **Properties**:
-  - `page`: Puppeteer page instance.
-
-**Methods**
-
-- `constructor`: Initializes the upload field with a locator and page instance.
-- `upload`: Uploads a file to the specified path.
-- `uploadHidden`: Uploads a file to a hidden element.
+| Method | Purpose |
+|--------|---------|
+| `upload(filePath)` | Uploads a file |
+| `uploadHidden(filePath)` | Uploads via a hidden input |

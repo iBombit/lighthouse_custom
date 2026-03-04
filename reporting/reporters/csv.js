@@ -22,8 +22,6 @@ const PERFORMANCE_THRESHOLDS = {
     'network-rtt': { good: 150, poor: 300, unit: 'ms', category: 'Network' },
     'network-server-latency': { good: 600, poor: 1500, unit: 'ms', category: 'Network' },
     'total-byte-weight': { good: 1600, poor: 3000, unit: 'KB', category: 'Network' },
-    'uses-optimized-images': { good: 85, poor: 40, unit: 'KB', category: 'Network' },
-    'uses-text-compression': { good: 10, poor: 40, unit: 'KB', category: 'Network' },
     'longest-first-party-request': { good: 1000, poor: 3000, unit: 'ms', category: 'Network' },
     'slowest-network-request': { good: 1000, poor: 3000, unit: 'ms', category: 'Network' },
     
@@ -43,7 +41,7 @@ function getThresholdStatus(value, thresholds, metricKey) {
         'max-potential-fid', 'network-rtt', 'network-server-latency',
         'longest-first-party-request', 'slowest-network-request',
         'main-thread-tasks', 'network-requests',
-        'total-byte-weight', 'uses-optimized-images', 'uses-text-compression',
+        'total-byte-weight',
         'network-xhr-audit', 'xhr-count-audit'
     ];
 

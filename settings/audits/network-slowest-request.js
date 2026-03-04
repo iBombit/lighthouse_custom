@@ -22,8 +22,13 @@ class SlowestNetworkRequest extends NetworkRequests {
             };
         }
 
+        // Flatten grouped items → individual requests
+        const allRequests = parentAuditResult.details.items.flatMap(item =>
+            item.subItems?.items ?? [item]
+        );
+
         // Find the slowest request by duration
-        const slowestRequest = parentAuditResult.details.items.reduce((max, item) => item.duration > max.duration ? item : max, parentAuditResult.details.items[0]);
+        const slowestRequest = allRequests.reduce((max, item) => item.duration > max.duration ? item : max, allRequests[0]);
 
         // Calculate the score based on the duration of the slowest network request
         const maxDuration = slowestRequest.duration;

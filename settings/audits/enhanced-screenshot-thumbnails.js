@@ -23,12 +23,12 @@ class EnhancedScreenshotThumbnails extends Audit {
       title: str_(UIStrings.title),
       failureTitle: str_(UIStrings.failureTitle),
       description: str_(UIStrings.description),
-      requiredArtifacts: ['traces'],
+      requiredArtifacts: ['Trace'],
     };
   }
 
   static async audit(artifacts, context) {
-    const trace = artifacts.traces[Audit.DEFAULT_PASS];
+    const trace = artifacts.Trace;
     const processedTrace = await ProcessedTrace.request(trace, context);
     const screenshots = await Screenshots.request(trace, context);
     

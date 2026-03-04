@@ -22,7 +22,7 @@ class NetworkXHRAudit extends Audit {
             title: str_(UIStrings.title),
             failureTitle: str_(UIStrings.failureTitle),
             description: str_(UIStrings.description),
-            requiredArtifacts: ['devtoolsLogs', 'URL', 'GatherContext', 'NetworkRequestBodies'],
+            requiredArtifacts: ['DevtoolsLog', 'URL', 'GatherContext', 'NetworkRequestBodies'],
         };
     }
 
@@ -107,7 +107,7 @@ class NetworkXHRAudit extends Audit {
     }
 
     static async audit(artifacts, context) {
-        const devtoolsLog = artifacts.devtoolsLogs[Audit.DEFAULT_PASS];
+        const devtoolsLog = artifacts.DevtoolsLog;
         const records = await NetworkRecords.request(devtoolsLog, context);
         const classifiedEntities = await EntityClassification.request({ URL: artifacts.URL, devtoolsLog }, context);
         const mainFrameId = await getMainFrameId(artifacts, context);
@@ -145,7 +145,7 @@ class NetworkXHRAudit extends Audit {
 
 async function getMainFrameId(artifacts, context) {
     if (artifacts.GatherContext.gatherMode === 'navigation') {
-        const mainResource = await MainResource.request({ devtoolsLog: artifacts.devtoolsLogs[Audit.DEFAULT_PASS], URL: artifacts.URL }, context);
+        const mainResource = await MainResource.request({ devtoolsLog: artifacts.DevtoolsLog, URL: artifacts.URL }, context);
         return mainResource.frameId;
     }
     return undefined;

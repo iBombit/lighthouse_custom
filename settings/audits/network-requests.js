@@ -14,6 +14,7 @@ const UIStrings = {
 
 const str_ = i18n.createIcuMessageFn(import.meta.url, UIStrings);
 
+// ── Audit ──────────────────────────────────────────────────────────────
 class NetworkRequests extends Audit {
     static get meta() {
         return {
@@ -21,7 +22,7 @@ class NetworkRequests extends Audit {
             scoreDisplayMode: Audit.SCORING_MODES.NUMERIC,
             title: str_(UIStrings.title),
             description: str_(UIStrings.description),
-            requiredArtifacts: ['devtoolsLogs', 'URL', 'GatherContext'],
+            requiredArtifacts: ['DevtoolsLog', 'URL', 'GatherContext'],
         };
     }
 
@@ -33,7 +34,7 @@ class NetworkRequests extends Audit {
     }
 
     static async audit(artifacts, context) {
-        const devtoolsLog = artifacts.devtoolsLogs[Audit.DEFAULT_PASS];
+        const devtoolsLog = artifacts.DevtoolsLog;
         const records = await NetworkRecords.request(devtoolsLog, context);
         const classifiedEntities = await EntityClassification.request({ URL: artifacts.URL, devtoolsLog }, context);
         const mainFrameId = await getMainFrameId(artifacts, context);
@@ -56,7 +57,7 @@ class NetworkRequests extends Audit {
 
 async function getMainFrameId(artifacts, context) {
     if (artifacts.GatherContext.gatherMode === 'navigation') {
-        const mainResource = await MainResource.request({ devtoolsLog: artifacts.devtoolsLogs[Audit.DEFAULT_PASS], URL: artifacts.URL }, context);
+        const mainResource = await MainResource.request({ devtoolsLog: artifacts.DevtoolsLog, URL: artifacts.URL }, context);
         return mainResource.frameId;
     }
     return undefined;
@@ -99,23 +100,86 @@ function calculateScore(context, maxExecutionTime) {
 }
 
 function createTableDetails(records, earliestRendererStartTime) {
-    const headings = [
-        { key: 'url', valueType: 'url', label: 'URL' },
-        { key: 'networkRequestTime', valueType: 'ms', granularity: 1, label: 'Network Request Time' },
-        { key: 'networkEndTime', valueType: 'ms', granularity: 1, label: 'Network End Time' },
-        { key: 'duration', valueType: 'ms', granularity: 1, label: 'Duration' },
-        { key: 'transferSize', valueType: 'bytes', displayUnit: 'kb', granularity: 1, label: 'Transfer Size' },
-        { key: 'resourceSize', valueType: 'bytes', displayUnit: 'kb', granularity: 1, label: 'Resource Size' },
-        { key: 'statusCode', valueType: 'text', label: 'Status Code' },
-        { key: 'mimeType', valueType: 'text', label: 'MIME Type' },
-    ];
+    // ── Group by entity ────────────────────────────────────────────────
+    const grouped = new Map();
+    for (const r of records) {
+        const key = r.entity || 'Unknown';
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(r);
+    }
 
-    const items = records.map(record => ({
-        ...record,
-        networkRequestTime: record.networkRequestTime ? Math.round(record.networkRequestTime) : undefined,
-        networkEndTime: record.networkEndTime ? Math.round(record.networkEndTime) : undefined,
-        duration: record.duration ? Math.round(record.duration) : undefined,
-    }));
+    const items = [];
+    for (const [entity, reqs] of grouped) {
+        // Sort sub-items by start time (natural waterfall order)
+        const sorted = reqs.sort((a, b) => (a.networkRequestTime ?? 0) - (b.networkRequestTime ?? 0));
+
+        const totalDuration = sorted.reduce((s, r) => s + (r.duration ?? 0), 0);
+        const totalTransfer = sorted.reduce((s, r) => s + (r.transferSize ?? 0), 0);
+        const totalResource = sorted.reduce((s, r) => s + (r.resourceSize ?? 0), 0);
+        const groupStart    = Math.min(...sorted.map(r => r.networkRequestTime ?? 0));
+        const groupEnd      = Math.max(...sorted.map(r => r.networkEndTime ?? 0));
+
+        items.push({
+            url: entity,
+            networkRequestTime: Math.round(groupStart),
+            duration: Math.round(totalDuration),
+            transferSize: totalTransfer,
+            resourceSize: totalResource,
+            statusCode: '',
+            mimeType: '',
+            entity: entity,
+            networkEndTime: Math.round(groupEnd),
+            subItems: {
+                type: 'subitems',
+                items: sorted.map(r => ({
+                    url: r.url,
+                    networkRequestTime: r.networkRequestTime ? Math.round(r.networkRequestTime) : undefined,
+                    duration: r.duration ? Math.round(r.duration) : undefined,
+                    transferSize: r.transferSize,
+                    resourceSize: r.resourceSize,
+                    statusCode: r.statusCode,
+                    mimeType: r.mimeType,
+                    entity: r.entity,
+                    networkEndTime: r.networkEndTime ? Math.round(r.networkEndTime) : undefined,
+                })),
+            },
+        });
+    }
+
+    // Sort entity groups by start time (waterfall reading order)
+    items.sort((a, b) => a.networkRequestTime - b.networkRequestTime);
+
+    // ── Headings ───────────────────────────────────────────────────────
+    const headings = [
+        {
+            key: 'url', valueType: 'url', label: 'URL',
+            subItemsHeading: { key: 'url', valueType: 'url' },
+        },
+        {
+            key: 'networkRequestTime', valueType: 'ms', granularity: 1, label: 'Start',
+            subItemsHeading: { key: 'networkRequestTime', valueType: 'ms', granularity: 1 },
+        },
+        {
+            key: 'duration', valueType: 'ms', granularity: 1, label: 'Duration',
+            subItemsHeading: { key: 'duration', valueType: 'ms', granularity: 1 },
+        },
+        {
+            key: 'transferSize', valueType: 'bytes', displayUnit: 'kb', granularity: 1, label: 'Transfer',
+            subItemsHeading: { key: 'transferSize', valueType: 'bytes', displayUnit: 'kb', granularity: 1 },
+        },
+        {
+            key: 'resourceSize', valueType: 'bytes', displayUnit: 'kb', granularity: 1, label: 'Resource',
+            subItemsHeading: { key: 'resourceSize', valueType: 'bytes', displayUnit: 'kb', granularity: 1 },
+        },
+        {
+            key: 'statusCode', valueType: 'text', label: 'Status',
+            subItemsHeading: { key: 'statusCode', valueType: 'text' },
+        },
+        {
+            key: 'mimeType', valueType: 'text', label: 'Type',
+            subItemsHeading: { key: 'mimeType', valueType: 'text' },
+        },
+    ];
 
     return Audit.makeTableDetails(headings, items, {
         networkStartTimeTs: Number.isFinite(earliestRendererStartTime) ? earliestRendererStartTime * 1000 : undefined,

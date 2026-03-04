@@ -1,11 +1,19 @@
-# logger
+# 📝 logger
 
 ## logger/logger.js
 
-The `logger/logger.js` file provides a custom logger using the `winston` library.
+Winston-based logger shared across the entire framework.
 
-**Logger Configuration**
+| Property | Value |
+|----------|-------|
+| Level | `debug` |
+| Format | `[YYYY-MM-DDTHH:mm:ss] message` |
+| Transports | Console + rotating file (`<datetime>.log`) |
+| Silent mode | Set `silent: true` to suppress all output |
 
-- **customFormat**: Custom log format that includes a timestamp and message.
-- **dateTime**: Current date and time used for the log file name.
-- **logger**: Winston logger instance configured with console and file transports.
+Exported as a singleton — import and use anywhere:
+
+```js
+import logger from 'lh-pptr-framework/logger/logger.js';
+logger.debug('Hello');
+```

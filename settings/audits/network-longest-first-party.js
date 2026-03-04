@@ -24,11 +24,16 @@ class LongestFirstPartyRequest extends NetworkRequests {
             };
         }
 
+        // Flatten grouped items → individual requests
+        const allRequests = parentAuditResult.details.items.flatMap(item =>
+            item.subItems?.items ?? [item]
+        );
+
         // Use the main document URL to compare against network request URLs
         const mainDocumentURL = params.url;
 
         // Filter for first-party requests using UrlUtils.rootDomainsMatch
-        const firstPartyRequests = parentAuditResult.details.items.filter(item => {
+        const firstPartyRequests = allRequests.filter(item => {
             return UrlUtils.rootDomainsMatch(item.url, mainDocumentURL);
         });
 

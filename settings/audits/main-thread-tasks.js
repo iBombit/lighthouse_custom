@@ -1,5 +1,5 @@
 import { Audit } from 'lighthouse/core/audits/audit.js';
-import { MainThreadTasks } from 'lighthouse/core/computed/main-thread-tasks.js';
+import { MainThreadTasks as MainThreadTasksComputed } from 'lighthouse/core/computed/main-thread-tasks.js';
 
 class CustomMainThreadTasks extends Audit {
     static get meta() {
@@ -8,13 +8,13 @@ class CustomMainThreadTasks extends Audit {
             scoreDisplayMode: Audit.SCORING_MODES.INFORMATIVE,
             title: 'Tasks',
             description: 'Lists the toplevel main thread tasks that executed during page load. Only timings, not much details here :()',
-            requiredArtifacts: ['traces'],
+            requiredArtifacts: ['Trace'],
         };
     }
 
     static async audit(artifacts, context) {
-        const trace = artifacts.traces[Audit.DEFAULT_PASS];
-        const tasks = await MainThreadTasks.request(trace, context);
+        const trace = artifacts.Trace;
+        const tasks = await MainThreadTasksComputed.request(trace, context);
 
         const results = tasks
             .filter(task => task.duration > 5 && !task.parent)
