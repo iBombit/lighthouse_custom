@@ -34,7 +34,7 @@ jobs:
 
       - name: Test with Lighthouse and Puppeteer
         run: |
-          docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:${{ steps.vars.outputs.lh_version }}-alpine npx mocha ${{ secrets.TEST_PATH }} --browsertype=desktop --headless=true --url="https://demoqa.com/"
+          docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:${{ steps.vars.outputs.lh_version }}-alpine npx mocha ${{ secrets.TEST_PATH }} --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
 
       - name: Upload report files
         if: always()
