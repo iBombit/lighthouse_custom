@@ -48,10 +48,44 @@ This parameter allows you to pass a custom JSON file to override the default Lig
       "height": 667,
       "deviceScaleFactor": 2,
       "disabled": false
+    },
+    "browserArgs": {
+      "headless": [
+        "--allow-no-sandbox-job",
+        "--allow-sandbox-debugging",
+        "--no-sandbox",
+        "--disable-gpu",
+        "--disable-gpu-sandbox",
+        "--display",
+        "--ignore-certificate-errors",
+        "--disable-storage-reset=true"
+      ],
+      "headful": [
+        "--allow-no-sandbox-job",
+        "--allow-sandbox-debugging",
+        "--no-sandbox",
+        "--ignore-certificate-errors",
+        "--disable-storage-reset=true"
+      ]
     }
   }
 }
 ```
+
+#### Browser Arguments
+
+The `browserArgs` section allows you to customize Puppeteer browser launch arguments. You can specify different arguments for headless and headful (headed) modes:
+
+- **headless**: Arguments used when `--headless=true`
+- **headful**: Arguments used when `--headless=false`
+
+Common browser arguments include:
+- `--no-sandbox` - Disable the sandbox
+- `--disable-gpu` - Disable GPU acceleration
+- `--disable-storage-reset=true` - Prevent storage reset between tests
+- `--ignore-certificate-errors` - Ignore SSL certificate errors
+- `--allow-no-sandbox-job` - Allow job objects without sandbox
+- `--display` - Specify display for headless Chrome on Linux
 
 ---
 
@@ -67,7 +101,7 @@ This parameter allows you to pass a custom JSON file to override the default Lig
 3. In the repository directory, execute the following commands:
    ```bash
    npm install
-   npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/"
+   npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=false --url="https://demoqa.com/" --configFile=customConfig.json
    ```
 
 ---
@@ -83,7 +117,7 @@ This parameter allows you to pass a custom JSON file to override the default Lig
 2. Verify that headless mode is enabled via the `--headless=true` flag.
 3. In the repository directory, run the following command:
    ```bash
-   docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:12.8.2-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/"
+   docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:12.8.2-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
    ```
 
 ### From Current User:
@@ -95,5 +129,5 @@ This parameter allows you to pass a custom JSON file to override the default Lig
 2. Verify that headless mode is enabled via the `--headless=true` flag.
 3. In the repository directory, run the following command:
    ```bash
-   docker run --rm -v "$PWD:$PWD" -w "$PWD" --user "$(id -u):$(id -g)" ibombit/lighthouse-puppeteer-chrome:12.8.2-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/"
+   docker run --rm -v "$PWD:$PWD" -w "$PWD" --user "$(id -u):$(id -g)" ibombit/lighthouse-puppeteer-chrome:12.8.2-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
    ```
