@@ -3,7 +3,7 @@ import logger from "lh-pptr-framework/logger/logger.js";
 import { Browser } from 'lh-pptr-framework/settings/browser.js';
 import { startFlow } from 'lighthouse/core/index.js';
 import { exec } from 'child_process';
-import { getConfigByBrowserType } from 'lh-pptr-framework/settings/lighthouse.js';
+import { getLighthouseConfigByBrowserType } from 'lh-pptr-framework/settings/configLoader.js';
 import * as os from 'os';
 
 class LighthouseBrowser {
@@ -70,7 +70,7 @@ class LighthouseBrowser {
   }
 
   async startNewLighthouseFlow() {
-    const config = getConfigByBrowserType(this.browserType);
+    const config = getLighthouseConfigByBrowserType(this.browserType);
     this.flow = await startFlow(this.page, { config });
     logger.debug(`[FLOW] Lighthouse Flow started with config: ${JSON.stringify(config)}`);
   }

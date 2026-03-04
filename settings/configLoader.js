@@ -1,9 +1,56 @@
 import fs from 'fs';
 import path from 'path';
-import { Desktop, Mobile, Mobile3G, Mobile4G, Mobile4G_Slow } from 'lh-pptr-framework/settings/constants.js';
+import { fileURLToPath } from 'url';
+import logger from 'lh-pptr-framework/logger/logger.js';
 import { configFilePath } from 'lh-pptr-framework/settings/testParams.js';
+import { Desktop, Mobile, Mobile3G, Mobile4G, Mobile4G_Slow } from 'lh-pptr-framework/settings/constants.js';
 
-function createBaseConfig(device) {
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+let browserConfig = null;
+
+/**
+ * Load custom config file from testParams or default location
+ * @returns {Object} Config object or empty object if not found
+ */
+export function loadCustomConfig() {
+    try {
+        if (configFilePath && fs.existsSync(configFilePath)) {
+            const configContent = fs.readFileSync(path.resolve(configFilePath), 'utf-8');
+            browserConfig = JSON.parse(configContent);
+            return browserConfig;
+        }
+    } catch (error) {
+        logger.warn(`Could not load custom config: ${error.message}`);
+        browserConfig = {};
+    }
+
+    return browserConfig;
+}
+
+/**
+ * Get browser args from config based on headless mode
+ * @param {boolean} isHeadless - Whether browser runs in headless mode
+ * @returns {Array<string>} Array of browser arguments
+ */
+export function getBrowserArgsFromCustomConfig(isHeadless = true) {
+    const config = loadCustomConfig();
+    const browserArgs = config?.settings?.browserArgs;
+
+    if (!browserArgs) {
+        return [];
+    }
+
+    const argType = isHeadless ? 'headless' : 'headful';
+    return Array.isArray(browserArgs[argType]) ? browserArgs[argType] : [];
+}
+
+/**
+ * Create base lighthouse config for a device
+ * @param {Object} device - Device configuration object
+ * @returns {Object} Base lighthouse configuration
+ */
+function createBaseLighthouseConfig(device) {
   return {
     extends: 'lighthouse:default',
     name: device.lighthouseReportName,
@@ -69,7 +116,12 @@ function createBaseConfig(device) {
   };
 }
 
-function getConfigByBrowserType(browserType) {
+/**
+ * Get lighthouse config by browser type, merging with custom config if available
+ * @param {string} browserType - Browser type (desktop, mobile, mobile3G, mobile4G, mobile4GSlow)
+ * @returns {Object} Merged lighthouse configuration
+ */
+export function getLighthouseConfigByBrowserType(browserType) {
   const deviceMap = {
     desktop: new Desktop(),
     mobile: new Mobile(),
@@ -78,7 +130,7 @@ function getConfigByBrowserType(browserType) {
     mobile4GSlow: new Mobile4G_Slow(),
   };
 
-  const baseConfig = createBaseConfig(deviceMap[browserType] || new Desktop());
+  const baseConfig = createBaseLighthouseConfig(deviceMap[browserType] || new Desktop());
 
   // Try to load and merge custom config file (if specified)
   if (configFilePath) {
@@ -93,12 +145,10 @@ function getConfigByBrowserType(browserType) {
         },
       };
     } catch (error) {
-      console.error(`Failed to load custom config file: ${error.message}`);
+      logger.error(`Failed to load custom config file: ${error.message}`);
       return baseConfig; // Fallback to base config if error occurs
     }
   }
 
   return baseConfig; // Default config if no custom file is provided
 }
-
-export { getConfigByBrowserType };
