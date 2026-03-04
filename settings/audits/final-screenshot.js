@@ -22,7 +22,7 @@ class CustomFinalScreenshot extends Audit {
             title: 'Final Screenshot Timing',
             failureTitle: 'Final Screenshot Timing',
             description: str_(UIStrings.description),
-            requiredArtifacts: ['traces', 'GatherContext'],
+            requiredArtifacts: ['Trace', 'GatherContext'],
         };
     }
 
@@ -34,7 +34,7 @@ class CustomFinalScreenshot extends Audit {
     }
 
     static async audit(artifacts, context) {
-        const trace = artifacts.traces[Audit.DEFAULT_PASS];
+        const trace = artifacts.Trace;
         const processedTrace = await ProcessedTrace.request(trace, context);
         const screenshots = await Screenshots.request(trace, context);
         const { timeOrigin } = processedTrace.timestamps;

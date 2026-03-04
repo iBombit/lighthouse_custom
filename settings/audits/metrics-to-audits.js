@@ -4,15 +4,14 @@ const myRelevantAudits = [
 ];
 
 // go/lh-audit-metric-mapping
+// Updated for Lighthouse v13 — removed audits replaced with insight audits
 const fcpRelevantAudits = [
   'server-response-time',
-  'render-blocking-resources',
+  'render-blocking-insight',             // was: render-blocking-resources
   'redirects',
-  'critical-request-chains',
-  'uses-text-compression',
-  'uses-rel-preconnect',
-  'uses-rel-preload',
-  'font-display',
+  'network-dependency-tree-insight',     // was: critical-request-chains, uses-rel-preconnect
+  'document-latency-insight',            // was: uses-text-compression
+  'font-display-insight',                // was: font-display
   'unminified-javascript',
   'unminified-css',
   'unused-css-rules',
@@ -20,35 +19,32 @@ const fcpRelevantAudits = [
 
 const lcpRelevantAudits = [
   ...fcpRelevantAudits,
-  'largest-contentful-paint-element',
-  'prioritize-lcp-image',
+  'lcp-breakdown-insight',               // was: largest-contentful-paint-element
+  'lcp-discovery-insight',               // was: prioritize-lcp-image, lcp-lazy-loaded
   'unused-javascript',
-  'efficient-animated-content',
+  'image-delivery-insight',              // was: efficient-animated-content, uses-optimized-images, uses-responsive-images
   'total-byte-weight',
-  'lcp-lazy-loaded',
 ];
 
 const tbtRelevantAudits = [
   'long-tasks',
-  'third-party-summary',
-  'third-party-facades',
+  'third-parties-insight',              // was: third-party-summary, third-party-facades
   'bootup-time',
   'mainthread-work-breakdown',
-  'dom-size',
-  'duplicated-javascript',
-  'legacy-javascript',
-  'viewport',
+  'dom-size-insight',                    // was: dom-size
+  'duplicated-javascript-insight',       // was: duplicated-javascript
+  'legacy-javascript-insight',           // was: legacy-javascript
+  'viewport-insight',                    // was: viewport
 ];
 
 const clsRelevantAudits = [
-  'layout-shift-elements',
+  'cls-culprits-insight',               // was: layout-shift-elements
   'non-composited-animations',
   'unsized-images',
-  // 'preload-fonts', // actually in BP, rather than perf
 ];
 
 const inpRelevantAudits = [
-  'work-during-interaction',
+  'inp-breakdown-insight',              // was: work-during-interaction
 ];
 
 export const metricsToAudits = {

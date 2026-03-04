@@ -22,7 +22,7 @@ class XHRCountAudit extends Audit {
             title: str_(UIStrings.title),
             failureTitle: str_(UIStrings.failureTitle),
             description: str_(UIStrings.description),
-            requiredArtifacts: ['devtoolsLogs'],
+            requiredArtifacts: ['DevtoolsLog'],
         };
     }
 
@@ -107,7 +107,7 @@ class XHRCountAudit extends Audit {
     }
 
     static async audit(artifacts, context) {
-        const devtoolsLog = artifacts.devtoolsLogs[Audit.DEFAULT_PASS];
+        const devtoolsLog = artifacts.DevtoolsLog;
         const records = await NetworkRecords.request(devtoolsLog, context);
 
         // Filter only XHR requests
