@@ -4,5 +4,14 @@
   "description": "Customizable framework for UI testing multiple pages/SPA actions within a single Lighthouse report",
   "author": "Sergei Pashkevich",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iBombit/lighthouse_custom"
+  },
+  "homepage": "https://github.com/iBombit/lighthouse_custom",
+  "bugs": {
+    "url": "https://github.com/iBombit/lighthouse_custom/issues"
+  }
 }
