@@ -90,19 +90,44 @@ export function buildWaterfallSVG(requests, entityGroups, timingMarkers, stepNam
     const ENTITY_ROW_H  = 28;
     const BAR_H         = 14;
     const HEADER_H      = 56;         // title + subtitle
-    const AXIS_H        = 32;
     const LEGEND_H      = 34;
+    const TIER_H        = 24;         // vertical space per stagger tier
+    const MIN_LABEL_GAP = 50;         // min px between marker labels before staggering
 
-    // Computed dims
+    // Sort markers by time and assign stagger tiers to avoid overlapping labels
+    timingMarkers.sort((a, b) => a.t - b.t);
+
+    // Computed dims (need maxTime first for tier assignment)
     const contentRows    = requests.length;
     const entityHeaders  = entityGroups.length;
     const CONTENT_H      = contentRows * ROW_H + entityHeaders * ENTITY_ROW_H;
-    const TOTAL_H        = HEADER_H + AXIS_H + CONTENT_H + LEGEND_H + 10;
 
     // Time scale
     const maxTime   = Math.max(...requests.map(r => r.start + r.duration), 1);
     const timeScale = TIMELINE_W / maxTime;
     const tlX       = PAD_L + LABEL_W;   // timeline x-origin
+
+    // Assign stagger tiers so nearby labels don't overlap
+    let maxTier = 0;
+    for (let i = 0; i < timingMarkers.length; i++) {
+        const mk = timingMarkers[i];
+        const xPx = mk.t * timeScale;
+        // Find the lowest tier that doesn't collide with a previous marker
+        let tier = 0;
+        for (let j = 0; j < i; j++) {
+            const prev = timingMarkers[j];
+            const prevXPx = prev.t * timeScale;
+            if (prev._tier === tier && Math.abs(xPx - prevXPx) < MIN_LABEL_GAP) {
+                tier++;
+                j = -1; // re-check all previous markers at the new tier
+            }
+        }
+        mk._tier = tier;
+        if (tier > maxTier) maxTier = tier;
+    }
+
+    const AXIS_H  = 32 + maxTier * TIER_H;
+    const TOTAL_H = HEADER_H + AXIS_H + CONTENT_H + LEGEND_H + 10;
 
     // Nice axis ticks
     const tickInt  = niceTickInterval(maxTime);
@@ -159,9 +184,10 @@ export function buildWaterfallSVG(requests, entityGroups, timingMarkers, stepNam
     for (const mk of timingMarkers) {
         if (mk.t > maxTime * 1.05) continue;   // skip if way beyond chart
         const x = tlX + mk.t * timeScale;
-        w(`<line x1="${x}" y1="${axisY + 4}" x2="${x}" y2="${bodyTop + CONTENT_H}" class="tm-line" stroke="${mk.color}"/>`);
-        w(`<text x="${x}" y="${axisY + 14}" text-anchor="middle" class="tm-lbl" fill="${mk.color}">${mk.label}</text>`);
-        w(`<text x="${x}" y="${axisY + 24}" text-anchor="middle" class="ax" fill="${mk.color}">${fmtMs(mk.t)}</text>`);
+        const tierOff = (mk._tier || 0) * TIER_H;
+        w(`<line x1="${x}" y1="${axisY + 4 + tierOff}" x2="${x}" y2="${bodyTop + CONTENT_H}" class="tm-line" stroke="${mk.color}"/>`);
+        w(`<text x="${x}" y="${axisY + 14 + tierOff}" text-anchor="middle" class="tm-lbl" fill="${mk.color}">${mk.label}</text>`);
+        w(`<text x="${x}" y="${axisY + 24 + tierOff}" text-anchor="middle" class="ax" fill="${mk.color}">${fmtMs(mk.t)}</text>`);
     }
 
     // ── Rows ───────────────────────────────────────────────────────────

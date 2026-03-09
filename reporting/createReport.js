@@ -115,13 +115,14 @@ export default class CreateReport {
 }
 
 /**
- * Inject CSS into the Lighthouse HTML report so the network-waterfall
- * audit thumbnail renders as a full-width image instead of a tiny square.
+ * Inject CSS + JS into the Lighthouse HTML report so the network-waterfall
+ * audit thumbnail renders as a full-width, clickable image that opens
+ * the SVG in a new browser tab.
  */
 function injectWaterfallStyles(html) {
   const css = `
 <style>
-  /* ── Network Waterfall: full-width image ──────────────────────── */
+  /* ── Network Waterfall: full-width clickable image ────────────── */
   [id="network-waterfall"] .lh-table-column--thumbnail {
     width: 100%;
   }
@@ -130,7 +131,7 @@ function injectWaterfallStyles(html) {
     height: auto;
     max-width: 100%;
     object-fit: contain;
-    pointer-events: none;   /* hides the base64 title tooltip */
+    cursor: pointer;
   }
   [id="network-waterfall"] thead {
     display: none;           /* hide empty table header */
@@ -140,5 +141,55 @@ function injectWaterfallStyles(html) {
   }
 </style>`;
 
-  return html.replace('</head>', css + '\n</head>');
+  const script = `
+<script>
+  /* Capture-phase delegation – fires before Lighthouse's own handlers */
+  document.addEventListener('click', function(e) {
+    var img = e.target.closest
+              ? e.target.closest('[id="network-waterfall"] .lh-thumbnail')
+              : null;
+    if (!img) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    /* data: URIs are blocked by window.open in modern browsers,
+       so we decode the base64 SVG and write it into a new tab. */
+    var src = img.src || '';
+    if (src.startsWith('data:image/svg+xml;base64,')) {
+      /* atob gives raw bytes; decode them as UTF-8 so ·, –, etc. render correctly */
+      var bytes = atob(src.split(',')[1]);
+      var utf8  = decodeURIComponent(
+        bytes.split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join('')
+      );
+      var w = window.open('', '_blank');
+      if (w) {
+        w.document.open();
+        w.document.write(
+          '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+          '<title>Network Waterfall</title>' +
+          '<style>body{margin:0;display:flex;justify-content:center;' +
+          'background:#fff}svg{max-width:100%;height:auto}</style></head>' +
+          '<body>' + utf8 + '</body></html>'
+        );
+        w.document.close();
+      }
+    } else {
+      window.open(src, '_blank');
+    }
+  }, true);
+
+  /* Add pointer + tooltip to every waterfall thumbnail (including flow steps) */
+  new MutationObserver(function() {
+    document.querySelectorAll('[id="network-waterfall"] .lh-thumbnail')
+      .forEach(function(img) {
+        if (img.dataset.wfReady) return;
+        img.dataset.wfReady = '1';
+        img.title = 'Click to open waterfall in a new tab';
+      });
+  }).observe(document.documentElement, { childList: true, subtree: true });
+</script>`;
+
+  return html.replace('</head>', css + script + '\n</head>');
 }
