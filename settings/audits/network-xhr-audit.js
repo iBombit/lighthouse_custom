@@ -242,25 +242,28 @@ function calculateScore(context, time) {
 
 function createTableDetails(records, earliestRendererStartTime, summary) {
     const headings = [
-        { key: 'url', valueType: 'url', label: 'URL' },
+        { key: 'url', valueType: 'url', label: 'URL', subItemsHeading: { key: 'requestBody', valueType: 'code' } },
         { key: 'requestMethod', valueType: 'text', label: 'Method' },
-        { key: 'requestBody', valueType: 'code', label: 'Request Body' },
-        { key: 'networkRequestTime', valueType: 'ms', granularity: 1, label: 'Request Time' },
-        { key: 'networkEndTime', valueType: 'ms', granularity: 1, label: 'End Time' },
+        { key: 'networkRequestTime', valueType: 'ms', granularity: 1, label: 'Start' },
         { key: 'duration', valueType: 'ms', granularity: 1, label: 'Duration' },
-        { key: 'transferSize', valueType: 'bytes', displayUnit: 'kb', granularity: 1, label: 'Transfer Size' },
+        { key: 'transferSize', valueType: 'bytes', displayUnit: 'kb', granularity: 1, label: 'Transfer' },
         { key: 'statusCode', valueType: 'text', label: 'Status' },
         { key: 'mimeType', valueType: 'text', label: 'Type' },
-        { key: 'resourceType', valueType: 'text', label: 'Resource Type' },
     ];
 
-    const items = records.map(record => ({
-        ...record,
-        requestBody: record.requestBody || (record.hasRequestBody ? '[Binary Data]' : ''),
-        networkRequestTime: record.networkRequestTime ? Math.round(record.networkRequestTime) : undefined,
-        networkEndTime: record.networkEndTime ? Math.round(record.networkEndTime) : undefined,
-        duration: record.duration ? Math.round(record.duration) : undefined,
-    }));
+    const items = records.map(record => {
+        const body = record.requestBody || (record.hasRequestBody ? '[Binary Data]' : '');
+        const item = {
+            ...record,
+            networkRequestTime: record.networkRequestTime ? Math.round(record.networkRequestTime) : undefined,
+            networkEndTime: record.networkEndTime ? Math.round(record.networkEndTime) : undefined,
+            duration: record.duration ? Math.round(record.duration) : undefined,
+        };
+        if (body) {
+            item.subItems = { type: 'subitems', items: [{ requestBody: body }] };
+        }
+        return item;
+    });
 
     // Sort by duration (longest first)
     items.sort((a, b) => (b.duration || 0) - (a.duration || 0));
