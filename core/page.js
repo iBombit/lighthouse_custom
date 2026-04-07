@@ -81,9 +81,9 @@ export default class Page {
         // Take snapshots after navigation is complete
         try {
             if (validationSuccessful) {
-                await browser.flow.snapshot({ name: stepName.replace('[N]_', '[S]_') + '_SUCCESS' });
+                await browser.snapshot({ name: stepName.replace('[N]_', '[S]_') + '_SUCCESS' });
             } else if (validationError) {
-                await browser.flow.snapshot({ name: stepName.replace('[N]_', '[S]_') + '_FAILED' });
+                await browser.snapshot({ name: stepName.replace('[N]_', '[S]_') + '_FAILED' });
                 throw new Error(`Page validation failed for ${link}: ${validationError.message}`);
             }
         } catch (snapshotError) {

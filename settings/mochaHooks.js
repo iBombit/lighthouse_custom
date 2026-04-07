@@ -44,7 +44,7 @@ export async function afterHook() {
             await browser.flow.endTimespan(); // stopping the active timespan if not stopped by timeout
             browser.page.isSuccess = false;
         }
-        await browser.flow.snapshot({ name: 'Capturing last state of the test' });
+        await browser.snapshot({ name: 'Capturing last state of the test' });
         await new CreateReport().createReports(browser.flow);
         await browser.closeBrowser();
     } catch (error) {
