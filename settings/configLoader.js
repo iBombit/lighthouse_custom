@@ -8,6 +8,8 @@ import { Desktop, Mobile, Mobile3G, Mobile4G, Mobile4G_Slow } from 'lh-pptr-fram
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let browserConfig = null;
+let customOnlyCategories = null;
+let configCategories = null;
 
 /**
  * Load custom config file from testParams or default location
@@ -138,14 +140,28 @@ export function getLighthouseConfigByBrowserType(browserType) {
   if (configFilePath) {
     try {
       const customConfig = JSON.parse(fs.readFileSync(path.resolve(configFilePath), 'utf-8'));
-      return {
+
+      // Extract non-lighthouse settings and onlyCategories before merging
+      const { browserArgs, onlyCategories, ...lighthouseSettings } = customConfig.settings || {};
+
+      // Store onlyCategories separately — applied per-step in browser.js
+      // to avoid conflicts with snapshot mode (which filters categories by gather mode
+      // before checking onlyCategories, causing "unrecognized category" errors)
+      customOnlyCategories = onlyCategories || null;
+
+      const mergedConfig = {
         ...baseConfig,
         ...customConfig,
         settings: {
           ...baseConfig.settings,
-          ...customConfig.settings,
+          ...lighthouseSettings,
         },
       };
+
+      // Store category definitions for mode-aware filtering
+      configCategories = mergedConfig.categories || baseConfig.categories || null;
+
+      return mergedConfig;
     } catch (error) {
       logger.error(`Failed to load custom config file: ${error.message}`);
       return baseConfig; // Fallback to base config if error occurs
@@ -153,4 +169,35 @@ export function getLighthouseConfigByBrowserType(browserType) {
   }
 
   return baseConfig; // Default config if no custom file is provided
+}
+
+/**
+ * Get onlyCategories from custom config (if specified)
+ * Used by browser.js to apply per-step category filtering for navigation/timespan steps
+ * @returns {string[]|null} Array of category IDs or null
+ */
+export function getOnlyCategories() {
+  return customOnlyCategories;
+}
+
+/**
+ * Get onlyCategories filtered for a specific gather mode.
+ * Removes categories whose supportedModes don't include the given mode.
+ * @param {string} mode - Gather mode ('navigation', 'timespan', 'snapshot')
+ * @returns {string[]|null} Filtered array of category IDs or null
+ */
+export function getOnlyCategoriesForMode(mode) {
+  if (!customOnlyCategories) return null;
+  if (!configCategories) return customOnlyCategories;
+
+  const filtered = customOnlyCategories.filter(categoryId => {
+    const category = configCategories[categoryId];
+    // If category is not in our config (e.g. a default LH category), keep it
+    if (!category) return true;
+    // If no supportedModes defined, category supports all modes
+    if (!category.supportedModes) return true;
+    return category.supportedModes.includes(mode);
+  });
+
+  return filtered.length ? filtered : null;
 }

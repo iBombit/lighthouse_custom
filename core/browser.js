@@ -3,7 +3,7 @@ import logger from "lh-pptr-framework/logger/logger.js";
 import { Browser } from 'lh-pptr-framework/settings/browser.js';
 import { startFlow } from 'lighthouse/core/index.js';
 import { exec } from 'child_process';
-import { getLighthouseConfigByBrowserType } from 'lh-pptr-framework/settings/configLoader.js';
+import { getLighthouseConfigByBrowserType, getOnlyCategories, getOnlyCategoriesForMode } from 'lh-pptr-framework/settings/configLoader.js';
 import * as os from 'os';
 
 class LighthouseBrowser {
@@ -102,7 +102,10 @@ class LighthouseBrowser {
     if (pages) await this.restartBrowser(pages)
     if (!link) link = this.page.url();
     try {
-      await this.flow.navigate(link, { name: name, configContext: { settingsOverrides: { disableStorageReset: true } } });
+      const flags = { name: name, configContext: { settingsOverrides: { disableStorageReset: true } } };
+      const onlyCategories = getOnlyCategories();
+      if (onlyCategories) flags.onlyCategories = onlyCategories;
+      await this.flow.navigate(link, flags);
     } catch (error) {
       throw new Error(error);
     }
@@ -111,15 +114,27 @@ class LighthouseBrowser {
 
   async customNavigation(stepName, actions, pages) {
     if (pages) await this.restartBrowser(pages)
-    await this.flow.startNavigation({ name: stepName })
+    const flags = { name: stepName };
+    const onlyCategories = getOnlyCategories();
+    if (onlyCategories) flags.onlyCategories = onlyCategories;
+    await this.flow.startNavigation(flags)
     await actions();
     await this.flow.endNavigation()
   }
 
   async timespan(stepName, actions) {
-    await this.flow.startTimespan({ name: stepName })
+    const flags = { name: stepName };
+    const onlyCategories = getOnlyCategories();
+    if (onlyCategories) flags.onlyCategories = onlyCategories;
+    await this.flow.startTimespan(flags)
     await actions();
     await this.flow.endTimespan()
+  }
+
+  async snapshot(flags = {}) {
+    const onlyCategories = getOnlyCategoriesForMode('snapshot');
+    if (onlyCategories) flags.onlyCategories = onlyCategories;
+    await this.flow.snapshot(flags);
   }
 
   async goToPage(link, timeout = LighthouseBrowser.DEFAULT_TIMEOUT) {
