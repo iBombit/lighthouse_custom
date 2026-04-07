@@ -42,6 +42,10 @@ This parameter allows you to pass a custom JSON file to override the default Lig
       "cpuSlowdownMultiplier": 2
     },
     "formFactor": "mobile",
+    "onlyCategories": [
+      "performance",
+      "server-side"
+    ],
     "screenEmulation": {
       "mobile": true,
       "width": 375,
@@ -78,6 +82,12 @@ The `browserArgs` section allows you to customize Puppeteer browser launch argum
 
 - **headless**: Arguments used when `--headless=true`
 - **headful**: Arguments used when `--headless=false`
+
+#### Category Filtering
+
+The `onlyCategories` setting limits which Lighthouse categories appear in the report. You can include both built-in categories (`performance`, `accessibility`, `best-practices`, `seo`) and custom ones (`server-side`).
+
+Categories are automatically filtered by gather mode — for example, `server-side` only supports `navigation` and `timespan` modes, so it is excluded from snapshot steps automatically.
 
 Common browser arguments include:
 - `--no-sandbox` - Disable the sandbox
