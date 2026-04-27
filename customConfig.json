@@ -25,14 +25,16 @@
           "--disable-gpu-sandbox",
           "--display",
           "--ignore-certificate-errors",
-          "--disable-storage-reset=true"
+          "--disable-storage-reset=true",
+          "--disable-features=LocalNetworkAccessChecks"
         ],
         "headful": [
           "--allow-no-sandbox-job",
           "--allow-sandbox-debugging",
           "--no-sandbox",
           "--ignore-certificate-errors",
-          "--disable-storage-reset=true"
+          "--disable-storage-reset=true",
+          "--disable-features=LocalNetworkAccessChecks"
         ]
       }
     }
