@@ -11,11 +11,11 @@ export default class CheckBoxPage extends Page {
     init(page) {
         super.init(page)
         this.pageValidate = new Element("//*[@id='tree-node']//span[text()='Desktop']", page)
-        this.homeCheckBox = new Button("label[for='tree-node-home']", page)
+        this.homeCheckBox = new Button("span[aria-label='Select Home']", page)
         this.homeSelectVerify = new Element("//*[@id='result']/span[text()='home']", page)
-        this.checkBoxExpandHome = new Button("#tree-node > ol > li > span > button", page)
-        this.checkBoxSelectVerify = new Element("//*[@id='result']/span[text()='public']", page)
-        this.desktopCheckbox = new Button("//*[@id='tree-node']//span[text()='Desktop']", page)
+        this.checkBoxExpandHome = new Button(".rc-tree-switcher.rc-tree-switcher_close", page)
+        this.checkBoxSelectVerify = new Element(".rc-tree-switcher.rc-tree-switcher_open", page)
+        this.desktopCheckbox = new Button("span[aria-label='Select Desktop']", page)
         this.desktopCheckboxVerify = new Element("//*[@id='result']/span[text()='desktop']", page)
     }
 
