@@ -30,6 +30,7 @@ Report filenames include a timestamp when `--includeTimestamp=true`.
 |----------|------|-----------------|----------|
 | **Datadog** | `datadog.js` | `--ddHost` `--ddKey` | HTTPS — Datadog Metrics API v1 |
 | **Teams** | `teamsWebhook.js` | `--teamsWebhook` | Incoming Webhook (Adaptive Card) |
+| **Teams Workflow** | `teamsWorkflow.js` | `--teamsWorkflow` | Teams Workflow API (MessageCard) |
 | **Slack** | `slackWebhook.js` | `--slackWebhook` | Incoming Webhook (Block Kit) |
 | **InfluxDB v1** | `influx_v1.js` | `--influxUrl` `--influxUsername` `--influxPassword` `--influxDatabase` | HTTP write API (line protocol) |
 | **InfluxDB v2** | `influx_v2.js` | `--influxUrl` `--influxToken` `--influxOrg` `--influxBucket` | HTTP write API v2 (line protocol + token auth) |

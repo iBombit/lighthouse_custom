@@ -85,7 +85,7 @@ CLI argument parser and browser singleton manager.
 | `--generateCSV` | `false` | Enable CSV performance report |
 | `--includeTimestamp` | `false` | Append timestamp to report filenames |
 
-**Reporting Params**: `--ddHost` · `--ddKey` · `--influxUrl` · `--influxToken` · `--influxOrg` · `--influxBucket` · `--influxUsername` · `--influxPassword` · `--influxDatabase` · `--teamsWebhook` · `--slackWebhook` · `--teamsWorkflowUrl` · `--ciUrl`
+**Reporting Params**: `--ddHost` · `--ddKey` · `--influxUrl` · `--influxToken` · `--influxOrg` · `--influxBucket` · `--influxUsername` · `--influxPassword` · `--influxDatabase` · `--teamsWebhook` · `--slackWebhook` · `--teamsWorkflow` · `--ciUrl`
 
 **Functions**
 
