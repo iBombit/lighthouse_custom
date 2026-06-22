@@ -6,12 +6,12 @@
 # Puppeteer-core doesn't have a browser
 # so having executablePath in LH browser settings in mandatory
 
-FROM node:alpine3.23 AS build
+FROM node:alpine3.24 AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production
 
-FROM alpine:3.23
+FROM alpine:3.24
 RUN apk add --no-cache nodejs npm chromium && \
     rm -rf /var/cache/apk/*
 COPY --from=build /app .
