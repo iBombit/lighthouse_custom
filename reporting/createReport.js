@@ -4,6 +4,7 @@ import logger from "lh-pptr-framework/logger/logger.js";
 import * as params from 'lh-pptr-framework/settings/testParams.js';
 import { sendMetricsToDD } from 'lh-pptr-framework/reporting/reporters/datadog.js';
 import { sendMetricsToTeams } from 'lh-pptr-framework/reporting/reporters/teamsWebhook.js';
+import { sendMetricsToTeamsWorkflow } from 'lh-pptr-framework/reporting/reporters/teamsWorkflow.js';
 import { sendMetricsToSlack } from 'lh-pptr-framework/reporting/reporters/slackWebhook.js';
 import { sendMetricsToInfluxV1 } from 'lh-pptr-framework/reporting/reporters/influx_v1.js';
 import { sendMetricsToInfluxV2 } from 'lh-pptr-framework/reporting/reporters/influx_v2.js';
@@ -61,8 +62,8 @@ export default class CreateReport {
         errorMessage: "[REPORT] Slack Webhook URL not provided. Skipping sending metrics"
       },
       {
-        condition: () => params.teamsWorkflowUrl,
-        action: () => logger.debug("[REPORT] Teams Workflow not implemented yet, sorry"),
+        condition: () => params.teamsWorkflow,
+        action: (flowResult) => sendMetricsToTeamsWorkflow(params.teamsWorkflow, flowResult),
         errorMessage: "[REPORT] Teams Workflow URL not provided. Skipping sending metrics"
       },
       {

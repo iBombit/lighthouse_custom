@@ -15,7 +15,7 @@ let regions = 'not set';
 let browserLocation, ddHost, ddKey;
 let influxUrl, influxToken, influxOrg, influxBucket;
 let influxUsername, influxPassword, influxDatabase;
-let ciUrl, teamsWebhook, slackWebhook, teamsWorkflowUrl;
+let ciUrl, teamsWebhook, slackWebhook, teamsWorkflow;
 let configFilePath;
 let includeTimestamp = false;
 let generateCSV = false;
@@ -45,6 +45,7 @@ args.forEach(arg => {
             case 'ddhost': ddHost = value; break;
             case 'teamswebhook': teamsWebhook = value; break;
             case 'slackwebhook': slackWebhook = value; break;
+            case 'teamsworkflow': teamsWorkflow = value; break;
             case 'influxurl': influxUrl = value; break;
             case 'influxtoken': influxToken = value; break;
             case 'influxorg': influxOrg = value; break;
@@ -53,7 +54,7 @@ args.forEach(arg => {
             case 'influxpassword': influxPassword = value; break;
             case 'influxdatabase': influxDatabase = value; break;
             case 'ciurl': ciUrl = value; break;
-            case 'teamsworkflowurl': teamsWorkflowUrl = value; break;
+            case 'teamsworkflowurl': teamsWorkflow = value; break;
             case 'configfile': configFilePath = value; break;
             case 'includetimestamp': includeTimestamp = value !== 'false'; break;
             case 'generatecsv': generateCSV = value === 'true'; break;
@@ -92,7 +93,7 @@ export {
     ddHost, ddKey,
     influxUrl, influxToken, influxOrg, influxBucket,
     influxUsername, influxPassword, influxDatabase,
-    ciUrl, teamsWebhook, slackWebhook, teamsWorkflowUrl,
+    ciUrl, teamsWebhook, slackWebhook, teamsWorkflow,
     configFilePath,
     includeTimestamp,
     generateCSV
