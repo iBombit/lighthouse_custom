@@ -1,6 +1,6 @@
 {
   "name": "lightprobe",
-  "version": "13.4.0",
+  "version": "13.5.0",
   "type": "module",
   "engines": {
     "node": ">=18.16"
@@ -10,15 +10,15 @@
     "crawl": "node crawler/crawler.js"
   },
   "dependencies": {
-    "chai": "^6.2.2",
+    "chai": "^6.3.0",
     "csv-parser": "^3.2.1",
     "es-main": "^1.4.0",
-    "express": "^5.2.1",
+    "express": "^5.3.0",
     "lh-pptr-framework": "1.3.7",
-    "lighthouse": "^13.4.0",
+    "lighthouse": "^13.5.0",
     "logform": "^2.7.0",
-    "mocha": "^11.7.6",
-    "puppeteer": "^25.1.0",
+    "mocha": "^12.0.3",
+    "puppeteer": "^25.15.0",
     "puppeteer-har": "^1.1.2",
     "request": "^2.88.2",
     "winston": "^3.19.0"
