@@ -9,10 +9,10 @@ import type * as LH from 'lighthouse/types/lh.js';
 const UIStrings = {
   title: 'Screenshot Thumbnails with Timing',
   failureTitle: 'Screenshot Thumbnails with Timing (failure)',
-  description: 'Key frames of how the page rendered: the first frame, the frames showing First and Largest Contentful ' +
-    'Paint, when visual progress reached 50 / 90 / 100 %, and the last visual change, plus evenly spaced frames in ' +
-    'between. Long gaps of blank or unchanged frames point at render-blocking resources or late data; late changes ' +
-    'after "visually complete" are usually ads, carousels or spinners.',
+  description: 'Key frames of how the page rendered: the first frame, the first visual change, the frames showing First ' +
+    'and Largest Contentful Paint, the moment the page was visually complete and the last visual change, plus evenly ' +
+    'spaced frames in between. Long gaps of blank or unchanged frames point at render-blocking resources or late data; ' +
+    'changes after "visually complete" are usually ads, carousels or spinners.',
 };
 
 const str_ = i18n.createIcuMessageFn(import.meta.url, UIStrings);
@@ -25,8 +25,35 @@ interface Frame {
   timing: number;
   timestamp: number;
   data: string;
-  /** Visual completeness 0–100, when known. */
-  progress?: number;
+}
+
+/** Moments of the step (ms from the time origin) to point out on the filmstrip, when known. */
+export interface FrameMarks {
+  /** First visual change (Speedline `first`). */
+  firstVisualChange?: number;
+  firstContentfulPaint?: number;
+  largestContentfulPaint?: number;
+  /** Visually complete (Speedline `complete`). */
+  visuallyComplete?: number;
+}
+
+/**
+ * What each frame shows: the frame on screen at each mark (the first frame at or after it), plus the
+ * first and the last frame. `timings` are sorted, in ms from the time origin.
+ */
+export function frameEvents(timings: number[], marks: FrameMarks): Map<number, string[]> {
+  const events = new Map<number, string[]>();
+  const tag = (index: number, label: string) => {
+    if (index >= 0) events.set(index, [...(events.get(index) ?? []), label]);
+  };
+  const frameAt = (ms: number | undefined) => (typeof ms === 'number' && Number.isFinite(ms) ? timings.findIndex(t => t >= ms) : -1);
+  tag(0, 'First frame');
+  tag(frameAt(marks.firstVisualChange), 'First visual change');
+  if (marks.firstContentfulPaint !== undefined) tag(frameAt(marks.firstContentfulPaint), `FCP ${Math.round(marks.firstContentfulPaint)} ms`);
+  if (marks.largestContentfulPaint !== undefined) tag(frameAt(marks.largestContentfulPaint), `LCP ${Math.round(marks.largestContentfulPaint)} ms`);
+  tag(frameAt(marks.visuallyComplete), 'Visually complete');
+  tag(timings.length - 1, 'Last visual change');
+  return events;
 }
 
 /**
@@ -68,8 +95,11 @@ class EnhancedScreenshotThumbnails extends Audit {
     const trace = artifacts.Trace;
     const processedTrace = await ProcessedTrace.request(trace, context);
     const { timeOrigin } = processedTrace.timestamps;
+    const marks: FrameMarks = {};
 
-    // Speedline (also used by Lighthouse's own filmstrip, so usually cached) adds visual progress.
+    // Speedline (also used by Lighthouse's own filmstrip, so usually cached) knows when the page first
+    // changed and when it was visually complete. Per-frame progress isn't used: Lighthouse 13.6 no longer
+    // exposes it.
     let frames: Frame[] = [];
     try {
       const speedline = await Speedline.request(trace, context);
@@ -77,8 +107,9 @@ class EnhancedScreenshotThumbnails extends Audit {
         timing: Math.round(frame.getTimeStamp() - timeOrigin / 1000),
         timestamp: frame.getTimeStamp() * 1000,
         data: `data:image/jpeg;base64,${frame.getImage().toString('base64')}`,
-        progress: frame.getProgress(),
       }));
+      marks.firstVisualChange = speedline.first;
+      marks.visuallyComplete = speedline.complete;
     } catch {
       const screenshots = await Screenshots.request(trace, context);
       frames = screenshots.map(s => ({ timing: Math.round((s.timestamp - timeOrigin) / 1000), timestamp: s.timestamp, data: s.datauri }));
@@ -87,28 +118,18 @@ class EnhancedScreenshotThumbnails extends Audit {
       return { score: null, notApplicable: true };
     }
 
-    // Frames to keep: what was on screen at FCP / LCP and at visual-progress milestones.
-    const events = new Map<number, string[]>();
-    const tag = (index: number, label: string) => { if (index >= 0) events.set(index, [...(events.get(index) ?? []), label]); };
-    const frameAt = (ms: number) => frames.findIndex(fr => fr.timing >= ms);
     try {
       const { timings } = await ProcessedNavigation.request(processedTrace, context);
-      tag(frameAt(timings.firstContentfulPaint), `FCP ${Math.round(timings.firstContentfulPaint)} ms`);
-      if (timings.largestContentfulPaint !== undefined) tag(frameAt(timings.largestContentfulPaint), `LCP ${Math.round(timings.largestContentfulPaint)} ms`);
+      marks.firstContentfulPaint = timings.firstContentfulPaint;
+      marks.largestContentfulPaint = timings.largestContentfulPaint;
     } catch {
       // Timespan: no paint metrics.
     }
-    const hasProgress = frames.some(fr => typeof fr.progress === 'number');
-    if (hasProgress) {
-      for (const pct of [50, 90]) tag(frames.findIndex(fr => (fr.progress ?? 0) >= pct), `${pct}% visually complete`);
-      tag(frames.findIndex(fr => (fr.progress ?? 0) >= 100), 'Visually complete');
-    }
-    tag(0, 'First frame');
-    tag(frames.length - 1, 'Last visual change');
 
-    const keep = pickKeyFrames(frames.map(fr => fr.timing), [...events.keys()]);
+    const timings = frames.map(fr => fr.timing);
+    const events = frameEvents(timings, marks);
+    const keep = pickKeyFrames(timings, [...events.keys()]);
     const kept = keep.map(i => frames[i]);
-    const visuallyComplete = hasProgress ? frames.find(fr => (fr.progress ?? 0) >= 100) : undefined;
     const last = frames[frames.length - 1];
 
     const filmstrip = {
@@ -119,17 +140,15 @@ class EnhancedScreenshotThumbnails extends Audit {
 
     return {
       score: 1,
-      displayValue: `${visuallyComplete ? `visually complete at ${(visuallyComplete.timing / 1000).toFixed(1)} s · ` : ''}` +
+      displayValue: `${marks.visuallyComplete !== undefined ? `visually complete at ${(marks.visuallyComplete / 1000).toFixed(1)} s · ` : ''}` +
         `last change at ${(last.timing / 1000).toFixed(1)} s · ${kept.length} of ${frames.length} frames shown`,
       details: Audit.makeListDetails([
         Audit.makeListDetailSectionItem(filmstrip as unknown as LH.Audit.Details.Table, `Key frames (${kept.length} of ${frames.length} screenshots)`),
         Audit.makeListDetailSectionItem(Audit.makeTableDetails([
           { key: 'timing', valueType: 'ms', granularity: 1, label: 'Time' },
-          { key: 'progress', valueType: 'text', label: 'Visual progress' },
           { key: 'event', valueType: 'text', label: 'What happened' },
         ], keep.map(i => ({
           timing: frames[i].timing,
-          progress: typeof frames[i].progress === 'number' ? `${Math.round(frames[i].progress!)}%` : '',
           event: (events.get(i) ?? []).join(' · '),
         }))), 'Frame timeline'),
       ]),

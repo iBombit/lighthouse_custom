@@ -4,7 +4,7 @@ import { chdirToTemp } from './helpers.ts';
 
 chdirToTemp();
 const { requestTimingBreakdown, timingHint, cacheSource } = await import('lh-pptr-framework/settings/audits/network-timing.js');
-const { pickKeyFrames, MAX_KEY_FRAMES } = await import('lh-pptr-framework/settings/audits/enhanced-screenshot-thumbnails.js');
+const { pickKeyFrames, frameEvents, MAX_KEY_FRAMES } = await import('lh-pptr-framework/settings/audits/enhanced-screenshot-thumbnails.js');
 const { default: MemoryAudit } = await import('lh-pptr-framework/settings/audits/memory-audit.js');
 const { default: SelectorTimingAudit } = await import('lh-pptr-framework/settings/audits/selector-timing-audit.js');
 const { collectFrontendIssues } = await import('lh-pptr-framework/reporting/frontendIssues.js');
@@ -46,6 +46,20 @@ test('key frames keep the first and last frame, the must-have frames and spread 
   assert.ok([0, 3, 90, 184].every(i => picked.includes(i)), String(picked));
   assert.deepEqual([...picked].sort((a, b) => a - b), picked, 'sorted');
   assert.deepEqual(pickKeyFrames([0, 100, 200], [1]), [0, 1, 2], 'few frames: all kept');
+});
+
+test('frames are tagged with the moments they show (Speedline summary + paint metrics)', () => {
+  const timings = [0, 100, 200, 300, 400];
+  const events = frameEvents(timings, { firstVisualChange: 100, firstContentfulPaint: 150, largestContentfulPaint: 290, visuallyComplete: 300 });
+  assert.deepEqual(Object.fromEntries(events), {
+    0: ['First frame'],
+    1: ['First visual change'],
+    2: ['FCP 150 ms'], // the first frame at or after the paint
+    3: ['LCP 290 ms', 'Visually complete'],
+    4: ['Last visual change'],
+  });
+  // Timespans: no paint metrics and possibly no Speedline summary.
+  assert.deepEqual(Object.fromEntries(frameEvents([0, 50], {})), { 0: ['First frame'], 1: ['Last visual change'] });
 });
 
 test('memory audit lists the page size, retained JS heap, listeners and documents without scoring them', () => {
