@@ -36,7 +36,7 @@
     "winston": "^3.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.19.0",
+    "@types/node": "^26.6.6",
     "lighthouse": "^13.6.0",
     "puppeteer-core": "^25.16.0",
     "typescript": "^7.0.2",
