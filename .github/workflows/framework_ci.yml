@@ -1,0 +1,133 @@
+name: Framework CI
+
+on:
+  pull_request:
+    branches: [framework]
+  workflow_dispatch:
+  # Also run by publish_npm_package.yml before every release.
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: framework-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Test · Node ${{ matrix.node }} · ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # Every supported Node major (engines: >=22.19) on Linux, plus Windows, where the suites run locally.
+        os: [ubuntu-latest]
+        node: ['22', '24', '26']
+        include:
+          - os: windows-latest
+            node: '24'
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js ${{ matrix.node }}
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: node --test "test/**/*.test.ts"
+
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify dependency signatures
+        run: npm audit signatures
+
+      - name: Build and pack
+        id: pack
+        run: |
+          npm run build
+          npm pack --ignore-scripts --pack-destination "$RUNNER_TEMP"
+          tarball="$RUNNER_TEMP/$(node -p "const p = require('./package.json'); p.name + '-' + p.version + '.tgz'")"
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+
+      - name: Check package contents
+        env:
+          TARBALL: ${{ steps.pack.outputs.tarball }}
+        run: |
+          tar -tzf "$TARBALL" | sort > "$RUNNER_TEMP/files.txt"
+          echo "$(wc -l < "$RUNNER_TEMP/files.txt") files, $(du -h "$TARBALL" | cut -f1)"
+          for f in package/package.json package/README.md package/dist/core/browser.js package/dist/core/browser.d.ts \
+                   package/dist/settings/configLoader.js package/dist/reporting/createReport.js; do
+            grep -qx "$f" "$RUNNER_TEMP/files.txt" || { echo "::error::$f is missing from the package"; exit 1; }
+          done
+          # TypeScript sources and tests stay out of the package (only dist/ and the READMEs ship).
+          if grep -v '^package/dist/' "$RUNNER_TEMP/files.txt" | grep -E '\.ts$|^package/test/'; then
+            echo "::error::Sources or tests would be published"; exit 1
+          fi
+
+      - name: Smoke-test the tarball in a fresh project
+        env:
+          TARBALL: ${{ steps.pack.outputs.tarball }}
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir consumer && cd consumer
+          npm init -y > /dev/null
+          npm pkg set type=module
+          npm install --no-audit --no-fund "$TARBALL" lighthouse@13 puppeteer-core winston
+          node --input-type=module -e "
+            import { pathToFileURL } from 'node:url';
+            const { getLighthouseConfigByBrowserType } = await import('lh-pptr-framework/settings/configLoader.js');
+            const config = getLighthouseConfigByBrowserType('desktop');
+            const modules = [...config.audits, ...config.artifacts.map(a => a.gatherer)];
+            for (const file of modules) {
+              const mod = await import(pathToFileURL(file).href);
+              if (typeof mod.default !== 'function') throw new Error('No default export in ' + file);
+            }
+            for (const m of ['core/browser.js', 'core/page.js', 'reporting/createReport.js', 'reporting/waterfall.js']) {
+              await import('lh-pptr-framework/' + m);
+            }
+            console.log('OK: ' + config.audits.length + ' audits and ' + config.artifacts.length + ' gatherers load from the package');
+          "
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
