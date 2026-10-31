@@ -42,7 +42,7 @@ jobs:
     outputs:
       published: ${{ steps.publish.outcome == 'success' }}
       version: ${{ steps.version.outputs.version }}
-      ref: ${{ env.IMAGE }}:${{ steps.version.outputs.tag }}
+      ref: ${{ steps.version.outputs.ref }}
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -63,6 +63,7 @@ jobs:
             exit 1
           fi
           echo "tag=$lh-alpine" >> "$GITHUB_OUTPUT"
+          echo "ref=$IMAGE:$lh-alpine" >> "$GITHUB_OUTPUT"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
