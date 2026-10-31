@@ -54,7 +54,7 @@ section (click its gauge at the top of the step) with, from top to bottom:
 4. **Network & server** — the request waterfall (DevTools timing phases per request, render-blocking requests and the
    LCP resource flagged, main-thread lane) with the slowest requests split into server time and download, API / XHR
    calls with server time, repeated and failing calls, server latency per origin.
-5. **Rendering, screenshots & memory** — key frames with visual progress, last visual change, page-validation timing,
+5. **Rendering, screenshots & memory** — key frames (first visual change, FCP, LCP, visually complete, last change), page-validation timing,
    page size, JS heap and event listeners after garbage collection (growth across interactions on one page is reported
    as a possible leak).
 
@@ -103,6 +103,14 @@ npm pack                                               # in this repo -> lh-pptr
 npm install ../path/to/lh-pptr-framework-<version>.tgz # in the test project
 ```
 
+## 2.0.1
+
+- Lighthouse 13.6 compatibility: Lighthouse 13.6 no longer exposes per-frame visual progress, so on 13.6
+  `enhanced-screenshot-thumbnails` silently lost its "visually complete" marker (and the type-check failed with
+  13.6 typings). The key frames are now tagged from Speedline's summary (first visual change, visually complete)
+  and the paint metrics, which every Lighthouse 13 version provides.
+- Developed and tested against Lighthouse 13.6.0 and Puppeteer 25.16.
+
 ## 2.0.0 — TypeScript rewrite
 
 The public API, CLI parameters, reports and metrics are unchanged. Differences from 1.3.7:
@@ -134,7 +142,8 @@ The public API, CLI parameters, reports and metrics are unchanged. Differences f
     page; it is now *not applicable* in that case (no value sent).
   - `network-requests` showed "-∞ s" (and a null value) for steps without requests; now *not applicable*.
   - `enhanced-screenshot-thumbnails` embedded every frame of the step (185 frames / 2 MB for one interaction in a real
-    run); it now shows up to 10 key frames with visual progress. A 15-step report went from 23 MB to 11 MB.
+    run); it now shows up to 10 key frames (first visual change, FCP, LCP, visually complete, last change). A 15-step
+    report went from 23 MB to 12 MB.
   - `network-waterfall` was rebuilt: requests in start order with DevTools timing phases, render-blocking / LCP flags, a
     main-thread lane and a "slowest requests — where the time went" table (it used to group bars by entity).
   - `longest-first-party-request` takes the first party from the step's page (Lighthouse entity) instead of `--url`;

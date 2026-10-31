@@ -161,7 +161,7 @@ DevTools-Performance-panel-style analysis built on Lighthouse's own computed art
 | Audit | ID | What it measures |
 |-------|----|------------------|
 | `final-screenshot.ts` | `final-screenshot` | Last screenshot of the step = last visual change, with its time (score: ≤ 2 s good, 4 s → 0.5) |
-| `enhanced-screenshot-thumbnails.ts` | `enhanced-screenshot-thumbnails` | Filmstrip of up to 10 key frames (first frame, FCP, LCP, 50 / 90 / 100 % visually complete, last change) with visual progress |
+| `enhanced-screenshot-thumbnails.ts` | `enhanced-screenshot-thumbnails` | Filmstrip of up to 10 key frames (first frame, first visual change, FCP, LCP, visually complete, last change) with a frame timeline |
 
 ### Metric Mappings
 
