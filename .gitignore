@@ -14,6 +14,9 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 node_modules/
 reports/
 
-package-lock.json
+# Build output (TypeScript -> JavaScript) and packed tarballs
+dist/
+*.tgz
+
 .promptLib
 .vscode

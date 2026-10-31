@@ -1,26 +1,131 @@
+# Publishes lh-pptr-framework with npm trusted publishing (OIDC, no npm token) and provenance.
+# Keep this file name: the trusted-publisher settings on npmjs.com refer to it.
 name: Publish npm package
 
 on:
   push:
-    branches:
-      - framework
+    branches: [framework]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Run every check and pack the package, but don't publish
+        type: boolean
+        default: true
 
 permissions:
-  id-token: write  # Required for OIDC
   contents: read
 
+concurrency:
+  group: publish-npm-package
+  cancel-in-progress: false # never interrupt a publish
+
 jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/framework_ci.yml
+    permissions:
+      contents: read
+
   publish:
+    name: Publish to npm
+    needs: ci
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/lh-pptr-framework
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing (OIDC) and provenance
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      published: ${{ steps.publish.outputs.published }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
-          registry-url: 'https://registry.npmjs.org/'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false # no dependency cache in release jobs (cache poisoning)
 
-      - name: Publish to npm
-        run: npm publish --provenance
+      - name: Use an npm with trusted publishing (>= 11.5.1)
+        run: |
+          current="$(npm --version)"
+          if node -e "const [a, b, c] = process.argv[1].split('.').map(Number); process.exit(a > 11 || (a === 11 && (b > 5 || (b === 5 && c >= 1))) ? 0 : 1)" "$current"; then
+            echo "npm $current"
+          else
+            npm install --global npm@11
+            echo "npm $(npm --version) (was $current)"
+          fi
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Skip versions that are already on npm
+        id: check
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          published="$(npm view "lh-pptr-framework@$VERSION" version 2>/dev/null || true)"
+          if [ "$published" = "$VERSION" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Nothing to publish::lh-pptr-framework@$VERSION is already on npm. Bump \"version\" in package.json to release."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish
+        id: publish
+        if: steps.check.outputs.exists == 'false'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+        run: |
+          # Pre-releases (e.g. 2.1.0-beta.1) go to the "next" dist-tag, never to "latest".
+          tag=latest
+          case "$VERSION" in *-*) tag=next ;; esac
+          if [ "$DRY_RUN" = "true" ]; then
+            npm publish --dry-run --access public --tag "$tag"
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          else
+            npm publish --provenance --access public --tag "$tag"   # `prepack` builds dist/
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "Published **lh-pptr-framework@$VERSION** to npm (dist-tag \`$tag\`)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  release:
+    name: Tag and GitHub release
+    needs: publish
+    if: needs.publish.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # create the tag and the release
+    steps:
+      - name: Create tag and release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.publish.outputs.version }}
+        run: |
+          # Prefixed tag: plain version tags (13.5.0, ...) belong to the test project on `main`.
+          tag="lh-pptr-framework@$VERSION"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $tag already exists"
+            exit 0
+          fi
+          previous="$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName --jq '[.[].tagName | select(startswith("lh-pptr-framework@"))][0] // ""')"
+          notes=(--notes "Published to npm: https://www.npmjs.com/package/lh-pptr-framework/v/$VERSION")
+          if [ -n "$previous" ]; then
+            notes=(--generate-notes --notes-start-tag "$previous")
+          fi
+          gh release create "$tag" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "lh-pptr-framework $VERSION" --latest=false "${notes[@]}"

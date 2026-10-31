@@ -1,0 +1,30 @@
+{
+  // Type-checks the framework sources and the unit tests (no output).
+  // `tsconfig.build.json` compiles the sources into `dist/`.
+  "compilerOptions": {
+    "target": "ES2022",
+    // DOM typings are needed for callbacks that Puppeteer runs inside the page (`evaluate`, `$eval`).
+    "lib": ["ES2023", "DOM"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    // Tests run the compiled package through its own `exports` (`lh-pptr-framework/<path>.js` -> dist/)
+    // and import their helpers as `.ts`; for type-checking, package paths map to the sources.
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "lh-pptr-framework/*": ["./*"]
+    }
+  },
+  "include": ["core", "logger", "reporting", "settings", "test"]
+}
