@@ -143,3 +143,18 @@ Common browser arguments include:
    ```bash
    docker run --rm -v "$PWD:$PWD" -w "$PWD" --user "$(id -u):$(id -g)" ibombit/lighthouse-puppeteer-chrome:13.5.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
    ```
+
+---
+
+## CI workflows
+
+| Workflow | Runs on | What it does |
+|----------|---------|--------------|
+| `test_ui.yml` | pull requests to `main`; manually (spec, start URL and device profile as inputs) | Builds the test image from the pull request's `Dockerfile` and runs the mocha suites in it. The specs come from the `TEST_PATH` repository variable (or secret). Reports are uploaded as the `test-reports` artifact and the issues for developers are shown in the run summary |
+| `docker_image.yml` | pull requests and pushes to `main` that change the `Dockerfile` or `package*.json`; manually | Builds and smoke-tests `ibombit/lighthouse-puppeteer-chrome:<lighthouse version>-alpine`. Only pushes to `main` publish it to Docker Hub (with provenance and SBOM), and never over an existing tag |
+| `docker_image_manual.yml` | manually | Rebuilds the images of the `docker/<version>` directories matching the input, optionally pushing them (overwrites tags) |
+| `codeql.yml` | pull requests, pushes to `main`, weekly | CodeQL security analysis of the code and of the workflows |
+
+Dependabot (`.github/dependabot.yml`) keeps the pinned actions of `main` and `framework`, the base images and the
+framework's dev dependencies up to date. Actions are pinned to commit SHAs, and every job runs with a read-only
+token unless it needs more.

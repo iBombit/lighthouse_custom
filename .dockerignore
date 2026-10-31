@@ -1,0 +1,7 @@
+# The root Dockerfile only copies package.json / package-lock.json: keep the build context small.
+.git
+.github
+node_modules
+reports
+docker
+*.log

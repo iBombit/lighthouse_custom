@@ -1,33 +1,80 @@
-name: Docker Image Manual
+# Rebuilds (and by default pushes) the images of the docker/<version> directories whose path contains the
+# given text, e.g. "v13.5.0", or "13." for every 13.x image. Pushing overwrites existing tags on purpose.
+name: Docker image (manual)
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version Number'
+        description: Build every docker/<dir> whose path contains this text, e.g. v13.5.0
+        type: string
         required: true
-        default: 'latest'
+      push:
+        description: Push the images to Docker Hub (overwrites existing tags)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-image-manual
+  cancel-in-progress: false
+
+env:
+  IMAGE: ibombit/lighthouse-puppeteer-chrome
 
 jobs:
-  build-and-push:
+  build:
+    name: Build and push
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
-    - uses: actions/checkout@v4
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-    - name: Login to DockerHub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USER }}
-        password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
-    - name: Build and Push Docker images
-      run: |
-        version=${{ github.event.inputs.version }}
-        find . -type f -name 'Dockerfile' -exec dirname {} \; | while read dir; do
-          if [[ -f "$dir/package.json" && "$dir" == *"$version"* ]]; then
-            tag=$(basename "$dir" | sed "s/^v//")
-            echo "Building $dir -> ibombit/lighthouse-puppeteer-chrome:$tag-alpine"
-            docker build -t ibombit/lighthouse-puppeteer-chrome:$tag-alpine "$dir"
-            docker push ibombit/lighthouse-puppeteer-chrome:$tag-alpine
+      - name: Log in to Docker Hub
+        if: inputs.push
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build matching images
+        env:
+          VERSION: ${{ inputs.version }}
+          PUSH: ${{ inputs.push }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$VERSION" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "::error::'version' may only contain letters, digits, '.', '_' and '-' (got '$VERSION')"
+            exit 1
           fi
-        done
+          output=(--load)
+          if [ "$PUSH" = "true" ]; then
+            output=(--push --provenance=mode=max --sbom=true)
+          fi
+          built=0
+          while IFS= read -r dir; do
+            [ "$dir" = "." ] && continue # the root Dockerfile is built by docker_image.yml
+            [[ -f "$dir/package.json" && "$dir" == *"$VERSION"* ]] || continue
+            tag="$(basename "$dir" | sed 's/^v//')-alpine"
+            echo "::group::$dir -> $IMAGE:$tag"
+            docker buildx build "${output[@]}" \
+              --label "org.opencontainers.image.source=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+              --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+              --tag "$IMAGE:$tag" "$dir"
+            echo "::endgroup::"
+            if [ "$PUSH" = "true" ]; then state="pushed"; else state="built only"; fi
+            echo "- \`$IMAGE:$tag\` from \`$dir\` ($state)" >> "$GITHUB_STEP_SUMMARY"
+            built=$((built + 1))
+          done < <(find . -path ./node_modules -prune -o -type f -name Dockerfile -print | xargs -n1 dirname | sort)
+          if [ "$built" -eq 0 ]; then
+            echo "::error::No docker/ directory matches '$VERSION'. Available: $(ls docker | tr '\n' ' ')"
+            exit 1
+          fi
