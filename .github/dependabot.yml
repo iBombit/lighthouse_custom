@@ -41,6 +41,10 @@ updates:
       interval: weekly
     allow:
       - dependency-type: development
+    ignore:
+      # Typings of the oldest supported Node (engines: >=22.19): a newer major would allow APIs that Node 22 lacks.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
     groups:
       dev-dependencies:
         patterns: ['*']
