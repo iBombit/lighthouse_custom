@@ -1,46 +1,92 @@
-name: Docker Test
+# Runs the Lighthouse / Puppeteer mocha suites inside the test image built from this commit's Dockerfile,
+# so a pull request that bumps Lighthouse is tested against its own image (nothing is pulled or pushed).
+name: UI tests
 
 on:
-  workflow_dispatch:
   pull_request:
-    branches:
-      - main
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      test_path:
+        description: Mocha spec(s) to run, e.g. test/demo.test.steps.js (default - the TEST_PATH variable or secret)
+        type: string
+        required: false
+      url:
+        description: Start URL
+        type: string
+        default: https://demoqa.com/
+      browser_type:
+        description: Device profile
+        type: choice
+        options: [desktop, mobile, mobile3G, mobile4G, mobile4GSlow]
+        default: desktop
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   lighthouse-test:
+    name: Lighthouse tests (Docker)
     runs-on: ubuntu-latest
-
+    timeout-minutes: 45
     steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        
-      - name: Print Working Directory and List Files
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build the test image
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          load: true
+          tags: lightprobe-tests:ci
+          cache-from: type=gha,scope=lighthouse-image
+          cache-to: type=gha,mode=max,scope=lighthouse-image
+
+      - name: Run the tests
+        env:
+          TEST_PATH: ${{ inputs.test_path || vars.TEST_PATH || secrets.TEST_PATH }}
+          START_URL: ${{ inputs.url || 'https://demoqa.com/' }}
+          BROWSER_TYPE: ${{ inputs.browser_type || 'desktop' }}
         run: |
-          echo Current directory:
-          pwd
-          echo Files in current directory:
-          ls -l
+          if [ -z "$TEST_PATH" ]; then
+            echo "::warning::TEST_PATH is not set (repository variable or secret), so mocha runs its default spec."
+          fi
+          # TEST_PATH may list several space-separated specs, hence unquoted.
+          # shellcheck disable=SC2086
+          docker run --rm -v "$PWD:$PWD" -w "$PWD" lightprobe-tests:ci \
+            npx mocha $TEST_PATH --browsertype="$BROWSER_TYPE" --headless=true --url="$START_URL" --configFile=customConfig.json
 
-      - name: Get LH version
-        id: vars
-        run: |
-          LH_VERSION=$(jq -r .dependencies.lighthouse ./package.json | tr -d '^')
-          echo "lh_version=$LH_VERSION" >> $GITHUB_OUTPUT
-
-      - name: Test with Lighthouse and Puppeteer
-        run: |
-          docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:${{ steps.vars.outputs.lh_version }}-alpine npx mocha ${{ secrets.TEST_PATH }} --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
-
-      - name: Upload report files
+      - name: Summary
         if: always()
-        uses: actions/upload-artifact@v4
+        run: |
+          {
+            echo "### Lighthouse UI tests"
+            if [ -f reports/user-flow.report.html ]; then
+              echo "The HTML / JSON flow report and the other report files are in the **test-reports** artifact of this run."
+            else
+              echo "No report was generated."
+            fi
+            # lh-pptr-framework >= 2.0 writes the issues for developers next to the report.
+            if [ -f reports/frontend-issues.md ]; then
+              echo
+              cat reports/frontend-issues.md
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: test-reports
-          path: |
-            ./reports/user-flow.report.html
-            ./reports/user-flow.report.json
+          path: reports/
+          retention-days: 14
+          if-no-files-found: warn

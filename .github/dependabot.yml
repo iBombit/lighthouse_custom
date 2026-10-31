@@ -1,0 +1,48 @@
+# Dependabot reads this file from the default branch (main) only; `target-branch` covers the framework branch.
+version: 2
+updates:
+  # Actions are pinned to commit SHAs: Dependabot keeps the SHAs and their version comments current.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ['*']
+    commit-message:
+      prefix: ci
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: framework
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns: ['*']
+    commit-message:
+      prefix: ci
+
+  # Base images of the test image (node / alpine security updates).
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
+
+  # Dev dependencies of the framework (TypeScript, Lighthouse, Puppeteer used by its tests): early warning
+  # when a new Lighthouse breaks the framework. The test project's own dependencies (Lighthouse version =
+  # image tag = release) stay manual.
+  - package-ecosystem: npm
+    directory: /
+    target-branch: framework
+    schedule:
+      interval: weekly
+    allow:
+      - dependency-type: development
+    groups:
+      dev-dependencies:
+        patterns: ['*']
+    commit-message:
+      prefix: chore
