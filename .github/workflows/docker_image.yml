@@ -1,7 +1,8 @@
 # Builds the ibombit/lighthouse-puppeteer-chrome image from the root Dockerfile.
 # Pull requests: build and smoke-test only (nothing is pushed before review).
 # Pushes to main: also publish the <lighthouse version>-alpine tag to Docker Hub, unless that tag already
-# exists (published tags are never overwritten here; rebuild one on purpose with docker_image_manual.yml).
+# exists (published tags are never overwritten here; rebuild one on purpose with docker_image_manual.yml),
+# and create the GitHub release <package.json version> for it.
 name: Docker image
 
 on:
@@ -38,13 +39,17 @@ jobs:
     name: Build and publish
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      published: ${{ steps.publish.outcome == 'success' }}
+      version: ${{ steps.version.outputs.version }}
+      ref: ${{ env.IMAGE }}:${{ steps.version.outputs.tag }}
     steps:
       - name: Check out
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Read the Lighthouse version
+      - name: Read the versions
         id: version
         run: |
           lh="$(jq -r '.dependencies.lighthouse // empty' package.json | sed 's/^[~^]//')"
@@ -52,7 +57,13 @@ jobs:
             echo "::error file=package.json::dependencies.lighthouse must be a version like 13.5.0 or ^13.5.0 (got '$lh')"
             exit 1
           fi
+          version="$(jq -r '.version // empty' package.json)"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error file=package.json::version must look like 13.5.0 (got '$version')"
+            exit 1
+          fi
           echo "tag=$lh-alpine" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
@@ -143,3 +154,31 @@ jobs:
             state="not published (see the failed step)"
           fi
           echo "**\`$REF\`**: $state" >> "$GITHUB_STEP_SUMMARY"
+
+  release:
+    name: GitHub release
+    needs: image
+    if: needs.image.outputs.published == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # create the tag and the release
+    steps:
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.image.outputs.version }}
+          IMAGE_REF: ${{ needs.image.outputs.ref }}
+        run: |
+          if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $VERSION already exists"
+            exit 0
+          fi
+          # Changelog since the previous test-project release (plain x.y.z tags; the framework uses lh-pptr-framework@x.y.z).
+          previous="$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName --jq '[.[].tagName | select(test("^[0-9]+[.][0-9]+[.][0-9]+$"))][0] // ""')"
+          args=(--title "$VERSION" --target "$GITHUB_SHA" --latest --generate-notes --notes "Docker image: \`$IMAGE_REF\`")
+          if [ -n "$previous" ]; then
+            args+=(--notes-start-tag "$previous")
+          fi
+          gh release create "$VERSION" --repo "$GITHUB_REPOSITORY" "${args[@]}"
+          echo "Created release **$VERSION** for \`$IMAGE_REF\`." >> "$GITHUB_STEP_SUMMARY"

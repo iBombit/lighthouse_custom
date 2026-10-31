@@ -23,6 +23,8 @@
 | `configFile`      | Specifies a custom Lighthouse configuration file.    | `--configFile=path/to/config.json`    |
 | `includetimestamp`| Adds timestamp to report file names (default false). | `--includetimestamp=true`             |
 | `generatecsv`     | Generates CSV performance analysis report (default false). | `--generatecsv=true`              |
+| `saveTraces`      | Saves each step's trace to `reports/traces/` for the DevTools Performance panel (default false). | `--saveTraces=true` |
+| `jsProfiling`     | Records JavaScript samples for the "JavaScript hot spots" audit (default false; adds overhead, so compare metrics only between runs with the same setting). | `--jsProfiling=true` |
 
 ---
 
@@ -44,7 +46,7 @@ This parameter allows you to pass a custom JSON file to override the default Lig
     "formFactor": "mobile",
     "onlyCategories": [
       "performance",
-      "server-side"
+      "custom-metrics"
     ],
     "screenEmulation": {
       "mobile": true,
@@ -87,9 +89,9 @@ The `browserArgs` section allows you to customize Puppeteer browser launch argum
 
 #### Category Filtering
 
-The `onlyCategories` setting limits which Lighthouse categories appear in the report. You can include both built-in categories (`performance`, `accessibility`, `best-practices`, `seo`) and custom ones (`server-side`).
+The `onlyCategories` setting limits which Lighthouse categories appear in the report. You can include both built-in categories (`performance`, `accessibility`, `best-practices`, `seo`) and the framework's `custom-metrics` category ("Custom Metrics": issues for developers, TBT breakdown, waterfall, API timing, ...; called `server-side` before lh-pptr-framework 2.0, and that id still works).
 
-Categories are automatically filtered by gather mode — for example, `server-side` only supports `navigation` and `timespan` modes, so it is excluded from snapshot steps automatically.
+Categories are automatically filtered by gather mode — for example, `custom-metrics` only supports `navigation` and `timespan` modes, so it is excluded from snapshot steps automatically.
 
 Common browser arguments include:
 - `--no-sandbox` - Disable the sandbox
@@ -129,7 +131,7 @@ Common browser arguments include:
 2. Verify that headless mode is enabled via the `--headless=true` flag.
 3. In the repository directory, run the following command:
    ```bash
-   docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:13.5.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
+   docker run --rm -v "$PWD:$PWD" -w "$PWD" ibombit/lighthouse-puppeteer-chrome:13.6.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
    ```
 
 ### From Current User:
@@ -141,7 +143,7 @@ Common browser arguments include:
 2. Verify that headless mode is enabled via the `--headless=true` flag.
 3. In the repository directory, run the following command:
    ```bash
-   docker run --rm -v "$PWD:$PWD" -w "$PWD" --user "$(id -u):$(id -g)" ibombit/lighthouse-puppeteer-chrome:13.5.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
+   docker run --rm -v "$PWD:$PWD" -w "$PWD" --user "$(id -u):$(id -g)" ibombit/lighthouse-puppeteer-chrome:13.6.0-alpine npx mocha --timeout 10000 .\test\huge.test.steps.js --browsertype=desktop --headless=true --url="https://demoqa.com/" --configFile=customConfig.json
    ```
 
 ---
@@ -151,7 +153,7 @@ Common browser arguments include:
 | Workflow | Runs on | What it does |
 |----------|---------|--------------|
 | `test_ui.yml` | pull requests to `main`; manually (spec, start URL and device profile as inputs) | Builds the test image from the pull request's `Dockerfile` and runs the mocha suites in it. The specs come from the `TEST_PATH` repository variable (or secret). Reports are uploaded as the `test-reports` artifact and the issues for developers are shown in the run summary |
-| `docker_image.yml` | pull requests and pushes to `main` that change the `Dockerfile` or `package*.json`; manually | Builds and smoke-tests `ibombit/lighthouse-puppeteer-chrome:<lighthouse version>-alpine`. Only pushes to `main` publish it to Docker Hub (with provenance and SBOM), and never over an existing tag |
+| `docker_image.yml` | pull requests and pushes to `main` that change the `Dockerfile` or `package*.json`; manually | Builds and smoke-tests `ibombit/lighthouse-puppeteer-chrome:<lighthouse version>-alpine`. Only pushes to `main` publish it to Docker Hub (with provenance and SBOM), never over an existing tag, and then create the GitHub release `<package.json version>` |
 | `docker_image_manual.yml` | manually | Rebuilds the images of the `docker/<version>` directories matching the input, optionally pushing them (overwrites tags) |
 | `codeql.yml` | pull requests, pushes to `main`, weekly | CodeQL security analysis of the code and of the workflows |
 
